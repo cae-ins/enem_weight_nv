@@ -1,0 +1,4 @@
+# Ignore Stata and tab-delimited data files
+*.dta
+*.tab
+*.csv
