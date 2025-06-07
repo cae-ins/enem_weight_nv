@@ -18,7 +18,7 @@ library(lubridate)
 # ------------------------------------------------------------------------------
 # Define base paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
 INPUT_ROOT <- file.path(BASE_DIR, "data", "02_Cleaned", "Menage")
 OUTPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed", "Menage")
 TRACKING_DIR <- file.path(BASE_DIR, "data", "03_Processed", "Tracking_ID")

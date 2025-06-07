@@ -34,7 +34,7 @@ library(janitor)
 # ------------------------------------------------------------------------------
 # Define paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
 
 PARENT_DIR <- file.path(BASE_DIR, "data/01_raw", "Denombrement", "T2_2024")
 OUTPUT_DIR <- file.path(BASE_DIR, "data/02_cleaned", "Denombrement", "T2_2024")

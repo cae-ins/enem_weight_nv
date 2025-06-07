@@ -18,7 +18,7 @@ library(haven)
 # ------------------------------------------------------------------------------
 # 2. Set Base Paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
 CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
@@ -56,7 +56,7 @@ library(haven)
 # ------------------------------------------------------------------------------
 # 2. Set Base Paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
 CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")

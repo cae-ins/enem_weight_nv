@@ -20,7 +20,7 @@ library(lubridate)
 # ------------------------------------------------------------------------------
 # Set Base Paths and Parameters
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
 TARGET_QUARTER <- "T3_2024"  # Specify the quarter you want to process
 
 DATA_DIR <- file.path(BASE_DIR, "data")
