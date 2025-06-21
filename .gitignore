@@ -1,4 +1,18 @@
-# Ignore Stata and tab-delimited data files
-*.dta
-*.tab
-*.csv
+# Ignorer tous les fichiers .dta partout dans le projet
+**/*.dta
+
+# Ignorer tous les fichiers .tab
+**/*.tab
+
+# Ignorer tous les fichiers .csv
+**/*.csv
+
+# Ignorer tous les fichiers Excel (.xlsx et .xls)
+**/*.xlsx
+**/*.xls
+
+# Ignorer tous les fichiers RData
+**/*.RData
+
+# Ignorer tous les dossiers nommés data, à n'importe quel niveau
+**/data/
