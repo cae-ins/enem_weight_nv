@@ -41,7 +41,7 @@ library(stringr)
 # Define file paths
 # ------------------------------------------------------------------------------
 # Base directory for the project
-BASE_DIR <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
 
 # Define paths for input and output files
 input_path <- file.path(BASE_DIR, "data", "02_cleaned", "RP_2021", "Bases_Menage_RGPH2021.dta")

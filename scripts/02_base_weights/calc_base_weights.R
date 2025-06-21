@@ -1,108 +1,192 @@
-################################################################################
-# Script Name: calc_base_weights.R
-# Project: Employment Survey Weights – National Rotating Panel (10-Year Study)
-# Author: [Your Name or Team]
-# Created: [YYYY-MM-DD]
-# Last Updated: [YYYY-MM-DD]
-#
-# Description:
-# ------------------------------------------------------------------------------
-# This script calculates the **base weights** for sampled units in the employment
-# survey. Base weights represent the inverse of the inclusion probability for each
-# sampled unit and are the foundation for subsequent adjustments such as
-# nonresponse correction and calibration.
-#
-# Base Weight Formula:
-#   w_base = 1 / π_i
-#   where π_i = probability of selection for unit i
-#
-# Key Functions:
-# - Load sampling frame and sample selection metadata
-# - Compute inclusion probabilities based on design strata, clusters, and rotation group
-# - Assign base weights to all respondents (and optionally nonrespondents)
-# - Export the base weight dataset for downstream use
-#
-# Inputs:
-# - Sampling frame or design metadata (e.g., inclusion probabilities, stratification info)
-# - Raw survey sample data for the current wave
-#
-# Outputs:
-# - A data frame with base weights appended
-#   (usually saved to `data/processed/base_weights_[wave].rds`)
-#
-# Dependencies:
-# - R packages: data.table, dplyr, readr, etc.
-# - Source utilities from scripts/00_utils/ if needed
-#
-# Notes:
-# - Base weights should reflect any planned oversampling, stratified design, or multi-stage selection
-# - They are the first stage in the full survey weighting pipeline
-# - Nonresponse and calibration adjustments will follow in subsequent scripts
-#
-# Example downstream usage:
-#   - `adjust_for_nonresponse.R` will read in these base weights to compute adjusted weights
-#   - Used in QC reports to assess sample representation before adjustments
-#
-################################################################################
+# ==============================================================================
+# Script_name : calc_base_weights.R
+# Title       : Compute and Label Base Weights for ENE Survey
+# Description : This script defines functions to compute inclusion probabilities
+#               and base weights at different stages of the sampling design.
+#               It also attaches variable labels for easier understanding.
+# Author      : Ezechiel KOFFIE
+# Date        : 11-06-2025
+# ==============================================================================
 
 # ------------------------------------------------------------------------------
-# FUNCTIONS TO COMPUTE INCLUSION PROBABILITIES AND BASE WEIGHTS
+# Load Required Libraries
 # ------------------------------------------------------------------------------
+library(dplyr)
+library(haven)
+library(labelled) 
 
-# 1. Inclusion probability for ZD (Zone de Dénombrement)
-compute_pi_zd <- function(n_zd, N_zd) {
-  if (n_zd <= 0 || N_zd <= 0 || n_zd > N_zd) stop("Invalid ZD selection parameters.")
-  pi_zd <- n_zd / N_zd
-  return(pi_zd)
+# ------------------------------------------------------------------------------
+# Set Base Paths and Parameters
+# ------------------------------------------------------------------------------
+BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+TARGET_QUARTER <- "T3_2024"
+
+DATA_DIR <- file.path(BASE_DIR, "data")
+WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
+WEIGHTS_COLUMNS_PATH <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("base_weights_", TARGET_QUARTER, ".dta"))
+
+INCONSISTENT_PATH = file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights", 
+                              paste0("inconsistent_rows_", TARGET_QUARTER, ".dta"))
+# ------------------------------------------------------------------------------
+# Constants
+# ------------------------------------------------------------------------------
+NB_MENS_ENQ <- 12  # Default number of households interviewed per segment
+TARGET_CODES = c(10)
+
+# ------------------------------------------------------------------------------
+# Count the segments to drop
+# ------------------------------------------------------------------------------
+count_seg_drop <- function(file_path, target_codes) {
+  data <- read_dta(file_path)
+  
+  # Ensure incoherence_code is treated as integer
+  codes <- as.integer(data$incoherence_code)
+  
+  # Count total number of matches
+  total_count <- sum(codes %in% target_codes, na.rm = TRUE)
+  
+  return(total_count)
 }
 
-# 2. Inclusion probability for segment (fixed: 1 selected out of 6)
-compute_pi_segment <- function() {
-  return(1 / 6)
+get_seg_drop <- function(file_path, target_codes) {
+  data <- read_dta(file_path)
+  
+  # Ensure incoherence_code is treated as integer
+  data <- data %>%
+    mutate(incoherence_code = as.integer(incoherence_code))
+  
+  # Filter rows with specified codes
+  filtered_data <- data %>%
+    filter(incoherence_code %in% target_codes)
+  
+  # Extract distinct segment identifiers
+  segment_info <- filtered_data %>%
+    select(region, depart, souspref, ZD, segment) %>%
+    distinct()
+  
+  return(segment_info)
 }
 
-# 3. Inclusion probability for a ménage (household) within a segment
-compute_pi_menage <- function(n_menages, N_menages) {
-  if (n_menages <= 0 || N_menages <= 0 || n_menages > N_menages) stop("Invalid household selection parameters.")
-  pi_menage <- n_menages / N_menages
-  return(pi_menage)
-}
-
-# 4. Combined probability of inclusion for a household
-compute_pi_household <- function(n_zd, N_zd, n_menages, N_menages) {
-  pi_zd <- compute_pi_zd(n_zd, N_zd)
-  pi_seg <- compute_pi_segment()
-  pi_men <- compute_pi_menage(n_menages, N_menages)
-  pi_total <- pi_zd * pi_seg * pi_men
-  return(pi_total)
-}
+seg_drop = count_seg_drop(INCONSISTENT_PATH, TARGET_CODES)
+seg_drop_info = get_seg_drop(INCONSISTENT_PATH, TARGET_CODES)
 
 # ------------------------------------------------------------------------------
-# FUNCTION TO APPEND BASE WEIGHTS TO A DATASET
+# Add the nb_zd_strat variable
 # ------------------------------------------------------------------------------
 
-#' Compute base weights and append to dataset
-#'
-#' @param data A data.frame or data.table containing the input sample
-#' @param n_zd_col, N_zd_col Column names for number selected and total ZDs in region
-#' @param n_men_col, N_men_col Column names for number and total households per segment
-#' @param weight_col Name of the column to store base weights
-#'
-#' @return A dataset with base weights column
-#' 
-compute_base_weights <- function(data,
-                                 n_zd_col, N_zd_col,
-                                 n_men_col, N_men_col,
-                                 weight_col = "base_weight") {
-  data[[weight_col]] <- mapply(
-    function(n_zd, N_zd, n_men, N_men) {
-      pi <- compute_pi_household(n_zd, N_zd, n_men, N_men)
-      return(1 / pi)
-    },
-    data[[n_zd_col]],
-    data[[N_zd_col]],
-    data[[n_men_col]],
-    data[[N_men_col]]
-  )
+compute_nb_zd_strat <- function(data, seg_infos) {
+  seg_to_drop_counts <- seg_infos %>%
+    group_by(region) %>%
+    summarise(segment_drop = n(), .groups = "drop")
+  
+  data <- data %>%
+    left_join(seg_to_drop_counts, by = "region") %>%
+    mutate(
+      segment_drop = ifelse(is.na(segment_drop), 0, segment_drop),
+      
+      nb_zd_strat = case_when(
+        region == 10101 ~ (13 * quarter_phase) - segment_drop,
+        TRUE            ~ (7 * quarter_phase)  - segment_drop
+      ),
+      
+      nb_zd_strat_wr = case_when(
+        rgmen == 1 & region == 10101 ~ 13 - segment_drop,
+        rgmen == 1                  ~ 7 - segment_drop,
+        TRUE                        ~ NA_real_
+      )
+    ) %>%
+    set_variable_labels(
+      segment_drop     = "Nombre de segments non interrogés dans la région",
+      nb_zd_strat      = "Nombre de segments interrogés dans la région",
+      nb_zd_strat_wr   = "Nombre de segments interrogés dans la région (Trimestre en cours uniquement)"
+    )
+  
   return(data)
 }
+
+# ------------------------------------------------------------------------------
+# Compute ZD-level Inclusion Probabilities
+# ------------------------------------------------------------------------------
+compute_pi_zd <- function(region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat) {
+  if (any(is.na(c(region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat))) || nb_indivs_reg == 0)
+    return(NA_real_)
+  multiplier <- ifelse(region == 10101, 104, 56)
+  multiplier * (nb_indivs_zd / nb_indivs_reg) * (nb_zd_strat / multiplier)
+}
+
+# ------------------------------------------------------------------------------
+# Compute Household-Level Inclusion Probabilities
+# ------------------------------------------------------------------------------
+compute_pi_hh <- function(nb_mens_seg) {
+  if (is.na(nb_mens_seg) || nb_mens_seg == 0)
+    return(NA_real_)
+  if (NB_MENS_ENQ > nb_mens_seg)
+    return(1)
+  (NB_MENS_ENQ / nb_mens_seg) * (1 / 6)
+}
+# ------------------------------------------------------------------------------
+# Combine Inclusion Probabilities
+# ------------------------------------------------------------------------------
+compute_pi_HH <- function(pi_zd, pi_hh) {
+  ifelse(is.na(pi_zd) | is.na(pi_hh), NA_real_, pi_zd * pi_hh)
+}
+
+# ------------------------------------------------------------------------------
+# Append Base Weights to Dataset
+# ------------------------------------------------------------------------------
+append_base_weights <- function(data, resurvey = TRUE) {
+  # Mandatory variables for all calculations
+  required_cols <- c("region", "nb_indivs_zd", "nb_indivs_reg", 
+                     "nb_zd_strat", "nb_mens_seg")
+  if (resurvey) {
+    required_cols <- c(required_cols, "proportion")
+  }
+  
+  missing <- setdiff(required_cols, names(data))
+  if (length(missing) > 0) {
+    stop(paste("Missing required columns:", paste(missing, collapse = ", ")))
+  }
+  
+  data <- data %>%
+    mutate(
+      pi_zd     = mapply(compute_pi_zd, region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat),
+      pi_zd_wr  = mapply(compute_pi_zd, region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat_wr),
+      pi_hh     = mapply(compute_pi_hh, nb_mens_seg),
+      pi_HH     = compute_pi_HH(pi_zd, pi_hh),
+      pi_HH_wr  = compute_pi_HH(pi_zd_wr, pi_hh),
+      base_weight_HH    = ifelse(!is.na(pi_HH) & pi_HH != 0, 1 / pi_HH, NA_real_),
+      base_weight_HH_WR = ifelse(!is.na(pi_HH_wr) & pi_HH_wr != 0, 1 / pi_HH_wr, NA_real_)
+    )
+  
+  data <- data %>%
+    set_variable_labels(
+      pi_zd       = "Probabilité d'inclusion au niveau de la ZD",
+      pi_zd_wr    = "Probabilité d'inclusion au niveau de la ZD (Trimestre en cours uniquement)",
+      pi_hh       = "Probabilité d'inclusion du ménage dans le segment",
+      pi_HH       = "Probabilité d'inclusion combinée ZD × HH",
+      pi_HH_wr    = "Probabilité d'inclusion combinée ZD × HH (Trimestre en cours uniquement)",
+      base_weight_HH = "Poids de base des ménages du segment",
+      base_weight_HH_WR = "Poids de base des ménages du segment (Trimestre en cours uniquement)"
+    )
+  
+  return(data)
+}
+
+# ------------------------------------------------------------------------------
+# Calculate the base weights 
+# ------------------------------------------------------------------------------
+weight_data <- read_dta(WEIGHTS_COLUMNS_PATH)
+weight_data <- compute_nb_zd_strat(weight_data, seg_drop_info)
+
+## Drop the inconsistent rows
+weight_data <- weight_data %>%
+  anti_join(seg_drop_info, by = c("region", "depart", "souspref", "ZD", "segment"))
+
+# Compute weights with or without resurvey logic
+weight_data <- append_base_weights(weight_data, resurvey = FALSE)
+
+# ------------------------------------------------------------------------------
+# Save Final Dataset
+# ------------------------------------------------------------------------------
+write_dta(weight_data, WEIGHTS_COLUMNS_PATH)

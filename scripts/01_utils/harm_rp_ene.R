@@ -17,6 +17,7 @@ library(dplyr)    # For data manipulation
 library(labelled) # For labelling the columns
 library(tibble)
 library(tidyr)
+library(stringr)
 
 # -----------------------
 # 2. Define File Paths
@@ -52,13 +53,13 @@ mapping <- mapping %>%
 ## In the RP dataset, region codes 29 and 30 correspond to LA ME and IFFOU, respectively.
 ## However, in the mapping dataset, these codes are reversed.
 
-rp <- rp %>%
-  mutate(REGION = case_when(
-    REGION == 29 ~ -1,   # Temporarily assign -1 to avoid conflict
-    REGION == 30 ~ 29,   # Change 30 to 29
-    TRUE         ~ REGION
-  )) %>%
-  mutate(REGION = if_else(REGION == -1, 30, REGION))
+# rp <- rp %>%
+#   mutate(REGION = case_when(
+#     REGION == 29 ~ -1,   # Temporarily assign -1 to avoid conflict
+#     REGION == 30 ~ 29,   # Change 30 to 29
+#     TRUE         ~ REGION
+#   )) %>%
+#   mutate(REGION = if_else(REGION == -1, 30, REGION))
 
 # -----------------------
 # 6. Perform the Join on Composite Key
@@ -67,16 +68,39 @@ rp <- rp %>%
 # Match with (CodReg, CodDep, CodSp, ZD) in mapping
 
 rp <- rp %>%
-  right_join(mapping %>%
-              select(CodReg, CodDep, CodSp, NumZD,
-                     NumReg, NomReg,
-                     NumDep, NomDep,
-                     NumSp, NomSp),
-            by = c("REGION"      = "CodReg",
-                   "DEPART"      = "CodDep",
-                   "SOUSPREFID"  = "CodSp",
-                   "ZD"          = "NumZD")) %>%
+  mutate(
+    ZD = str_pad(as.character(NUM_ZD_Vf), width = 4, pad = "0"),
+    SOUSPREFID = as.double(paste0(
+      as.character(CodDep_num),
+      str_pad(as.character(CodSp_num), width = 2, pad = "0")
+    ))
+  ) %>%
+  select(
+    REGION = OFFICIEL_CodReg,
+    DEPART = CodDep_num,
+    SOUSPREFID,
+    ZD,
+    Nb_individus = POP_ZdVf,
+    Nb_menages = MENAGES
+  ) %>%
+  left_join(
+    mapping %>%
+      select(
+        CodReg, CodDep, CodSp,
+        NumReg, NomReg,
+        NumDep, NomDep,
+        NumSp, NomSp
+      ) %>%
+      distinct(CodReg, CodDep, CodSp, .keep_all = TRUE),
+    by = c(
+      "REGION" = "CodReg",
+      "DEPART" = "CodDep",
+      "SOUSPREFID"     = "CodSp"
+    )
+  ) %>%
   drop_na()
+
+
 # -----------------------
 # 7. Rename Variables for Clarity
 # -----------------------
