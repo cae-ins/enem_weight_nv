@@ -22,7 +22,7 @@ library(writexl)
 # ------------------------------------------------------------------------------
 # Define base paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+source("config/1_config.r")
 INPUT_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Menage")
 OUTPUT_DIR_ROOT <- file.path(BASE_DIR, "data", "03_Processed", "Tracking_ID")
 

@@ -18,7 +18,7 @@ library(haven)
 # ------------------------------------------------------------------------------
 # 2. Set Base Paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"
+source("config/1_config.r")
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
 CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
@@ -215,3 +215,4 @@ write_dta(final_dataset, output_path)
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_dataset)
+

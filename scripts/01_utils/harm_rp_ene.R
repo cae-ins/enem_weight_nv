@@ -22,8 +22,10 @@ library(stringr)
 # -----------------------
 # 2. Define File Paths
 # -----------------------
-rp_path    <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS/data/03_processed/RP_2021/nb_men_indiv_RP.dta"
-map_path   <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS/data/01_raw/Equivalence/VF_BASE_ILOT_12012024_VF_work_Geovf.xlsx"
+source("config/1_config.r")
+# Define the base directory for the project
+rp_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indiv_RP.dta")
+map_path <- file.path(BASE_DIR, "data", "01_raw", "Equivalence", "VF_BASE_ILOT_12012024_VF_work_Geovf.xlsx")
 
 
 # -----------------------
@@ -147,8 +149,8 @@ rp <- rp %>%
 glimpse(rp)
 
 # Save the harmonized dataset
-write_dta(rp, "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS/data/03_processed/RP_2021/nb_men_indivs_ZD.dta")
-
+output_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
+write_dta(rp, output_path)
 # -----------------------
 # End of Script
 # -----------------------

@@ -20,8 +20,8 @@ library(tidyr)
 # ------------------------------------------------------------------------------
 # Step 1: Locate latest subfolder in Tracking_ID
 # ------------------------------------------------------------------------------
-base_dir <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
-tracking_id_dir <- file.path(base_dir, "data", "03_Processed", "Tracking_ID")
+source("config/1_config.r")
+tracking_id_dir <- file.path(BASE_DIR, "data", "03_Processed", "Tracking_ID")
 
 latest_subdir <- dir_ls(tracking_id_dir, type = "directory") %>%
   file_info() %>%

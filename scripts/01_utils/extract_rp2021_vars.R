@@ -32,8 +32,7 @@ library(readr)  # for efficient write_csv()
 # Define file paths
 # ------------------------------------------------------------------------------
 # Base directory for the project
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
-
+source("config/1_config.r")
 # Define input path (SPSS .sav file)
 sav_path <- "D:/RP_2021/Bases_Menage_RGPH2024_EMPLOI.sav"
 

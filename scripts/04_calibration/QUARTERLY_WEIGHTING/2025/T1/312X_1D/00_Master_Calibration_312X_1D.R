@@ -114,17 +114,52 @@ library("haven")          # to read and write SPSS and STATA datasets
 
 ###   choose the year
 
-year=2025
+parse_target_quarter <- function(target_quarter) {
+  
+  # Check if input is valid
+  if (is.null(target_quarter) || !is.character(target_quarter)) {
+    stop("target_quarter must be a character string")
+  }
+  
+  # Check format (should be like "T1_2025", "T2_2024", etc.)
+  if (!grepl("^T[1-4]_[0-9]{4}$", target_quarter)) {
+    stop("target_quarter format should be 'TX_YYYY' where X is 1-4 and YYYY is a 4-digit year")
+  }
+  
+  # Extract quarter number and year
+  parts <- strsplit(target_quarter, "_")[[1]]
+  quarter_part <- parts[1]  # "T1", "T2", etc.
+  year_part <- parts[2]     # "2025", "2024", etc.
+  
+  # Extract just the number from quarter part
+  quarter <- as.numeric(gsub("T", "", quarter_part))
+  year <- as.numeric(year_part)
+  
+  # Return as a named list
+  result <- list(
+    quarter = quarter,
+    year = year,
+    original = target_quarter
+  )
+  
+  # Print results
+  cat("Parsed target quarter:\n")
+  cat("Quarter:", quarter, "\n")
+  cat("Year:", year, "\n")
+  
+  return(result)
+}
+source("config/1_config.r")
+# Parse the target quarter
+parsed <- parse_target_quarter(TARGET_QUARTER)
 
-year 
+# Extract individual components
+quarter <- parsed$quarter  # 1
+year <- parsed$year        # 2025
 
-###   choose the quarter
-
-quarter=1
-
-quarter 
-
-
+# Or access them directly
+quarter <- parsed$quarter
+year <- parsed$year
 
 ###   For regenesees: number of constraints X used in the calibration with Regenesees
 
@@ -160,7 +195,7 @@ pathx
 ###
 ###  Lets set the main root/directory on our computer o server (where we have the LFS data and programs )
 
-root_lfs <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"
+root_lfs <- BASE_DIR
 root_lfs
 
 
