@@ -18,8 +18,9 @@ library(lubridate)
 # ------------------------------------------------------------------------------
 # Define base paths
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+source("config/1_config.r")
 INPUT_ROOT <- file.path(BASE_DIR, "data", "02_Cleaned", "Menage")
+
 OUTPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed", "Menage")
 TRACKING_DIR <- file.path(BASE_DIR, "data", "03_Processed", "Tracking_ID")
 
@@ -71,3 +72,4 @@ for (dir_path in quarter_dirs) {
   write_dta(df, output_file)
   message("Processed and saved: ", output_file)
 }
+

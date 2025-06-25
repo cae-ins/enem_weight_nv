@@ -15,12 +15,14 @@ library(haven)
 library(readxl)
 library(labelled)
 library(lubridate)
+library(stringr)
+library(rlang)  # for .datas
 
 # ------------------------------------------------------------------------------
 # Set Base Paths and Parameters
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
-TARGET_QUARTER <- "T3_2024"  # Change to target quarter
+# Base directory for the project
+source("config/1_config.r")
 
 DATA_DIR <- file.path(BASE_DIR, "data")
 CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
@@ -159,16 +161,16 @@ for (q in all_quarters) {
     mutate(date1 = quarter_start_date)
   
   survey_info <- enem %>%
-    select(interview_key, hh2, hh3, hh4, hh8, hh7, date1) %>%
+    select(interview_key, hh2, hh3, hh4, hh8, hh7, hh6,date1) %>%
     rename(
       region = hh2, depart = hh3, souspref = hh4,
-      ZD = hh8, segment = hh7, date_ref = date1
+      ZD = hh8, segment = hh7, milieu = hh6, date_ref = date1
     )
   
   seg_survey <- seg_counts %>%
     left_join(survey_info, by = "interview_key") %>%
     select(-interview_key) %>%
-    group_by(region, depart, souspref, ZD, segment) %>%
+    group_by(region, depart, souspref, ZD, segment, milieu) %>%
     summarise(
       nb_mens_seg   = sum(nb_mens_seg, na.rm = TRUE),
       nb_indivs_seg = sum(nb_indivs_seg, na.rm = TRUE),
@@ -255,7 +257,7 @@ final_data <- final_data %>%
 
 final_data <- final_data %>%
   select(
-    region, depart, souspref, ZD, segment, date_ref,
+    region, depart, souspref, ZD, segment, milieu,date_ref,
     nb_indivs_enq, nb_indivs_enq_pot, nb_indivs_enq_elig, 
     nb_mens_enq, nb_indivs_seg, nb_mens_seg,
     nb_indivs_zd, nb_mens_zd,
@@ -326,6 +328,36 @@ if (length(update_files) > 0) {
     distinct()
 }
 
+final_data <- final_data %>%
+  group_by(region, milieu) %>%
+  mutate(nb_indivs_milieu = sum(nb_indivs_zd, na.rm = TRUE),
+         nb_mens_milieu = sum(nb_mens_zd, na.rm= TRUE)) %>%
+  ungroup()
+
+
+final_data <- final_data %>%
+  mutate(
+    year = ifelse(!is.na(.data$first_trim) & str_detect(.data$first_trim, "^T[1-4]_\\d{4}$"),
+                  as.integer(str_sub(.data$first_trim, 4, 7)),
+                  NA_integer_),
+    trimester = ifelse(!is.na(.data$first_trim) & str_detect(.data$first_trim, "^T[1-4]_\\d{4}$"),
+                       as.integer(str_sub(.data$first_trim, 2, 2)),
+                       NA_integer_),
+    quarter_rank = ifelse(!is.na(year) & !is.na(trimester),
+                          year * 10 + trimester,
+                          NA_integer_)
+  ) %>%
+  group_by(region, depart, souspref, ZD) %>%
+  filter(quarter_rank == max(quarter_rank, na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(-year, -trimester, -quarter_rank) %>%
+  group_by(region, milieu) %>%
+  mutate(
+    nb_indivs_milieu = sum(nb_indivs_zd, na.rm = TRUE),
+    nb_mens_milieu = sum(nb_mens_zd, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
 # ------------------------------------------------------------------------------
 # Set Variable Labels
 # ------------------------------------------------------------------------------
@@ -334,6 +366,7 @@ var_label(final_data$depart)         <- "Département"
 var_label(final_data$souspref)       <- "Sous-préfecture"
 var_label(final_data$ZD)             <- "Zone de dénombremement"
 var_label(final_data$segment)        <- "Segment"
+var_label(final_data$milieu)         <- "Milieu de résidence"
 var_label(final_data$date_ref)       <- "Date de référence du début"
 var_label(final_data$nb_indivs_seg)  <- "Nombre d'individus du segment"
 var_label(final_data$nb_mens_seg)    <- "Nombre de ménages du segment"
@@ -346,6 +379,8 @@ var_label(final_data$nb_mens_enq)    <- "Nombre de ménages effectivement enquê
 var_label(final_data$nb_indivs_enq)  <- "Nombre d'individus effectivement enquêtés"
 var_label(final_data$nb_indivs_enq_pot) <- "Nombre de ménages enquêtés potentiellement éligibles"
 var_label(final_data$nb_indivs_enq_elig) <- "Nombre d'individus éligibles"
+var_label(final_data$nb_indivs_milieu) <- "Nombre d'individus par (region, milieu de résidence)"
+var_label(final_data$nb_mens_milieu) <- "Nombre de ménages par (region, milieu de résidence)"
 var_label(final_data$rgmen)          <- "Rang d'interrogation"
 var_label(final_data$first_trim)     <- "Premier trimestre d'interrogation"
 
@@ -362,13 +397,19 @@ incoherence_labels <- c(
   "Ménages du segment > ménages de la ZD"      = 7L,
   "Individus du segment > individus de la ZD"  = 8L,
   "Ménages du segment > individus du segment"  = 9L,
-  "Aucun ménage ou individu enquêté"           = 10L
+  "Aucun ménage ou individu enquêté"           = 10L,
+  "ZD dupliquée"                               = 11L
 )
 
 # ------------------------------------------------------------------------------
 # Create the labelled variable
 # ------------------------------------------------------------------------------
 inconsistent_rows <- final_data %>%
+  group_by(region, depart, souspref, ZD, segment) %>%
+  mutate(
+    tmp_is_duplicate = n() > 1
+  ) %>%
+  ungroup() %>%
   mutate(
     incoherence_code = case_when(
       is.na(nb_mens_enq) & is.na(nb_indivs_enq) ~ 10L,
@@ -381,10 +422,12 @@ inconsistent_rows <- final_data %>%
       nb_mens_seg > nb_mens_zd                  ~ 7L,
       nb_indivs_seg > nb_indivs_zd              ~ 8L,
       nb_mens_seg > nb_indivs_seg               ~ 9L,
+      tmp_is_duplicate                          ~ 11L,
       TRUE ~ NA_integer_
     ),
     incoherence_code = labelled(incoherence_code, labels = incoherence_labels)
   ) %>%
+  select(-tmp_is_duplicate) %>%
   filter(!is.na(incoherence_code))
 
 

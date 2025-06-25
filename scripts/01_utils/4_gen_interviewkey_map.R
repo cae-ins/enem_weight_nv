@@ -20,8 +20,7 @@ library(readr)
 # ------------------------------------------------------------------------------
 # Define base directory and output path
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
-
+source("config/1_config.r")
 input_dir <- file.path(BASE_DIR, "data" ,"02_Cleaned", "Menage")
 OUTPUT_MAPPING_FILE <- file.path(BASE_DIR, "data" ,"03_Processed", "Tracking_ID","interview_key_mapping.dta")
 
@@ -74,3 +73,4 @@ tracking_df <- bind_rows(tracking_data)
 
 write_dta(tracking_df, OUTPUT_MAPPING_FILE)
 message("Mapping file saved to: ", OUTPUT_MAPPING_FILE)
+

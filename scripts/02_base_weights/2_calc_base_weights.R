@@ -18,8 +18,9 @@ library(labelled)
 # ------------------------------------------------------------------------------
 # Set Base Paths and Parameters
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
-TARGET_QUARTER <- "T3_2024"
+source("config/1_config.r")
+source("scripts/01_utils/check_duplicates.r")
+
 
 DATA_DIR <- file.path(BASE_DIR, "data")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
@@ -189,4 +190,26 @@ weight_data <- append_base_weights(weight_data, resurvey = FALSE)
 # ------------------------------------------------------------------------------
 # Save Final Dataset
 # ------------------------------------------------------------------------------
+
+# Ajoute les infos de doublons
+
+# Check final data quality
+cat("\n🔍 Running final quality checks...\n")
+final_qc <- check_duplicates(
+  weight_data, 
+  c("region", "depart", "souspref", "ZD", "segment")
+)
+
+# Create quality report
+if (final_qc$summary$duplicate_rows == 0) {
+  cat("✅ Quality check PASSED - No duplicates found\n")
+} else {
+  cat("⚠️  Quality check FAILED - Found", final_qc$summary$duplicate_rows, "duplicate rows\n")
+  cat("Consider reviewing the data before proceeding\n")
+}
+glimpse(weight_data)
+source("scripts/07_correction_quarter/0_apply_quarter_correction.r")
+weight_data <- apply_quarter_correction(weight_data, TARGET_QUARTER)
+
 write_dta(weight_data, WEIGHTS_COLUMNS_PATH)
+cat("Base weights calculated and saved to:", WEIGHTS_COLUMNS_PATH, "\n")
