@@ -5,6 +5,7 @@
 library(dplyr)
 library(haven)
 library(labelled)
+library(readxl)
 
 # ==============================================================================
 # Paths and Parameters
@@ -34,17 +35,25 @@ INDIVIDU_COLUMN_PATH <- file.path(
 # ==============================================================================
 weights_data <- read_dta(WEIGHTS_COLUMNS_PATH)
 # Path to Stata file containing Urban_Pop_menage and Rural_Pop_Menage
+# Extraire les 2 derniers chiffres de l'année
+annee_courte <- substr(TARGET_QUARTER, 6, 7)  # "25" de "T1_2025"
+
 POP_MENAGE_PATH <- file.path(
-  WEIGHTS_DIR,"struct_menage_rp21.dta")
-
-
+  WEIGHTS_DIR, 
+  paste0("struct_menage_rp", annee_courte, ".xlsx")
+)
 # Read the Stata file
-pop_menage_data <- read_dta(POP_MENAGE_PATH)
+pop_menage_data <- read_excel(POP_MENAGE_PATH)
 
 # ==============================================================================
 # Function: Aggregate Base Weights
 # ==============================================================================
-
+weights_data <- weights_data %>%
+  select(-any_of(c("Urbain_Pop_Menage", "Rural_Pop_Menage"))) %>% 
+  left_join(
+    pop_menage_data %>% select(region, Urbain_Pop_Menage, Rural_Pop_Menage),
+    by = "region"
+  )
 
 
 aggregate_base_weights <- function(data) {
@@ -78,14 +87,12 @@ aggregate_base_weights <- function(data) {
     left_join(weights_by_milieu, by = c("region", "milieu")) 
   
 
-  data <- data %>%
-  left_join(
-    pop_menage_data %>% select(region, Urbain_Pop_Menage, Rural_Pop_Menage),
-    by = "region"
-  )
+  
   return(data)
 }
 
+weights_data <- weights_data %>%
+  aggregate_base_weights() 
 # ==============================================================================
 # Function: Compute Margin Factors
 # ==============================================================================
@@ -108,13 +115,13 @@ compute_margin_factors <- function(data) {
       margin_factor_HH_WR = "Facteur de calage des poids HH (Trimestre en cours)"
     )
 }
-
+weights_data <- weights_data %>%
+  compute_margin_factors()
 # ==============================================================================
 # Processing
 # ==============================================================================
-weights_data <- weights_data %>%
-  aggregate_base_weights() %>%
-  compute_margin_factors()
+library(tibble)
+weights_data <- as_tibble(weights_data)
 
 glimpse(weights_data)
 # ==============================================================================

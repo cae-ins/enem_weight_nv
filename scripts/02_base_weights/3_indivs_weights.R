@@ -117,3 +117,4 @@ individu_q <- clean_names(individu_q)
 write_dta(adjusted_data, WEIGHTS_COLUMNS_PATH)
 write_dta(menage_q, MENAGE_COLUMNS_PATH)
 write_dta(individu_q, INDIVIDU_COLUMN_PATH)
+

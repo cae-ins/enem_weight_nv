@@ -149,3 +149,4 @@ quarters_log_path <- file.path(OUTPUT_DIR, quarters_log_filename)
 
 write_xlsx(tibble(quarter_label = updated_quarters), quarters_log_path)
 message("Quarters processed log updated at: ", quarters_log_path)
+
