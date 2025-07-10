@@ -209,10 +209,13 @@ timestamp <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
 output_filename <- paste0("denombrement_update_", timestamp, ".dta")
 output_path <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", output_filename)
 
+subset_dataset <- final_dataset %>%
+  filter(segment == 1)
+
 write_dta(final_dataset, output_path)
+write_dta(subset_dataset, output_path)
 
 # ------------------------------------------------------------------------------
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_dataset)
-

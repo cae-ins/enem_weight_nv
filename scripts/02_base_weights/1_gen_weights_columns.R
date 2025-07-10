@@ -31,7 +31,7 @@ WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 
 NB_MEN_INDIV_FILE <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_indivs_ZD.dta")
-
+POIDS_REGIONAUX <- file.path(PROCESSED_DIR, "RP_2021", "help_poids_regionaux.dta")
 QUARTERS_EXCEL <- file.path(DATA_DIR, "01_raw", "Organisation","quarter_resurvey.xlsx")
 
 # ------------------------------------------------------------------------------
@@ -44,15 +44,7 @@ nb_men_indiv_ZD <- nb_men_indiv_ZD %>%
     nb_indivs_zd = Nb_individus,
     nb_mens_zd = Nb_menages
   ) %>%
-  group_by(region) %>%
-  mutate(
-    nb_indivs_reg = sum(Nb_individus, na.rm = TRUE),
-    nb_mens_reg = sum(Nb_menages, na.rm = TRUE)
-  ) %>%
-  ungroup() %>%
-  select(region, depart, souspref, ZD,
-         nb_indivs_reg, nb_mens_reg,
-         nb_indivs_zd, nb_mens_zd)
+  select(region, depart, souspref, ZD, nb_indivs_zd, nb_mens_zd)
 
 # ------------------------------------------------------------------------------
 # Load Menage and Individu Datasets for Current Quarter
@@ -235,14 +227,20 @@ get_quarter_phase <- function(date_ref) {
 final_data <- final_data %>%
   mutate(quarter_phase = get_quarter_phase(date_ref))
 
+poids_regionaux <- read_dta(POIDS_REGIONAUX) %>%
+  mutate(
+    region = as.double(CodReg),
+    nb_indivs_reg = as.double(Population)
+  )
+final_data <- final_data %>%
+    left_join(poids_regionaux %>% select(region, nb_indivs_reg), by = "region", suffix = c("", "_from_reg"))
 # ------------------------------------------------------------------------------
 # Fill Missing Region-Level Counts
 # ------------------------------------------------------------------------------
 final_data <- final_data %>%
   group_by(region) %>%
   mutate(
-    nb_indivs_reg = if_else(is.na(nb_indivs_reg), first(nb_indivs_reg[!is.na(nb_indivs_reg)]), nb_indivs_reg),
-    nb_mens_reg = if_else(is.na(nb_mens_reg), first(nb_mens_reg[!is.na(nb_mens_reg)]), nb_mens_reg)
+    nb_indivs_reg = if_else(is.na(nb_indivs_reg), first(nb_indivs_reg[!is.na(nb_indivs_reg)]), nb_indivs_reg)
   ) %>%
   ungroup()
 
@@ -261,7 +259,7 @@ final_data <- final_data %>%
     nb_indivs_enq, nb_indivs_enq_pot, nb_indivs_enq_elig, 
     nb_mens_enq, nb_indivs_seg, nb_mens_seg,
     nb_indivs_zd, nb_mens_zd,
-    nb_indivs_reg, nb_mens_reg,
+    nb_indivs_reg,
     quarter_phase, rgmen, first_trim
   )
 
@@ -319,7 +317,7 @@ if (length(update_files) > 0) {
       nb_mens_seg    = if_else(!is.na(nb_mens_seg_upd),    nb_mens_seg_upd,    nb_mens_seg),
       nb_mens_zd     = if_else(!is.na(nb_mens_zd_upd),     nb_mens_zd_upd,     nb_mens_zd),
       nb_indivs_seg  = if_else(!is.na(nb_indivs_seg_upd),  nb_indivs_seg_upd,  nb_indivs_seg),
-      nb_indivs_zd   = if_else(!is.na(nb_indivs_zd_upd),   nb_indivs_zd_upd,   nb_indivs_zd)
+      #nb_indivs_zd   = if_else(!is.na(nb_indivs_zd_upd),   nb_indivs_zd_upd,   nb_indivs_zd)
     ) %>%
     select(-nb_mens_seg_upd, -nb_mens_zd_upd, -nb_indivs_seg_upd, -nb_indivs_zd_upd)
   
@@ -371,7 +369,7 @@ var_label(final_data$date_ref)       <- "Date de référence du début"
 var_label(final_data$nb_indivs_seg)  <- "Nombre d'individus du segment"
 var_label(final_data$nb_mens_seg)    <- "Nombre de ménages du segment"
 var_label(final_data$nb_indivs_reg)  <- "Nombre d'individus de la région"
-var_label(final_data$nb_mens_reg)    <- "Nombre de ménages de la région"
+#var_label(final_data$nb_mens_reg)    <- "Nombre de ménages de la région"
 var_label(final_data$nb_indivs_zd)   <- "Nombre d'individus de la ZD"
 var_label(final_data$nb_mens_zd)     <- "Nombre de ménages de la ZD"
 var_label(final_data$quarter_phase)  <- "Nombre de trimestres enquêtés"

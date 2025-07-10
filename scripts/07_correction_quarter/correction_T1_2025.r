@@ -29,7 +29,7 @@ apply_T1_2025_correction <- function(df, log_dir = "logs") {
   # Dataframe nettoyé
   df_clean <- df %>%
     filter(!(
-      (region == 10524 & depart == 10524081 & souspref == 1052408103 & ZD == 6017 & nb_indivs_seg == 0)
+      (region == 10524 & depart == 10524081 & souspref == 1052408103 & ZD == "6017" & nb_indivs_seg == 0)
       |
       (region == 11132 & depart == 11132086 & souspref == 1113208603 & ZD == "0018" & nb_indivs_seg == 0)
     ))

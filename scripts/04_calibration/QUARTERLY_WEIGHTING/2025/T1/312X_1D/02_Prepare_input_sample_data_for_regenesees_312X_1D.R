@@ -68,7 +68,7 @@ head(tmpSD)
 ### 
 ######################################################################################################
 
-tmpSD$DOMAIN <- as.character(tmpSD$HH2)
+tmpSD$DOMAIN <- as.character(tmpSD$hh2)
 
 
 ######################################################################################################
@@ -95,34 +95,34 @@ list_of_X
 
 # NATIONAL LEVEL - MALE BY URBAN LOCATION AND 12 AGE GROUP
 
-tmpSD$X1[ tmpSD$AgeAnnee>=  0 & tmpSD$AgeAnnee <=14 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X2[ tmpSD$AgeAnnee>= 15 & tmpSD$AgeAnnee <=19 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X3[ tmpSD$AgeAnnee>= 20 & tmpSD$AgeAnnee <=24 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X4[ tmpSD$AgeAnnee>= 25 & tmpSD$AgeAnnee <=29 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X5[ tmpSD$AgeAnnee>= 30 & tmpSD$AgeAnnee <=34 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X6[ tmpSD$AgeAnnee>= 35 & tmpSD$AgeAnnee <=39 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X7[ tmpSD$AgeAnnee>= 40 & tmpSD$AgeAnnee <=44 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X8[ tmpSD$AgeAnnee>= 45 & tmpSD$AgeAnnee <=49 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X9[ tmpSD$AgeAnnee>= 50 & tmpSD$AgeAnnee <=54 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X10[tmpSD$AgeAnnee>= 55 & tmpSD$AgeAnnee <=59 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X11[tmpSD$AgeAnnee>= 60 & tmpSD$AgeAnnee <=64 & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
-tmpSD$X12[tmpSD$AgeAnnee>= 65                  & tmpSD$HH6==1 & tmpSD$M5==1]<- 1
+tmpSD$X1[ tmpSD$AgeAnnee>=  0 & tmpSD$AgeAnnee <=14 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X2[ tmpSD$AgeAnnee>= 15 & tmpSD$AgeAnnee <=19 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X3[ tmpSD$AgeAnnee>= 20 & tmpSD$AgeAnnee <=24 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X4[ tmpSD$AgeAnnee>= 25 & tmpSD$AgeAnnee <=29 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X5[ tmpSD$AgeAnnee>= 30 & tmpSD$AgeAnnee <=34 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X6[ tmpSD$AgeAnnee>= 35 & tmpSD$AgeAnnee <=39 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X7[ tmpSD$AgeAnnee>= 40 & tmpSD$AgeAnnee <=44 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X8[ tmpSD$AgeAnnee>= 45 & tmpSD$AgeAnnee <=49 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X9[ tmpSD$AgeAnnee>= 50 & tmpSD$AgeAnnee <=54 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X10[tmpSD$AgeAnnee>= 55 & tmpSD$AgeAnnee <=59 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X11[tmpSD$AgeAnnee>= 60 & tmpSD$AgeAnnee <=64 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X12[tmpSD$AgeAnnee>= 65                  & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
 
 
 # NATIONAL LEVEL - MALE BY RURAL LOCATION AND 12 AGE GROUP
 
-tmpSD$X13[ tmpSD$AgeAnnee>=  0 & tmpSD$AgeAnnee <=14 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X14[ tmpSD$AgeAnnee>= 15 & tmpSD$AgeAnnee <=19 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X15[ tmpSD$AgeAnnee>= 20 & tmpSD$AgeAnnee <=24 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X16[ tmpSD$AgeAnnee>= 25 & tmpSD$AgeAnnee <=29 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X17[ tmpSD$AgeAnnee>= 30 & tmpSD$AgeAnnee <=34 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X18[ tmpSD$AgeAnnee>= 35 & tmpSD$AgeAnnee <=39 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X19[ tmpSD$AgeAnnee>= 40 & tmpSD$AgeAnnee <=44 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X20[ tmpSD$AgeAnnee>= 45 & tmpSD$AgeAnnee <=49 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X21[ tmpSD$AgeAnnee>= 50 & tmpSD$AgeAnnee <=54 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X22[tmpSD$AgeAnnee>= 55 & tmpSD$AgeAnnee <=59 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X23[tmpSD$AgeAnnee>= 60 & tmpSD$AgeAnnee <=64 & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
-tmpSD$X24[tmpSD$AgeAnnee>= 65                  & tmpSD$HH6==2 & tmpSD$M5==1]<- 1
+tmpSD$X13[ tmpSD$AgeAnnee>=  0 & tmpSD$AgeAnnee <=14 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X14[ tmpSD$AgeAnnee>= 15 & tmpSD$AgeAnnee <=19 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X15[ tmpSD$AgeAnnee>= 20 & tmpSD$AgeAnnee <=24 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X16[ tmpSD$AgeAnnee>= 25 & tmpSD$AgeAnnee <=29 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X17[ tmpSD$AgeAnnee>= 30 & tmpSD$AgeAnnee <=34 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X18[ tmpSD$AgeAnnee>= 35 & tmpSD$AgeAnnee <=39 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X19[ tmpSD$AgeAnnee>= 40 & tmpSD$AgeAnnee <=44 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X20[ tmpSD$AgeAnnee>= 45 & tmpSD$AgeAnnee <=49 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X21[ tmpSD$AgeAnnee>= 50 & tmpSD$AgeAnnee <=54 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X22[tmpSD$AgeAnnee>= 55 & tmpSD$AgeAnnee <=59 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X23[tmpSD$AgeAnnee>= 60 & tmpSD$AgeAnnee <=64 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X24[tmpSD$AgeAnnee>= 65                  & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
 
 
 

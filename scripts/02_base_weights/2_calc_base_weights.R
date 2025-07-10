@@ -186,7 +186,7 @@ weight_data <- weight_data %>%
 
 # Compute weights with or without resurvey logic
 weight_data <- append_base_weights(weight_data, resurvey = FALSE)
-
+write_dta(weight_data, WEIGHTS_COLUMNS_PATH)
 # ------------------------------------------------------------------------------
 # Save Final Dataset
 # ------------------------------------------------------------------------------
@@ -213,3 +213,7 @@ weight_data <- apply_quarter_correction(weight_data, TARGET_QUARTER)
 
 write_dta(weight_data, WEIGHTS_COLUMNS_PATH)
 cat("Base weights calculated and saved to:", WEIGHTS_COLUMNS_PATH, "\n")
+
+
+
+

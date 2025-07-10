@@ -150,6 +150,7 @@ parse_target_quarter <- function(target_quarter) {
   return(result)
 }
 source("config/1_config.r")
+source("scripts/02_base_weights/3_indivs_weights.R")
 # Parse the target quarter
 parsed <- parse_target_quarter(TARGET_QUARTER)
 
@@ -214,7 +215,7 @@ dir_data_DV
 ###
 ###  Let's parameterize the name and path of the csv file with the full sample data "_DER"
 
-FILE_LFS_ILO_DER_DTA  <- paste0(dir_data_DV,"base_finale_wnr_pour_tabulation.dta")
+FILE_LFS_ILO_DER_DTA  <- INDIVIDU_COLUMN_PATH
 FILE_LFS_ILO_DER_DTA
 
 ###  Let's parameterize the name and path of the RData file with the full sample data 

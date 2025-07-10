@@ -62,19 +62,19 @@ dim(LFS_ILO_DER)
 ### Individuals in the frame must have a unique identification code (INDKEY) hence let's verify it using the following instruction
 
 
-LFS_ILO_DER$INDKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview__key, "-", LFS_ILO_DER$membres__id))
+LFS_ILO_DER$INDKEY <- as.factor(paste0(LFS_ILO_DER$hh2, "-",LFS_ILO_DER$hh3, "-", LFS_ILO_DER$hh4, "-", LFS_ILO_DER$hh8, "-", LFS_ILO_DER$interview_key, "-", LFS_ILO_DER$membres_id))
 
 length(unique(LFS_ILO_DER$INDKEY))
 
 ### We can also check how many households we have interviewed by counting the unique households ids (HHKEY)
 
-LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview__key))
+LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$hh2, "-",LFS_ILO_DER$hh3, "-", LFS_ILO_DER$hh4, "-", LFS_ILO_DER$hh8, "-", LFS_ILO_DER$interview_key))
 
 length(unique(LFS_ILO_DER$HHKEY))
 
 ### and the number of enumeration areas (PSUKEY)
 
-LFS_ILO_DER$PSUKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8))
+LFS_ILO_DER$PSUKEY <- as.factor(paste0(LFS_ILO_DER$hh2, "-",LFS_ILO_DER$hh3, "-", LFS_ILO_DER$hh4, "-", LFS_ILO_DER$hh8))
 
 
 length(unique(LFS_ILO_DER$PSUKEY))
@@ -86,7 +86,7 @@ length(unique(LFS_ILO_DER$HHKEY)) / length(unique(LFS_ILO_DER$PSUKEY))
 
 ### The number of strata (STRATAKEY)
 
-LFS_ILO_DER$STRATAKEY <- as.factor(LFS_ILO_DER$HH2)
+LFS_ILO_DER$STRATAKEY <- as.factor(LFS_ILO_DER$hh2)
 
 length(unique(LFS_ILO_DER$STRATAKEY))
 
@@ -96,7 +96,7 @@ length(unique(LFS_ILO_DER$STRATAKEY))
 
 ### The number of regions (REGION)
 
-length(unique(LFS_ILO_DER$HH2))
+length(unique(LFS_ILO_DER$hh2))
 
 
 
@@ -105,7 +105,7 @@ length(unique(LFS_ILO_DER$HH2))
 ### to open the manual of the function table 
 help(table) 
 
-table(LFS_ILO_DER$HH2)
+table(LFS_ILO_DER$hh2)
 
 # table(LFS_ILO_DER$YEAR , LFS_ILO_DER$QUARTER )
 # 
@@ -122,9 +122,9 @@ table(LFS_ILO_DER$HH2)
 
 
 LFS_ILO_DER %>%
-  tab_cols(M5, HH6, total()) %>%
-  tab_rows(HH2, total()) %>%
-  tab_weight(poids_menage) %>%
+  tab_cols(m5, milieu, total()) %>%
+  tab_rows(hh2, total()) %>%
+  tab_weight(adjusted_weight_IND) %>%
   tab_stat_sum %>%
   tab_pivot()
 
@@ -372,7 +372,7 @@ tmp_sum_pop_fig1
 #######   CHECK THE POPULATION ESTIMATES OBTAINED WITH THE DESIGN WEIGHTS   ###########################################################################################
 
 tmp_sum_est_pop_dw <- 
-  sum(LFS_ILO_DER$poids_menage)
+  sum(LFS_ILO_DER$adjusted_weight_IND)
 tmp_sum_est_pop_dw
 
 #######   CHECK THE AVERAGE CORRECTION FACTOR FOR THE FINAL WIEGHTS   ###########################################################################################
