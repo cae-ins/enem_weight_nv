@@ -214,8 +214,11 @@ dir_data_DV
 ##############################################################################################################
 ###
 ###  Let's parameterize the name and path of the csv file with the full sample data "_DER"
+get_individu_path <- function(sr = FALSE) {
+  if (sr) INDIVIDU_COLUMN_PATH_SR else INDIVIDU_COLUMN_PATH
+}
 
-FILE_LFS_ILO_DER_DTA  <- INDIVIDU_COLUMN_PATH
+FILE_LFS_ILO_DER_DTA  <- get_individu_path(sr = TRUE)
 FILE_LFS_ILO_DER_DTA
 
 ###  Let's parameterize the name and path of the RData file with the full sample data 

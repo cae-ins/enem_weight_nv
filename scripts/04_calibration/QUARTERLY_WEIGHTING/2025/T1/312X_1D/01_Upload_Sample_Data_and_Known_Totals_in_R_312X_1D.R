@@ -39,7 +39,9 @@ LFS_ILO_DER <- read_dta(file = FILE_LFS_ILO_DER_DTA)
 ###  show the first 6 lines of the dataset 
 
 head(LFS_ILO_DER)
-
+LFS_ILO_DER$hh2r <- as.character(LFS_ILO_DER$hh2)
+LFS_ILO_DER$reg <- substr(LFS_ILO_DER$hh2r, nchar(LFS_ILO_DER$hh2r)-1, nchar(LFS_ILO_DER$hh2r))
+LFS_ILO_DER$reg <- as.numeric(LFS_ILO_DER$reg)
 ### See the structure of the object
 
 str(LFS_ILO_DER)
@@ -124,7 +126,7 @@ table(LFS_ILO_DER$hh2)
 LFS_ILO_DER %>%
   tab_cols(m5, milieu, total()) %>%
   tab_rows(hh2, total()) %>%
-  tab_weight(adjusted_weight_IND) %>%
+  tab_weight(d_weights) %>%
   tab_stat_sum %>%
   tab_pivot()
 
@@ -372,7 +374,7 @@ tmp_sum_pop_fig1
 #######   CHECK THE POPULATION ESTIMATES OBTAINED WITH THE DESIGN WEIGHTS   ###########################################################################################
 
 tmp_sum_est_pop_dw <- 
-  sum(LFS_ILO_DER$adjusted_weight_IND)
+  sum(LFS_ILO_DER$d_weights)
 tmp_sum_est_pop_dw
 
 #######   CHECK THE AVERAGE CORRECTION FACTOR FOR THE FINAL WIEGHTS   ###########################################################################################

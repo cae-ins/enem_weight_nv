@@ -109,14 +109,15 @@ sample_data$ONES      <- 1
 
 
 ###  show the entire dataset
-View(sample_data)
+head(sample_data)
+glimpse(sample_data)
 
 ### in case we need to rename some variables whose name was not correctly read from the csv
 #names(sample_data)[names(sample_data) == "@UR_RU"] <- "UR_RU"
 #head(sample_data)
 
 ###  Check the total of the estimates using the design weights (before final calibration) 
-sum(sample_data$poids_menage)
+sum(sample_data$d_weights)
 
 
 ######################################################################################################
@@ -152,7 +153,7 @@ sum(rowSums( known_totals[, seq(2,49) ] ))
 design_lfs  <- e.svydesign(data = sample_data, 
                             ids = ~ PSUKEY + HHKEY, 
                          strata = ~ STRATAKEY, 
-                        weights = ~ poids_menage, 
+                        weights = ~ d_weights, 
                             fpc = NULL, 
                    self.rep.str = NULL, 
                      check.data = TRUE)
@@ -266,7 +267,7 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.2, 4.6),
+                           bounds = c(0.1, 5),
                    aggregate.stage = NULL, 
                              maxit = 50,
                            epsilon = 1e-06, 
