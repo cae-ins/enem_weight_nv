@@ -23,6 +23,31 @@ library(rlang)  # for .datas
 # ------------------------------------------------------------------------------
 # Base directory for the project
 source("config/1_config.r")
+################################################################################################################### 
+# Chargement de script de correction si disponible
+appliquer_correction_trimestre <- function(df, trimestre, dossier_scripts = "scripts/07_correction_quarter") {
+  nom_fichier <- file.path(dossier_scripts, paste0("correction_", trimestre, ".r"))
+
+  if (!exists("correction_reaffectation_menage", mode = "function")) {
+    if (file.exists(nom_fichier)) {
+      message("Chargement du script de correction : ", nom_fichier)
+      source(nom_fichier)
+    } else {
+      warning("Le fichier de correction '", nom_fichier, "' est introuvable.")
+      return(df)
+    }
+  }
+
+  if (exists("correction_reaffectation_menage", mode = "function")) {
+    message("Application de la correction pour le trimestre : ", trimestre)
+    return(df %>% correction_reaffectation_menage())
+  } else {
+    warning("La fonction correction_reaffectation_menage() n'est pas disponible même après chargement.")
+    return(df)
+  }
+}
+
+###################################################################################################################
 
 DATA_DIR <- file.path(BASE_DIR, "data")
 CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
@@ -56,6 +81,9 @@ menage_file <- list.files(menage_path, pattern = "^menage.*\\.dta$", full.names 
 individu_file <- list.files(individu_path, pattern = "^individu.*\\.dta$", full.names = TRUE)[1]
 
 menage_q <- read_dta(menage_file)
+menage_q <- menage_q %>%
+  appliquer_correction_trimestre(trimestre = TARGET_QUARTER)
+
 individu_q <- read_dta(individu_file)
 
 # Helper function to rename columns if needed
@@ -212,7 +240,7 @@ get_quarter_phase <- function(date_ref) {
   # Apply the mapping rules
   phase <- case_when(
     year == 2024 & quarter == 2                     ~ 1,
-    (year == 2024 & quarter == 3) |
+    (year == 2024 & quarter == 3) |  (year == 2024 & quarter == 4) |
       (year == 2025 & quarter == 1)                 ~ 2,
     year == 2025 & quarter == 2                     ~ 3,
     (year > 2025) |
@@ -428,7 +456,8 @@ inconsistent_rows <- final_data %>%
   select(-tmp_is_duplicate) %>%
   filter(!is.na(incoherence_code))
 
-
+# ------------------------------------------------------------------------------
+glimpse(final_data)
 # ------------------------------------------------------------------------------
 # Save Final Dataset
 # ------------------------------------------------------------------------------

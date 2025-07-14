@@ -1,0 +1,293 @@
+# Function to update nb_men_denom_pas1 based on household identifiers
+# Translation from Stata code for post-enumerated ZDs segment size assignment
+
+update_household_denominations <- function(data) {
+  # Create a copy of the data to avoid modifying the original
+  data_updated <- data
+  
+  # Initialize nb_men_denom_pas1 if it doesn't exist
+  if (!"nb_men_denom_pas1" %in% colnames(data_updated)) {
+    data_updated$nb_men_denom_pas1 <- NA
+  }
+  
+  # Apply the updates based on household identifiers
+  # Each condition checks for specific combinations of HH2, HH3, HH4, and HH8
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 10916 & 
+                                 data_updated$HH3 == 10916107 & 
+                                 data_updated$HH4 == 1091610702 & 
+                                 data_updated$HH8 == "6025"] <- 13
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11423 & 
+                                 data_updated$HH3 == 11423014 & 
+                                 data_updated$HH4 == 1142301402 & 
+                                 data_updated$HH8 == "6021"] <- 28  # A revoir
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11228 & 
+                                 data_updated$HH3 == 11228085 & 
+                                 data_updated$HH4 == 1122808502 & 
+                                 data_updated$HH8 == "6006"] <- 51
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11103 & 
+                                 data_updated$HH3 == 11103075 & 
+                                 data_updated$HH4 == 1110307501 & 
+                                 data_updated$HH8 == "6012"] <- 27
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11018 & 
+                                 data_updated$HH3 == 11018059 & 
+                                 data_updated$HH4 == 1101805901 & 
+                                 data_updated$HH8 == "0035"] <- 17
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11018 & 
+                                 data_updated$HH3 == 11018059 & 
+                                 data_updated$HH4 == 1101805901 & 
+                                 data_updated$HH8 == "6019"] <- 27
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11027 & 
+                                 data_updated$HH3 == 11027022 & 
+                                 data_updated$HH4 == 1102702202 & 
+                                 data_updated$HH8 == "6049"] <- 30
+  
+  # Commented out in original code:
+  # data_updated$nb_men_denom_pas1[data_updated$HH2 == 11027 & 
+  #                                data_updated$HH3 == 11027007 & 
+  #                                data_updated$HH4 == 1102700709 & 
+  #                                data_updated$HH8 == "6009"] <- 18
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 10510 & 
+                                 data_updated$HH3 == 10510034 & 
+                                 data_updated$HH4 == 1051003403 & 
+                                 data_updated$HH8 == "6006"] <- 56
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 11314 & 
+                                 data_updated$HH3 == 11314080 & 
+                                 data_updated$HH4 == 1131408003 & 
+                                 data_updated$HH8 == "6014"] <- 21
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 10309 & 
+                                 data_updated$HH3 == 10309037 & 
+                                 data_updated$HH4 == 1030903705 & 
+                                 data_updated$HH8 == "6065"] <- 21
+  
+  data_updated$nb_men_denom_pas1[data_updated$HH2 == 10617 & 
+                                 data_updated$HH3 == 10617024 & 
+                                 data_updated$HH4 == 1061702402 & 
+                                 data_updated$HH8 == "40003"] <- 16
+  
+  return(data_updated)
+}
+
+# Alternative more concise approach using a lookup table
+update_household_denominations_v2 <- function(data) {
+  # Create a copy of the data
+  data_updated <- data
+  
+  # Initialize nb_men_denom_pas1 if it doesn't exist
+  if (!"nb_men_denom_pas1" %in% colnames(data_updated)) {
+    data_updated$nb_men_denom_pas1 <- NA
+  }
+  
+  # Define the lookup table
+  lookup_table <- data.frame(
+    HH2 = c(10916, 11423, 11228, 11103, 11018, 11018, 11027, 10510, 11314, 10309, 10617),
+    HH3 = c(10916107, 11423014, 11228085, 11103075, 11018059, 11018059, 11027022, 10510034, 11314080, 10309037, 10617024),
+    HH4 = c(1091610702, 1142301402, 1122808502, 1110307501, 1101805901, 1101805901, 1102702202, 1051003403, 1131408003, 1030903705, 1061702402),
+    HH8 = c("6025", "6021", "6006", "6012", "0035", "6019", "6049", "6006", "6014", "6065", "40003"),
+    nb_men_denom_pas1 = c(13, 28, 51, 27, 17, 27, 30, 56, 21, 21, 16),
+    stringsAsFactors = FALSE
+  )
+  
+  # Merge with the lookup table
+  data_updated <- merge(data_updated, lookup_table, 
+                       by = c("HH2", "HH3", "HH4", "HH8"), 
+                       all.x = TRUE, suffixes = c("", "_new"))
+  
+  # Update the values where there's a match
+  data_updated$nb_men_denom_pas1 <- ifelse(
+    !is.na(data_updated$nb_men_denom_pas1_new), 
+    data_updated$nb_men_denom_pas1_new, 
+    data_updated$nb_men_denom_pas1
+  )
+  
+  # Remove the temporary column
+  data_updated$nb_men_denom_pas1_new <- NULL
+  
+  return(data_updated)
+}
+
+
+# Example usage:
+# updated_data <- update_household_denominations(your_data)
+# or
+# updated_data <- update_household_denominations_v2(your_data)
+# Function to add missing enumeration records
+# Translation from Stata code for adding missing household enumerations
+
+add_missing_enumerations <- function(data) {
+  # Create a copy of the data
+  data_updated <- data
+  
+  # Helper function to add a new record with specific values
+  add_enumeration_record <- function(df, hh2, hh3, hh4, hh6, hh8, zd, nb_men_denom) {
+    # Create a new row with all values set to NA/""
+    new_row <- df[1, ]  # Copy structure from first row
+    
+    # Set numeric variables to NA
+    numeric_vars <- c("HH1", "HH2", "HH3", "HH4", "HH6", "ZD", "HH7", 
+                      "trimestreencours", "mois_en_cours", "annee", "HH12", "HH13", 
+                      "nb_men_denom_pas1")
+    for (var in numeric_vars) {
+      if (var %in% names(new_row)) {
+        new_row[[var]] <- NA
+      }
+    }
+    
+    # Set character variables to empty string
+    character_vars <- c("interview__key", "interview__id", "HH8A", "HH8B", 
+                       "HH8", "nom_agent", "date_actuel")
+    for (var in character_vars) {
+      if (var %in% names(new_row)) {
+        new_row[[var]] <- ""
+      }
+    }
+    
+    # Set the specific values
+    new_row$HH2 <- hh2
+    new_row$HH3 <- hh3
+    new_row$HH4 <- hh4
+    if (!is.null(hh6)) new_row$HH6 <- hh6
+    new_row$HH8 <- hh8
+    new_row$ZD <- zd
+    new_row$nb_men_denom_pas1 <- nb_men_denom
+    
+    # Bind the new row to the dataframe
+    return(rbind(df, new_row))
+  }
+  
+  # Add records for missing enumerations
+  
+  # 1. ODIENNE BAFING TOUBA TOUBA 0023 / S1 36
+  data_updated <- add_enumeration_record(
+    data_updated, 
+    hh2 = 11319, 
+    hh3 = 11319046, 
+    hh4 = 1131904604, 
+    hh6 = 1, 
+    hh8 = "0023", 
+    zd = 23, 
+    nb_men_denom = 36
+  )
+  
+  # 2. BONDOUKOU BOUKANI DOROPO DOROPO 6016/1 33
+  data_updated <- add_enumeration_record(
+    data_updated, 
+    hh2 = 11423, 
+    hh3 = 11423076, 
+    hh4 = 1142307602, 
+    hh6 = 2, 
+    hh8 = "6016", 
+    zd = 6016, 
+    nb_men_denom = 33
+  )
+  
+  # 3. GAGNOA GOH GAGNOA GAGNOA 150 33 (commented out in original)
+  # data_updated <- add_enumeration_record(
+  #   data_updated, 
+  #   hh2 = 10617, 
+  #   hh3 = 10617024, 
+  #   hh4 = 1061702406, 
+  #   hh6 = NULL, 
+  #   hh8 = "0150", 
+  #   zd = 150, 
+  #   nb_men_denom = 33
+  # )
+  
+  # 4. ODIENNE FOLON KANIASSO MAHANDIANA-SOKOURANI 6005 / S1 31 (commented out in original)
+  # data_updated <- add_enumeration_record(
+  #   data_updated, 
+  #   hh2 = 10524, 
+  #   hh3 = 10524081, 
+  #   hh4 = 1052408103, 
+  #   hh6 = NULL, 
+  #   hh8 = "6006", 
+  #   zd = 6006, 
+  #   nb_men_denom = 22
+  # )
+  
+  # Fill in missing interview IDs and keys
+  data_updated$interview__id[data_updated$interview__id == "" | is.na(data_updated$interview__id)] <- "denombrement_perdu_complete"
+  data_updated$interview__key[data_updated$interview__key == "" | is.na(data_updated$interview__key)] <- "denombrement_perdu_complete"
+  
+  return(data_updated)
+}
+
+# Alternative approach using a more structured method with a lookup table
+add_missing_enumerations_v2 <- function(data) {
+  # Create a copy of the data
+  data_updated <- data
+  
+  # Define the missing enumerations to add
+  missing_enumerations <- data.frame(
+    HH2 = c(11319, 11423),
+    HH3 = c(11319046, 11423076),
+    HH4 = c(1131904604, 1142307602),
+    HH6 = c(1, 2),
+    HH8 = c("0023", "6016"),
+    ZD = c(23, 6016),
+    nb_men_denom_pas1 = c(36, 33),
+    location_description = c("ODIENNE BAFING TOUBA TOUBA 0023 / S1", 
+                            "BONDOUKOU BOUKANI DOROPO DOROPO 6016/1"),
+    stringsAsFactors = FALSE
+  )
+  
+  # Create template rows for the new records
+  for (i in 1:nrow(missing_enumerations)) {
+    # Create a new row with all values set to NA/""
+    new_row <- data_updated[1, ]  # Copy structure from first row
+    
+    # Set numeric variables to NA
+    numeric_vars <- c("HH1", "HH2", "HH3", "HH4", "HH6", "ZD", "HH7", 
+                      "trimestreencours", "mois_en_cours", "annee", "HH12", "HH13", 
+                      "nb_men_denom_pas1")
+    for (var in numeric_vars) {
+      if (var %in% names(new_row)) {
+        new_row[[var]] <- NA
+      }
+    }
+    
+    # Set character variables to empty string
+    character_vars <- c("interview__key", "interview__id", "HH8A", "HH8B", 
+                       "HH8", "nom_agent", "date_actuel")
+    for (var in character_vars) {
+      if (var %in% names(new_row)) {
+        new_row[[var]] <- ""
+      }
+    }
+    
+    # Set the specific values from the lookup table
+    new_row$HH2 <- missing_enumerations$HH2[i]
+    new_row$HH3 <- missing_enumerations$HH3[i]
+    new_row$HH4 <- missing_enumerations$HH4[i]
+    new_row$HH6 <- missing_enumerations$HH6[i]
+    new_row$HH8 <- missing_enumerations$HH8[i]
+    new_row$ZD <- missing_enumerations$ZD[i]
+    new_row$nb_men_denom_pas1 <- missing_enumerations$nb_men_denom_pas1[i]
+    
+    # Add the new row to the dataframe
+    data_updated <- rbind(data_updated, new_row)
+  }
+  
+  # Fill in missing interview IDs and keys
+  data_updated$interview__id[data_updated$interview__id == "" | is.na(data_updated$interview__id)] <- "denombrement_perdu_complete"
+  data_updated$interview__key[data_updated$interview__key == "" | is.na(data_updated$interview__key)] <- "denombrement_perdu_complete"
+  
+  return(data_updated)
+}
+
+# Example usage:
+# updated_data <- add_missing_enumerations(your_data)
+# or
+# updated_data <- add_missing_enumerations_v2(your_data)
+
+# Note: The commented out sections from the original Stata code are preserved as comments
+# If you need to include them, uncomment the relevant sections in the first function

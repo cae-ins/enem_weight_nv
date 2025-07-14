@@ -1,6 +1,6 @@
 # Project root (use `here::here()` if working in RStudio)
 BASE_DIR <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"  
-TARGET_QUARTER <- "T1_2025"
+TARGET_QUARTER <- "T3_2024"
 
 # Install required packages if not already installed
 required_packages <- c("dplyr", "haven", "labelled", "readxl", "stringr", "purrr","paws","aws.signature","jsonlite")
