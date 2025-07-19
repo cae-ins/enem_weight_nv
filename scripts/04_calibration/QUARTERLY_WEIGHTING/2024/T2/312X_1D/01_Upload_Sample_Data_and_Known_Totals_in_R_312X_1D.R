@@ -59,6 +59,16 @@ str(LFS_ILO_DER)
 
 dim(LFS_ILO_DER)
 
+
+### weights to be used in the following
+LFS_ILO_DER$d_weights =  LFS_ILO_DER$poids_men
+
+### Remove NA d_weights
+LFS_ILO_DER <- LFS_ILO_DER[!is.na(LFS_ILO_DER$d_weights), ]
+
+dim(LFS_ILO_DER)
+
+
 ### Individuals in the frame must have a unique identification code (INDKEY) hence let's verify it using the following instruction
 
 
@@ -68,7 +78,7 @@ length(unique(LFS_ILO_DER$INDKEY))
 
 ### We can also check how many households we have interviewed by counting the unique households ids (HHKEY)
 
-LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview__key))
+LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview_key))
 
 length(unique(LFS_ILO_DER$HHKEY))
 
@@ -124,7 +134,7 @@ table(LFS_ILO_DER$HH2)
 LFS_ILO_DER %>%
   tab_cols(M5, HH6, total()) %>%
   tab_rows(HH2, total()) %>%
-  tab_weight(poids_menage) %>%
+  tab_weight(d_weights) %>%
   tab_stat_sum %>%
   tab_pivot()
 
@@ -372,7 +382,7 @@ tmp_sum_pop_fig1
 #######   CHECK THE POPULATION ESTIMATES OBTAINED WITH THE DESIGN WEIGHTS   ###########################################################################################
 
 tmp_sum_est_pop_dw <- 
-  sum(LFS_ILO_DER$poids_menage)
+  sum(LFS_ILO_DER$d_weights)
 tmp_sum_est_pop_dw
 
 #######   CHECK THE AVERAGE CORRECTION FACTOR FOR THE FINAL WIEGHTS   ###########################################################################################

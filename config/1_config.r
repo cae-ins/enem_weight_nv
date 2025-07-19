@@ -1,6 +1,7 @@
 # Project root (use `here::here()` if working in RStudio)
 BASE_DIR <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"  
-TARGET_QUARTER <- "T1_2025"
+setwd(BASE_DIR)
+TARGET_QUARTER <- "T4_2024"
 
 # Install required packages if not already installed
 required_packages <- c("dplyr", "haven", "labelled", "readxl", "stringr", "purrr","paws","aws.signature","jsonlite")
@@ -76,4 +77,11 @@ get_path <- function(type, ..., quarter = NULL) {
   path <- PATHS[[type]]
   if (!is.null(quarter)) path <- gsub("\\{quarter\\}", quarter, path)
   file.path(path, ...)
+}
+
+apply_if_exists <- function(env, fn_name, data) {
+  if (exists(fn_name, envir = env, mode = "function")) {
+    data <- get(fn_name, envir = env)(data)
+  }
+  return(data)
 }

@@ -18,11 +18,37 @@ library(lubridate)
 library(stringr)
 library(rlang)  # for .datas
 
+
 # ------------------------------------------------------------------------------
 # Set Base Paths and Parameters
 # ------------------------------------------------------------------------------
 # Base directory for the project
 source("config/1_config.r")
+################################################################################################################### 
+# Chargement de script de correction si disponible
+appliquer_correction_trimestre <- function(df, trimestre, dossier_scripts = "scripts/07_correction_quarter") {
+  nom_fichier <- file.path(dossier_scripts, paste0("correction_", trimestre, ".r"))
+
+  if (!exists("apply_T4_2024_correction", mode = "function")) {
+    if (file.exists(nom_fichier)) {
+      message("Chargement du script de correction : ", nom_fichier)
+      source(nom_fichier)
+    } else {
+      warning("Le fichier de correction '", nom_fichier, "' est introuvable.")
+      return(df)
+    }
+  }
+
+  if (exists("apply_T4_2024_correction", mode = "function")) {
+    message("Application de la correction pour le trimestre : ", trimestre)
+    return(df %>% apply_T4_2024_correction())
+  } else {
+    warning("La fonction correction_reaffectation_menage() n'est pas disponible même après chargement.")
+    return(df)
+  }
+}
+
+###################################################################################################################
 
 DATA_DIR <- file.path(BASE_DIR, "data")
 CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
@@ -101,85 +127,12 @@ indiv_enq_counts <- indiv_with_ids %>%
   ) %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
 
+
 # ------------------------------------------------------------------------------
 # Load Cleaned Denombrement for Segment-Level Counts (Current + Resurveyed Quarters)
 # ------------------------------------------------------------------------------
 
-get_all_quarters <- function(target_q) {
-  row <- quarter_mapping %>%
-    filter(`Trimestre_En_Cours` == target_q) %>%
-    select(starts_with("Trimestre_")) %>%
-    unlist(use.names = FALSE) %>%
-    na.omit() %>%
-    unique()
-  
-  quarters <- gsub(" ", "_", row)
-  return(quarters)
-}
-
-quarter_mapping <- read_excel(QUARTERS_EXCEL)
-
-resurvey_quarters <- get_all_quarters(gsub("_", " ", TARGET_QUARTER))
-all_quarters <- unique(c(TARGET_QUARTER, resurvey_quarters))
-
-# Set unified quarter start date (for all quarters)
-quarter_num <- as.integer(substr(TARGET_QUARTER, 2, 2))
-year_num <- as.integer(substr(TARGET_QUARTER, 4, 7))
-quarter_start_month <- c("01", "04", "07", "10")[quarter_num]
-quarter_start_date <- paste0(year_num, "-", quarter_start_month, "-02") %>% ymd()
-
-seg_survey_all <- list()
-
-for (q in all_quarters) {
-  q_dir <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", q)
-  
-  menage_file <- list.files(q_dir, pattern = "^menage.*\\.dta$", full.names = TRUE)[1]
-  enem_file   <- list.files(q_dir, pattern = "^ENEM.*\\.dta$", full.names = TRUE)[1]
-  
-  if (!file.exists(menage_file) || !file.exists(enem_file)) next
-  
-  menage <- read_dta(menage_file) %>% normalize_column_names()
-  enem   <- read_dta(enem_file) %>% normalize_column_names()
-  
-  seg_counts <- menage %>%
-    group_by(interview_key) %>%
-    summarise(
-      nb_mens_seg = n(),
-      nb_indivs_seg = sum(taille, na.rm = TRUE),
-      .groups = "drop"
-    )
-  
-  enem <- enem %>%
-    mutate(date1 = quarter_start_date)
-  
-  survey_info <- enem %>%
-    select(interview_key, hh2, hh3, hh4, hh8, hh7, hh6,date1) %>%
-    rename(
-      region = hh2, depart = hh3, souspref = hh4,
-      ZD = hh8, segment = hh7, milieu = hh6, date_ref = date1
-    )
-  
-  seg_survey <- seg_counts %>%
-    left_join(survey_info, by = "interview_key") %>%
-    select(-interview_key) %>%
-    group_by(region, depart, souspref, ZD, segment, milieu) %>%
-    summarise(
-      nb_mens_seg   = sum(nb_mens_seg, na.rm = TRUE),
-      nb_indivs_seg = sum(nb_indivs_seg, na.rm = TRUE),
-      date_ref      = first(date_ref),
-      .groups = "drop"
-    ) %>%
-    mutate(
-      rgmen = ifelse(q == TARGET_QUARTER, 1, 2),
-      first_trim = q
-    )
-  
-  seg_survey_all[[q]] <- seg_survey
-}
-
-# Bind all quarters’ data
-seg_survey <- bind_rows(seg_survey_all)
-
+source("scripts/02_base_weights/construct_denombrement.r")
 
 # ------------------------------------------------------------------------------
 # Merge with Region-Level Data
@@ -212,7 +165,7 @@ get_quarter_phase <- function(date_ref) {
   # Apply the mapping rules
   phase <- case_when(
     year == 2024 & quarter == 2                     ~ 1,
-    (year == 2024 & quarter == 3) |
+    (year == 2024 & quarter == 3) |  (year == 2024 & quarter == 4) |
       (year == 2025 & quarter == 1)                 ~ 2,
     year == 2025 & quarter == 2                     ~ 3,
     (year > 2025) |
@@ -428,7 +381,8 @@ inconsistent_rows <- final_data %>%
   select(-tmp_is_duplicate) %>%
   filter(!is.na(incoherence_code))
 
-
+# ------------------------------------------------------------------------------
+glimpse(final_data)
 # ------------------------------------------------------------------------------
 # Save Final Dataset
 # ------------------------------------------------------------------------------
@@ -441,3 +395,4 @@ write_dta(inconsistent_rows, inconsistent_file)
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_data)
+

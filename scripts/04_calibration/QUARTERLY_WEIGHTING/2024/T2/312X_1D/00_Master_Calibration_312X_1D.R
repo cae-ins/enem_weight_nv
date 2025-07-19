@@ -120,7 +120,7 @@ year
 
 ###   choose the quarter
 
-quarter=4
+quarter=2
 
 quarter 
 
@@ -160,7 +160,7 @@ pathx
 ###
 ###  Lets set the main root/directory on our computer o server (where we have the LFS data and programs )
 
-root_lfs <- "C:/Users/fajmi/Desktop/ENE_SURVEY_WEIGHTS"
+root_lfs <- "D:/DOCUMENTS/CAE/Calibration/Applications ENEM"
 root_lfs
 
 
@@ -179,7 +179,7 @@ dir_data_DV
 ###
 ###  Let's parameterize the name and path of the csv file with the full sample data "_DER"
 
-FILE_LFS_ILO_DER_DTA  <- paste0(dir_data_DV,"membres_menages_finale_T",quarter,".dta")
+FILE_LFS_ILO_DER_DTA  <- paste0(dir_data_DV,"base_finale_ind_menage_wcal.dta")
 FILE_LFS_ILO_DER_DTA
 
 ###  Let's parameterize the name and path of the RData file with the full sample data 
@@ -243,7 +243,7 @@ FILE_POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR_RDATA
 ###
 ###  Let's parameterize the path of the working directory where the outputs of the calibration will be stored
 
-dir_data_QW <- paste0( root_lfs , "/data/QUARTERLY_WEIGHTING/", year, "/T", quarter , "/" , pathx,"/")
+dir_data_QW <- paste0( root_lfs , "/DATA/QUARTERLY_WEIGHTING/", year, "/T", quarter , "/" , pathx,"/")
 dir_data_QW
 
 
@@ -303,12 +303,13 @@ FILE_LFS_KNOWN_TOTALS_XLSX
 ###  Let's parameterize the path of the program folder
 ### "W\ILO_LFS_GSBPM\PROG\565_QUARTERLY_WEIGHTING\2021\Quarter1\312X_1D_ALLWR"
 
-dir_prog_QW <- paste0( root_lfs , "/Scripts/QUARTERLY_WEIGHTING/", year, "/T", quarter , "/" , pathx,"/")
+dir_prog_QW <- paste0( root_lfs , "/PROG/QUARTERLY_WEIGHTING/", pathx,"/")
 dir_prog_QW
+
 
 ###  Let's parameterize the name and path of the script file that constains the additional functions for ReGenesees
 
-R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS <- paste0( root_lfs , "/Scripts/QUARTERLY_WEIGHTING/Other_R_functions_for_Regenesees/Functions_to_Create _X_vector_and_X_Summary_Table.R")
+R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS <- paste0( root_lfs , "/PROG/QUARTERLY_WEIGHTING/Other_R_functions_for_Regenesees/Functions_to_Create _X_vector_and_X_Summary_Table.R")
 R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS 
 
 
@@ -441,16 +442,19 @@ dir_prog_QW
 
 ### or run the script below altogether without opening it
 
-source( paste0( dir_prog_QW , "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,".R"  ) )
+#  source( paste0( dir_prog_565QW , "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,".R"  ) )
+
+
+
 #######   UPDATE EXCEL SCHEME ON SET OF CONSTRAINTS  #########################################################
 ###
 ###    Update excel scheme an programs to format summary tables on calibration produced by Regenesees
 ###
 ##############################################################################################################
 
-xls = xl.get.excel()
-xl.workbook.close(xl.workbook.name = NULL)
-xl.workbook.open( paste0( dir_prog_QW , "01_Set_of_constraints_", setx,".xlsx")   )
+#  xls = xl.get.excel()
+#  xl.workbook.close(xl.workbook.name = NULL)
+#  xl.workbook.open( paste0( dir_prog_565QW , "01_Set_of_constraints_", setx,".xlsx")   )
 
 
 
@@ -466,7 +470,7 @@ xl.workbook.open( paste0( dir_prog_QW , "01_Set_of_constraints_", setx,".xlsx") 
 
 ### or run the script below altogether without opening it 
 
-source( paste0(dir_prog_QW, "02_Prepare_input_sample_data_for_regenesees_", pathx,".R") )
+#  source( paste0( dir_prog_565QW , "02_Prepare_input_sample_data_for_regenesees_", pathx,".R") )
 
 
 
@@ -482,7 +486,7 @@ source( paste0(dir_prog_QW, "02_Prepare_input_sample_data_for_regenesees_", path
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "03_Prepare_input_pop_figures_for_regenesees_", pathx,".R") )
 
 ### or run the script below altogether without opening it 
-source( paste0( dir_prog_QW , "03_Prepare_input_pop_figures_for_regenesees_", pathx,".R") )
+#  source( paste0( dir_prog_565QW , "03_Prepare_input_pop_figures_for_regenesees_", pathx,".R") )
 
 
 
@@ -498,7 +502,7 @@ source( paste0( dir_prog_QW , "03_Prepare_input_pop_figures_for_regenesees_", pa
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "04c_Run_Quarterly_Calibration_with_Regenesees_", pathx,".R") )
 
 ### or run the script below altogether without opening it 
-source( paste0( dir_prog_QW , "04c_Run_Quarterly_Calibration_with_Regenesees_", pathx,".R") )
+#  source( paste0( dir_prog_565QW , "04c_Run_Quarterly_Calibration_with_Regenesees_", pathx,".R") )
 
 
 
@@ -514,7 +518,7 @@ source( paste0( dir_prog_QW , "04c_Run_Quarterly_Calibration_with_Regenesees_", 
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "05_Attach_final_weights_to_full_sample_data_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-source( paste0( dir_prog_QW , "05_Attach_final_weights_to_full_sample_data_", pathx,".R") )
+#  source( paste0( dir_prog_565QW , "05_Attach_final_weights_to_full_sample_data_", pathx,".R") )
 
 
 
@@ -529,7 +533,7 @@ source( paste0( dir_prog_QW , "05_Attach_final_weights_to_full_sample_data_", pa
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "06_Create_Table1_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-source( paste0( dir_prog_QW , "06_Create_Table1_", pathx,".R"  ) )
+#  source( paste0( dir_prog_565QW , "06_Create_Table1_", pathx,".R"  ) )
 
 
 
@@ -543,5 +547,5 @@ source( paste0( dir_prog_QW , "06_Create_Table1_", pathx,".R"  ) )
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-source( paste0( dir_prog_QW , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R"  ) )
+#  source( paste0( dir_prog_565QW , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R"  ) )
 

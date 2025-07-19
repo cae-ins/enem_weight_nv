@@ -21,6 +21,8 @@ MENAGE_COLUMNS_PATH  <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
                                   paste0("menage_", TARGET_QUARTER, ".dta"))
 INDIVIDU_COLUMN_PATH <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
                                   paste0("individu_", TARGET_QUARTER, ".dta"))
+INDIVIDU_COLUMN_PATH_SR <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("SR_individu_", TARGET_QUARTER, ".dta"))                                  
 
 # ==============================================================================
 # Load Base Weights Data
@@ -110,11 +112,15 @@ clean_names <- function(df) {
 }
 menage_q   <- clean_names(menage_q)
 individu_q <- clean_names(individu_q)
-
+individu_q$d_weights <- individu_q$adjusted_weight_IND 
+individu_q_SR <- individu_q %>%
+  filter(!is.na(adjusted_weight_IND_WR))
+individu_q_SR$d_weights  <- individu_q_SR$adjusted_weight_IND_WR 
 # ==============================================================================
 # Save Updated Datasets
 # ==============================================================================
 write_dta(adjusted_data, WEIGHTS_COLUMNS_PATH)
 write_dta(menage_q, MENAGE_COLUMNS_PATH)
 write_dta(individu_q, INDIVIDU_COLUMN_PATH)
+write_dta(individu_q_SR, INDIVIDU_COLUMN_PATH_SR)
 

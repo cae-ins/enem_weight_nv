@@ -3,7 +3,7 @@
 # Purpose: Process newly updated ZD counts from Denombrement_update
 #          and create a harmonized dataset with household and individual counts
 # Author: Ezechiel KOFFIE
-# Date: 11-06-2025
+# Date: 13-07-2025
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
@@ -19,6 +19,7 @@ library(haven)
 # 2. Set Base Paths
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
+
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
 CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
@@ -212,10 +213,28 @@ output_path <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", 
 subset_dataset <- final_dataset %>%
   filter(segment == 1)
 
-write_dta(final_dataset, output_path)
-write_dta(subset_dataset, output_path)
+# --------------------------------------------------------------------------------------------------------------
+# 11. Traitement spécifique pour les données de T2_2024 dont les fichiers excels de ZDs ne sont plus disponibles
+# --------------------------------------------------------------------------------------------------------------
+
+final_dataset <- update_T2_2024(final_dataset)
+subset_dataset <- update_T2_2024(subset_dataset)
+
+# --------------------------------------------------------------------------------------------------------------
+# 12. Traitement spécifique pour les données de T4_2024 (idem)
+# --------------------------------------------------------------------------------------------------------------
+
+final_dataset <- update_T4_2024(final_dataset)
+subset_dataset <- update_T4_2024(subset_dataset)
 
 # ------------------------------------------------------------------------------
-# Done
+# 13. Final save
 # ------------------------------------------------------------------------------
+
 glimpse(final_dataset)
+glimpse(subset_dataset)
+
+message("Final dataset created with ", nrow(final_dataset), " records.")
+write_dta(final_dataset, output_path)
+message("Dataset segment 1 created with ", nrow(subset_dataset), " records.")
+write_dta(subset_dataset, output_path)

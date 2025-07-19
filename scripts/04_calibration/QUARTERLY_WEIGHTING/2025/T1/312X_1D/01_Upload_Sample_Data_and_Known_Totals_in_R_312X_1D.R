@@ -124,7 +124,7 @@ table(LFS_ILO_DER$hh2)
 LFS_ILO_DER %>%
   tab_cols(m5, milieu, total()) %>%
   tab_rows(hh2, total()) %>%
-  tab_weight(adjusted_weight_IND) %>%
+  tab_weight(base_weight_HH) %>%
   tab_stat_sum %>%
   tab_pivot()
 
@@ -372,7 +372,7 @@ tmp_sum_pop_fig1
 #######   CHECK THE POPULATION ESTIMATES OBTAINED WITH THE DESIGN WEIGHTS   ###########################################################################################
 
 tmp_sum_est_pop_dw <- 
-  sum(LFS_ILO_DER$adjusted_weight_IND)
+  sum(LFS_ILO_DER$poids_menage)
 tmp_sum_est_pop_dw
 
 #######   CHECK THE AVERAGE CORRECTION FACTOR FOR THE FINAL WIEGHTS   ###########################################################################################
