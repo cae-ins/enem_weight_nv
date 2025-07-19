@@ -35,8 +35,8 @@ library(janitor)
 # Define paths
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
-PARENT_DIR <- file.path(BASE_DIR, "data/01_raw", "Denombrement", "T2_2024")
-OUTPUT_DIR <- file.path(BASE_DIR, "data/02_cleaned", "Denombrement", "T2_2024")
+PARENT_DIR <- file.path(BASE_DIR, "data/01_raw", "Denombrement", "T3_2024")
+OUTPUT_DIR <- file.path(BASE_DIR, "data/02_cleaned", "Denombrement", "T3_2024")
 
 # Ensure output directory exists
 dir_create(OUTPUT_DIR)
@@ -91,6 +91,8 @@ for (i in seq_len(nrow(dta_index))) {
   
   cat("Saved:", output_path, "\n\n")
 }
+ 
+
 
 cat("Done. All files successfully processed.\n")
 

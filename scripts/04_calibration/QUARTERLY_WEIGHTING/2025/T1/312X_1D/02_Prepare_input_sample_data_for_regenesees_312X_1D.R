@@ -161,270 +161,270 @@ tmpSD$X48[tmpSD$ageannee>= 65                  & tmpSD$milieu==2 & tmpSD$m5==2]<
 
 # REGION BY SEX BY URBAN_RURAL LOCATION AND 2 AGE GROUP
 
-tmpSD$X49[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==1] <- 1
-tmpSD$X50[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==1] <- 1
-tmpSD$X51[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==1] <- 1
-tmpSD$X52[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==1] <- 1
-tmpSD$X53[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==2] <- 1
-tmpSD$X54[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==2] <- 1
-tmpSD$X55[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==2] <- 1
-tmpSD$X56[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==2] <- 1
-tmpSD$X57[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==3] <- 1
-tmpSD$X58[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==3] <- 1
-tmpSD$X59[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==3] <- 1
-tmpSD$X60[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==3] <- 1
-tmpSD$X61[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==4] <- 1
-tmpSD$X62[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==4] <- 1
-tmpSD$X63[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==4] <- 1
-tmpSD$X64[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==4] <- 1
-tmpSD$X65[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==5] <- 1
-tmpSD$X66[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==5] <- 1
-tmpSD$X67[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==5] <- 1
-tmpSD$X68[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==5] <- 1
-tmpSD$X69[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==6] <- 1
-tmpSD$X70[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==6] <- 1
-tmpSD$X71[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==6] <- 1
-tmpSD$X72[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==6] <- 1
-tmpSD$X73[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==7] <- 1
-tmpSD$X74[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==7] <- 1
-tmpSD$X75[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==7] <- 1
-tmpSD$X76[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==7] <- 1
-tmpSD$X77[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==8] <- 1
-tmpSD$X78[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==8] <- 1
-tmpSD$X79[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==8] <- 1
-tmpSD$X80[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==8] <- 1
-tmpSD$X81[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==9] <- 1
-tmpSD$X82[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==9] <- 1
-tmpSD$X83[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==9] <- 1
-tmpSD$X84[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==9] <- 1
-tmpSD$X85[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==10] <- 1
-tmpSD$X86[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==10] <- 1
-tmpSD$X87[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==10] <- 1
-tmpSD$X88[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==10] <- 1
-tmpSD$X89[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==11] <- 1
-tmpSD$X90[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==11] <- 1
-tmpSD$X91[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==11] <- 1
-tmpSD$X92[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==11] <- 1
-tmpSD$X93[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==12] <- 1
-tmpSD$X94[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==12] <- 1
-tmpSD$X95[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==12] <- 1
-tmpSD$X96[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==12] <- 1
-tmpSD$X97[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==13] <- 1
-tmpSD$X98[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==13] <- 1
-tmpSD$X99[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==13] <- 1
-tmpSD$X100[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==13] <- 1
-tmpSD$X101[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==14] <- 1
-tmpSD$X102[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==14] <- 1
-tmpSD$X103[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==14] <- 1
-tmpSD$X104[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==14] <- 1
-tmpSD$X105[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==15] <- 1
-tmpSD$X106[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==15] <- 1
-tmpSD$X107[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==15] <- 1
-tmpSD$X108[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==15] <- 1
-tmpSD$X109[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==16] <- 1
-tmpSD$X110[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==16] <- 1
-tmpSD$X111[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==16] <- 1
-tmpSD$X112[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==16] <- 1
-tmpSD$X113[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==17] <- 1
-tmpSD$X114[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==17] <- 1
-tmpSD$X115[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==17] <- 1
-tmpSD$X116[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==17] <- 1
-tmpSD$X117[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==18] <- 1
-tmpSD$X118[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==18] <- 1
-tmpSD$X119[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==18] <- 1
-tmpSD$X120[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==18] <- 1
-tmpSD$X121[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==19] <- 1
-tmpSD$X122[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==19] <- 1
-tmpSD$X123[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==19] <- 1
-tmpSD$X124[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==19] <- 1
-tmpSD$X125[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==20] <- 1
-tmpSD$X126[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==20] <- 1
-tmpSD$X127[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==20] <- 1
-tmpSD$X128[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==20] <- 1
-tmpSD$X129[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==21] <- 1
-tmpSD$X130[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==21] <- 1
-tmpSD$X131[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==21] <- 1
-tmpSD$X132[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==21] <- 1
-tmpSD$X133[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==22] <- 1
-tmpSD$X134[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==22] <- 1
-tmpSD$X135[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==22] <- 1
-tmpSD$X136[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==22] <- 1
-tmpSD$X137[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==23] <- 1
-tmpSD$X138[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==23] <- 1
-tmpSD$X139[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==23] <- 1
-tmpSD$X140[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==23] <- 1
-tmpSD$X141[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==24] <- 1
-tmpSD$X142[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==24] <- 1
-tmpSD$X143[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==24] <- 1
-tmpSD$X144[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==24] <- 1
-tmpSD$X145[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==25] <- 1
-tmpSD$X146[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==25] <- 1
-tmpSD$X147[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==25] <- 1
-tmpSD$X148[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==25] <- 1
-tmpSD$X149[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==26] <- 1
-tmpSD$X150[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==26] <- 1
-tmpSD$X151[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==26] <- 1
-tmpSD$X152[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==26] <- 1
-tmpSD$X153[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==27] <- 1
-tmpSD$X154[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==27] <- 1
-tmpSD$X155[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==27] <- 1
-tmpSD$X156[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==27] <- 1
-tmpSD$X157[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==28] <- 1
-tmpSD$X158[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==28] <- 1
-tmpSD$X159[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==28] <- 1
-tmpSD$X160[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==28] <- 1
-tmpSD$X161[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==29] <- 1
-tmpSD$X162[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==29] <- 1
-tmpSD$X163[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==29] <- 1
-tmpSD$X164[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==29] <- 1
-tmpSD$X165[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==30] <- 1
-tmpSD$X166[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==30] <- 1
-tmpSD$X167[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==30] <- 1
-tmpSD$X168[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==30] <- 1
-tmpSD$X169[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==31] <- 1
-tmpSD$X170[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==31] <- 1
-tmpSD$X171[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==31] <- 1
-tmpSD$X172[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==31] <- 1
-tmpSD$X173[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==32] <- 1
-tmpSD$X174[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==32] <- 1
-tmpSD$X175[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==32] <- 1
-tmpSD$X176[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==32] <- 1
-tmpSD$X177[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==33] <- 1
-tmpSD$X178[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$reg==33] <- 1
-tmpSD$X179[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==33] <- 1
-tmpSD$X180[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$reg==33] <- 1
-tmpSD$X181[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==1] <- 1
-tmpSD$X182[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==1] <- 1
-tmpSD$X183[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==1] <- 1
-tmpSD$X184[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==1] <- 1
-tmpSD$X185[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==2] <- 1
-tmpSD$X186[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==2] <- 1
-tmpSD$X187[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==2] <- 1
-tmpSD$X188[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==2] <- 1
-tmpSD$X189[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==3] <- 1
-tmpSD$X190[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==3] <- 1
-tmpSD$X191[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==3] <- 1
-tmpSD$X192[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==3] <- 1
-tmpSD$X193[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==4] <- 1
-tmpSD$X194[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==4] <- 1
-tmpSD$X195[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==4] <- 1
-tmpSD$X196[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==4] <- 1
-tmpSD$X197[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==5] <- 1
-tmpSD$X198[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==5] <- 1
-tmpSD$X199[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==5] <- 1
-tmpSD$X200[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==5] <- 1
-tmpSD$X201[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==6] <- 1
-tmpSD$X202[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==6] <- 1
-tmpSD$X203[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==6] <- 1
-tmpSD$X204[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==6] <- 1
-tmpSD$X205[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==7] <- 1
-tmpSD$X206[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==7] <- 1
-tmpSD$X207[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==7] <- 1
-tmpSD$X208[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==7] <- 1
-tmpSD$X209[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==8] <- 1
-tmpSD$X210[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==8] <- 1
-tmpSD$X211[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==8] <- 1
-tmpSD$X212[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==8] <- 1
-tmpSD$X213[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==9] <- 1
-tmpSD$X214[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==9] <- 1
-tmpSD$X215[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==9] <- 1
-tmpSD$X216[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==9] <- 1
-tmpSD$X217[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==10] <- 1
-tmpSD$X218[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==10] <- 1
-tmpSD$X219[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==10] <- 1
-tmpSD$X220[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==10] <- 1
-tmpSD$X221[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==11] <- 1
-tmpSD$X222[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==11] <- 1
-tmpSD$X223[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==11] <- 1
-tmpSD$X224[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==11] <- 1
-tmpSD$X225[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==12] <- 1
-tmpSD$X226[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==12] <- 1
-tmpSD$X227[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==12] <- 1
-tmpSD$X228[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==12] <- 1
-tmpSD$X229[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==13] <- 1
-tmpSD$X230[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==13] <- 1
-tmpSD$X231[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==13] <- 1
-tmpSD$X232[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==13] <- 1
-tmpSD$X233[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==14] <- 1
-tmpSD$X234[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==14] <- 1
-tmpSD$X235[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==14] <- 1
-tmpSD$X236[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==14] <- 1
-tmpSD$X237[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==15] <- 1
-tmpSD$X238[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==15] <- 1
-tmpSD$X239[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==15] <- 1
-tmpSD$X240[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==15] <- 1
-tmpSD$X241[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==16] <- 1
-tmpSD$X242[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==16] <- 1
-tmpSD$X243[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==16] <- 1
-tmpSD$X244[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==16] <- 1
-tmpSD$X245[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==17] <- 1
-tmpSD$X246[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==17] <- 1
-tmpSD$X247[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==17] <- 1
-tmpSD$X248[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==17] <- 1
-tmpSD$X249[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==18] <- 1
-tmpSD$X250[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==18] <- 1
-tmpSD$X251[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==18] <- 1
-tmpSD$X252[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==18] <- 1
-tmpSD$X253[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==19] <- 1
-tmpSD$X254[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==19] <- 1
-tmpSD$X255[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==19] <- 1
-tmpSD$X256[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==19] <- 1
-tmpSD$X257[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==20] <- 1
-tmpSD$X258[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==20] <- 1
-tmpSD$X259[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==20] <- 1
-tmpSD$X260[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==20] <- 1
-tmpSD$X261[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==21] <- 1
-tmpSD$X262[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==21] <- 1
-tmpSD$X263[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==21] <- 1
-tmpSD$X264[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==21] <- 1
-tmpSD$X265[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==22] <- 1
-tmpSD$X266[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==22] <- 1
-tmpSD$X267[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==22] <- 1
-tmpSD$X268[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==22] <- 1
-tmpSD$X269[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==23] <- 1
-tmpSD$X270[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==23] <- 1
-tmpSD$X271[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==23] <- 1
-tmpSD$X272[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==23] <- 1
-tmpSD$X273[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==24] <- 1
-tmpSD$X274[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==24] <- 1
-tmpSD$X275[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==24] <- 1
-tmpSD$X276[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==24] <- 1
-tmpSD$X277[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==25] <- 1
-tmpSD$X278[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==25] <- 1
-tmpSD$X279[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==25] <- 1
-tmpSD$X280[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==25] <- 1
-tmpSD$X281[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==26] <- 1
-tmpSD$X282[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==26] <- 1
-tmpSD$X283[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==26] <- 1
-tmpSD$X284[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==26] <- 1
-tmpSD$X285[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==27] <- 1
-tmpSD$X286[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==27] <- 1
-tmpSD$X287[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==27] <- 1
-tmpSD$X288[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==27] <- 1
-tmpSD$X289[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==28] <- 1
-tmpSD$X290[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==28] <- 1
-tmpSD$X291[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==28] <- 1
-tmpSD$X292[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==28] <- 1
-tmpSD$X293[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==29] <- 1
-tmpSD$X294[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==29] <- 1
-tmpSD$X295[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==29] <- 1
-tmpSD$X296[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==29] <- 1
-tmpSD$X297[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==30] <- 1
-tmpSD$X298[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==30] <- 1
-tmpSD$X299[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==30] <- 1
-tmpSD$X300[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==30] <- 1
-tmpSD$X301[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==31] <- 1
-tmpSD$X302[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==31] <- 1
-tmpSD$X303[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==31] <- 1
-tmpSD$X304[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==31] <- 1
-tmpSD$X305[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==32] <- 1
-tmpSD$X306[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==32] <- 1
-tmpSD$X307[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==32] <- 1
-tmpSD$X308[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==32] <- 1
-tmpSD$X309[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==33] <- 1
-tmpSD$X310[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$reg==33] <- 1
-tmpSD$X311[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==33] <- 1
-tmpSD$X312[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$reg==33] <- 1
+tmpSD$X49[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10101] <- 1
+tmpSD$X50[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10101] <- 1
+tmpSD$X51[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10101] <- 1
+tmpSD$X52[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10101] <- 1
+tmpSD$X53[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10702] <- 1
+tmpSD$X54[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10702] <- 1
+tmpSD$X55[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10702] <- 1
+tmpSD$X56[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10702] <- 1
+tmpSD$X57[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11103] <- 1
+tmpSD$X58[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11103] <- 1
+tmpSD$X59[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11103] <- 1
+tmpSD$X60[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11103] <- 1
+tmpSD$X61[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11204] <- 1
+tmpSD$X62[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11204] <- 1
+tmpSD$X63[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11204] <- 1
+tmpSD$X64[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11204] <- 1
+tmpSD$X65[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10405] <- 1
+tmpSD$X66[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10405] <- 1
+tmpSD$X67[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10405] <- 1
+tmpSD$X68[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10405] <- 1
+tmpSD$X69[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11006] <- 1
+tmpSD$X70[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11006] <- 1
+tmpSD$X71[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11006] <- 1
+tmpSD$X72[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11006] <- 1
+tmpSD$X73[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10207] <- 1
+tmpSD$X74[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10207] <- 1
+tmpSD$X75[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10207] <- 1
+tmpSD$X76[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10207] <- 1
+tmpSD$X77[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11408] <- 1
+tmpSD$X78[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11408] <- 1
+tmpSD$X79[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11408] <- 1
+tmpSD$X80[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11408] <- 1
+tmpSD$X81[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10309] <- 1
+tmpSD$X82[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10309] <- 1
+tmpSD$X83[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10309] <- 1
+tmpSD$X84[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10309] <- 1
+tmpSD$X85[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10510] <- 1
+tmpSD$X86[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10510] <- 1
+tmpSD$X87[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10510] <- 1
+tmpSD$X88[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10510] <- 1
+tmpSD$X89[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10811] <- 1
+tmpSD$X90[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10811] <- 1
+tmpSD$X91[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10811] <- 1
+tmpSD$X92[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10811] <- 1
+tmpSD$X93[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10712] <- 1
+tmpSD$X94[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10712] <- 1
+tmpSD$X95[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10712] <- 1
+tmpSD$X96[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10712] <- 1
+tmpSD$X97[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10413] <- 1
+tmpSD$X98[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10413] <- 1
+tmpSD$X99[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10413] <- 1
+tmpSD$X100[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10413] <- 1
+tmpSD$X101[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11314] <- 1
+tmpSD$X102[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11314] <- 1
+tmpSD$X103[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11314] <- 1
+tmpSD$X104[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11314] <- 1
+tmpSD$X105[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10615] <- 1
+tmpSD$X106[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10615] <- 1
+tmpSD$X107[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10615] <- 1
+tmpSD$X108[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10615] <- 1
+tmpSD$X109[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10916] <- 1
+tmpSD$X110[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10916] <- 1
+tmpSD$X111[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10916] <- 1
+tmpSD$X112[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10916] <- 1
+tmpSD$X113[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10617] <- 1
+tmpSD$X114[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10617] <- 1
+tmpSD$X115[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10617] <- 1
+tmpSD$X116[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10617] <- 1
+tmpSD$X117[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11018] <- 1
+tmpSD$X118[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11018] <- 1
+tmpSD$X119[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11018] <- 1
+tmpSD$X120[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11018] <- 1
+tmpSD$X121[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11319] <- 1
+tmpSD$X122[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11319] <- 1
+tmpSD$X123[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11319] <- 1
+tmpSD$X124[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11319] <- 1
+tmpSD$X125[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11120] <- 1
+tmpSD$X126[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11120] <- 1
+tmpSD$X127[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11120] <- 1
+tmpSD$X128[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11120] <- 1
+tmpSD$X129[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10821] <- 1
+tmpSD$X130[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10821] <- 1
+tmpSD$X131[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10821] <- 1
+tmpSD$X132[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10821] <- 1
+tmpSD$X133[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11322] <- 1
+tmpSD$X134[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11322] <- 1
+tmpSD$X135[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11322] <- 1
+tmpSD$X136[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11322] <- 1
+tmpSD$X137[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11423] <- 1
+tmpSD$X138[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11423] <- 1
+tmpSD$X139[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11423] <- 1
+tmpSD$X140[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11423] <- 1
+tmpSD$X141[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10524] <- 1
+tmpSD$X142[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10524] <- 1
+tmpSD$X143[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10524] <- 1
+tmpSD$X144[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10524] <- 1
+tmpSD$X145[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10325] <- 1
+tmpSD$X146[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10325] <- 1
+tmpSD$X147[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10325] <- 1
+tmpSD$X148[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10325] <- 1
+tmpSD$X149[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10926] <- 1
+tmpSD$X150[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10926] <- 1
+tmpSD$X151[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10926] <- 1
+tmpSD$X152[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10926] <- 1
+tmpSD$X153[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11027] <- 1
+tmpSD$X154[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11027] <- 1
+tmpSD$X155[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11027] <- 1
+tmpSD$X156[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11027] <- 1
+tmpSD$X157[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11228] <- 1
+tmpSD$X158[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11228] <- 1
+tmpSD$X159[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11228] <- 1
+tmpSD$X160[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11228] <- 1
+tmpSD$X161[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10829] <- 1
+tmpSD$X162[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10829] <- 1
+tmpSD$X163[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10829] <- 1
+tmpSD$X164[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10829] <- 1
+tmpSD$X165[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10930] <- 1
+tmpSD$X166[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10930] <- 1
+tmpSD$X167[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10930] <- 1
+tmpSD$X168[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10930] <- 1
+tmpSD$X169[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10331] <- 1
+tmpSD$X170[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10331] <- 1
+tmpSD$X171[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10331] <- 1
+tmpSD$X172[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10331] <- 1
+tmpSD$X173[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11132] <- 1
+tmpSD$X174[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==11132] <- 1
+tmpSD$X175[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11132] <- 1
+tmpSD$X176[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==11132] <- 1
+tmpSD$X177[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10833] <- 1
+tmpSD$X178[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 1 & tmpSD$hh2==10833] <- 1
+tmpSD$X179[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10833] <- 1
+tmpSD$X180[ tmpSD$ageannee>= 15 & tmpSD$milieu== 1 & tmpSD$m5== 2 & tmpSD$hh2==10833] <- 1
+tmpSD$X181[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10101] <- 1
+tmpSD$X182[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10101] <- 1
+tmpSD$X183[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10101] <- 1
+tmpSD$X184[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10101] <- 1
+tmpSD$X185[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10702] <- 1
+tmpSD$X186[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10702] <- 1
+tmpSD$X187[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10702] <- 1
+tmpSD$X188[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10702] <- 1
+tmpSD$X189[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11103] <- 1
+tmpSD$X190[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11103] <- 1
+tmpSD$X191[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11103] <- 1
+tmpSD$X192[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11103] <- 1
+tmpSD$X193[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11204] <- 1
+tmpSD$X194[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11204] <- 1
+tmpSD$X195[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11204] <- 1
+tmpSD$X196[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11204] <- 1
+tmpSD$X197[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10405] <- 1
+tmpSD$X198[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10405] <- 1
+tmpSD$X199[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10405] <- 1
+tmpSD$X200[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10405] <- 1
+tmpSD$X201[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11006] <- 1
+tmpSD$X202[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11006] <- 1
+tmpSD$X203[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11006] <- 1
+tmpSD$X204[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11006] <- 1
+tmpSD$X205[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10207] <- 1
+tmpSD$X206[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10207] <- 1
+tmpSD$X207[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10207] <- 1
+tmpSD$X208[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10207] <- 1
+tmpSD$X209[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11408] <- 1
+tmpSD$X210[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11408] <- 1
+tmpSD$X211[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11408] <- 1
+tmpSD$X212[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11408] <- 1
+tmpSD$X213[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10309] <- 1
+tmpSD$X214[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10309] <- 1
+tmpSD$X215[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10309] <- 1
+tmpSD$X216[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10309] <- 1
+tmpSD$X217[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10510] <- 1
+tmpSD$X218[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10510] <- 1
+tmpSD$X219[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10510] <- 1
+tmpSD$X220[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10510] <- 1
+tmpSD$X221[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10811] <- 1
+tmpSD$X222[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10811] <- 1
+tmpSD$X223[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10811] <- 1
+tmpSD$X224[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10811] <- 1
+tmpSD$X225[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10712] <- 1
+tmpSD$X226[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10712] <- 1
+tmpSD$X227[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10712] <- 1
+tmpSD$X228[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10712] <- 1
+tmpSD$X229[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10413] <- 1
+tmpSD$X230[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10413] <- 1
+tmpSD$X231[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10413] <- 1
+tmpSD$X232[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10413] <- 1
+tmpSD$X233[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11314] <- 1
+tmpSD$X234[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11314] <- 1
+tmpSD$X235[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11314] <- 1
+tmpSD$X236[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11314] <- 1
+tmpSD$X237[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10615] <- 1
+tmpSD$X238[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10615] <- 1
+tmpSD$X239[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10615] <- 1
+tmpSD$X240[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10615] <- 1
+tmpSD$X241[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10916] <- 1
+tmpSD$X242[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10916] <- 1
+tmpSD$X243[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10916] <- 1
+tmpSD$X244[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10916] <- 1
+tmpSD$X245[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10617] <- 1
+tmpSD$X246[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10617] <- 1
+tmpSD$X247[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10617] <- 1
+tmpSD$X248[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10617] <- 1
+tmpSD$X249[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11018] <- 1
+tmpSD$X250[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11018] <- 1
+tmpSD$X251[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11018] <- 1
+tmpSD$X252[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11018] <- 1
+tmpSD$X253[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11319] <- 1
+tmpSD$X254[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11319] <- 1
+tmpSD$X255[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11319] <- 1
+tmpSD$X256[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11319] <- 1
+tmpSD$X257[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11120] <- 1
+tmpSD$X258[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11120] <- 1
+tmpSD$X259[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11120] <- 1
+tmpSD$X260[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11120] <- 1
+tmpSD$X261[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10821] <- 1
+tmpSD$X262[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10821] <- 1
+tmpSD$X263[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10821] <- 1
+tmpSD$X264[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10821] <- 1
+tmpSD$X265[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11322] <- 1
+tmpSD$X266[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11322] <- 1
+tmpSD$X267[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11322] <- 1
+tmpSD$X268[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11322] <- 1
+tmpSD$X269[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11423] <- 1
+tmpSD$X270[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11423] <- 1
+tmpSD$X271[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11423] <- 1
+tmpSD$X272[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11423] <- 1
+tmpSD$X273[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10524] <- 1
+tmpSD$X274[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10524] <- 1
+tmpSD$X275[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10524] <- 1
+tmpSD$X276[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10524] <- 1
+tmpSD$X277[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10325] <- 1
+tmpSD$X278[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10325] <- 1
+tmpSD$X279[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10325] <- 1
+tmpSD$X280[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10325] <- 1
+tmpSD$X281[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10926] <- 1
+tmpSD$X282[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10926] <- 1
+tmpSD$X283[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10926] <- 1
+tmpSD$X284[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10926] <- 1
+tmpSD$X285[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11027] <- 1
+tmpSD$X286[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11027] <- 1
+tmpSD$X287[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11027] <- 1
+tmpSD$X288[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11027] <- 1
+tmpSD$X289[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11228] <- 1
+tmpSD$X290[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11228] <- 1
+tmpSD$X291[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11228] <- 1
+tmpSD$X292[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11228] <- 1
+tmpSD$X293[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10829] <- 1
+tmpSD$X294[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10829] <- 1
+tmpSD$X295[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10829] <- 1
+tmpSD$X296[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10829] <- 1
+tmpSD$X297[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10930] <- 1
+tmpSD$X298[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10930] <- 1
+tmpSD$X299[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10930] <- 1
+tmpSD$X300[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10930] <- 1
+tmpSD$X301[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10331] <- 1
+tmpSD$X302[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10331] <- 1
+tmpSD$X303[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10331] <- 1
+tmpSD$X304[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10331] <- 1
+tmpSD$X305[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11132] <- 1
+tmpSD$X306[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==11132] <- 1
+tmpSD$X307[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11132] <- 1
+tmpSD$X308[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==11132] <- 1
+tmpSD$X309[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10833] <- 1
+tmpSD$X310[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 1 & tmpSD$hh2==10833] <- 1
+tmpSD$X311[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10833] <- 1
+tmpSD$X312[ tmpSD$ageannee>= 15 & tmpSD$milieu== 2 & tmpSD$m5== 2 & tmpSD$hh2==10833] <- 1
 
 
 
@@ -638,3 +638,4 @@ sum(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_EST_DES_WEIGHT[1,seq(50,57)],na.rm = TRUE)
 View(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_EST_DES_WEIGHT)
 
 View(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE)
+

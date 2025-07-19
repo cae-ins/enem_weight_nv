@@ -19,6 +19,7 @@ library(haven)
 # 2. Set Base Paths
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
+
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
 CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
@@ -216,40 +217,20 @@ subset_dataset <- final_dataset %>%
 # 11. Traitement spécifique pour les données de T2_2024 dont les fichiers excels de ZDs ne sont plus disponibles
 # --------------------------------------------------------------------------------------------------------------
 
-# Données de mise à jour pour les ZD existantes
-# (Veuillez ajouter toutes les lignes ici)
-lookup_data <- tribble(
-  ~region, ~depart, ~souspref, ~ZD,~segment, ~nb_mens_seg, ~quarter,
-  10916, 10916107, 1091610702, "6025",1, 13, "T2_2024",
-  11423, 11423014, 1142301402, "6021",1, 28, "T2_2024",
-  11228, 11228085, 1122808502, "6006",1, 51, "T2_2024",
-  11103, 11103075, 1110307501, "6012",1, 27, "T2_2024",
-  11018, 11018059, 1101805901, "0035",1, 17, "T2_2024",
-  11018, 11018059, 1101805901, "6019",1, 27, "T2_2024",
-  11027, 11027022, 1102702202, "6049",1, 30, "T2_2024",
-  10510, 10510034, 1051003403, "6006",1, 56, "T2_2024",
-  11314, 11314080, 1131408003, "6014",1, 21, "T2_2024",
-  10309, 10309037, 1030903705, "6065",1, 21, "T2_2024",
-  10617, 10617024, 1061702402, "40003",1, 16, "T2_2024"
-)
+final_dataset <- update_T2_2024(final_dataset)
+subset_dataset <- update_T2_2024(subset_dataset)
 
-# Données des ZD manquantes
-# (Veuillez ajouter toutes les lignes ici)
-missing_records_data <- tribble(
-  ~region, ~depart, ~souspref, ~ZD,~segment, ~nb_mens_seg, ~quarter,
-  11319, 11319046, 1131904604, "0023",1, 36, "T2_2024",
-  11423, 11423076, 1142307602, "6016",1, 33, "T2_2024"
-)
+# --------------------------------------------------------------------------------------------------------------
+# 12. Traitement spécifique pour les données de T4_2024 (idem)
+# --------------------------------------------------------------------------------------------------------------
 
-subset_dataset <- bind_rows(
-  subset_dataset,
-  lookup_data,
-  missing_records_data
-)
+final_dataset <- update_T4_2024(final_dataset)
+subset_dataset <- update_T4_2024(subset_dataset)
 
 # ------------------------------------------------------------------------------
-# Done
+# 13. Final save
 # ------------------------------------------------------------------------------
+
 glimpse(final_dataset)
 glimpse(subset_dataset)
 
@@ -257,4 +238,3 @@ message("Final dataset created with ", nrow(final_dataset), " records.")
 write_dta(final_dataset, output_path)
 message("Dataset segment 1 created with ", nrow(subset_dataset), " records.")
 write_dta(subset_dataset, output_path)
-

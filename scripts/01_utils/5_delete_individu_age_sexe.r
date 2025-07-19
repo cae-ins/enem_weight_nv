@@ -26,11 +26,12 @@ individu_file <- list.files(individu_path, pattern = "^individu.*\\.dta$", full.
 
 # Lire la base
 individu <- read_dta(individu_file) 
-
+dim(individu)
 # Nettoyage : suppression des lignes où ageanne ou m5 sont NA
 individu_cleaned <- individu %>%
   filter(!is.na(AgeAnnee)) %>%
-  filter(!is.na(M5))
+  filter(!is.na(M5)) %>%
+  filter(AgeAnnee != -9998)
 
 # Sauvegarde (en écrasant l’ancienne base)
 write_dta(individu_cleaned, individu_file) 

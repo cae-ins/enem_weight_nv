@@ -109,8 +109,7 @@ sample_data$ONES      <- 1
 
 
 ###  show the entire dataset
-head(sample_data)
-glimpse(sample_data)
+View(sample_data)
 
 ### in case we need to rename some variables whose name was not correctly read from the csv
 #names(sample_data)[names(sample_data) == "@UR_RU"] <- "UR_RU"
@@ -267,10 +266,10 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.1, 5),
+                           bounds = c(0.02, 3.2),
                    aggregate.stage = NULL, 
-                             maxit = 50,
-                           epsilon = 1e-06, 
+                             maxit = 100,
+                           epsilon = 1e-10, 
                              force = TRUE)
 
 
@@ -284,6 +283,7 @@ ecal.status
 ###   Check that the sum of the final weights is equal to the population benchmarks  
 
 sum(weights(calib_lfs))
+
 
 summary(weights(calib_lfs))
 
@@ -309,7 +309,7 @@ sample_data$FINAL_WEIGHT <- weights(calib_lfs)
 
 ###   Calculate the final correction factors
 
-sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$poids_menage
+sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$d_weights
 
 
 View(sample_data)
@@ -349,7 +349,7 @@ save(LFS_CALIBRATION_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_FINAL_WEIGHTS_RDAT
 ### SUMMARY OF DESIGN WEIGHTS
 
 LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS <-
-  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$poids_menage) , 
+  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$d_weights) , 
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 

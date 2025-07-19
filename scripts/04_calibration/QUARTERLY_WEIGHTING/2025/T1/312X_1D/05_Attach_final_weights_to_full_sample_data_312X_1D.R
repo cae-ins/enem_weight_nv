@@ -107,8 +107,6 @@ str(LFS_ILO_CAL)
 
 save(LFS_ILO_CAL, file = FILE_LFS_ILO_CAL_RDATA )
 
-library(haven)
-write_dta(LFS_ILO_CAL, path = "FILE_LFS_ILO_CAL_RDATA.dta")
 
 ######################################################################################################
 ###  
