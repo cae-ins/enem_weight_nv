@@ -116,7 +116,7 @@ View(sample_data)
 #head(sample_data)
 
 ###  Check the total of the estimates using the design weights (before final calibration) 
-sum(sample_data$poids_menage)
+sum(sample_data$d_weights)
 
 
 ######################################################################################################
@@ -152,7 +152,7 @@ sum(rowSums( known_totals[, seq(2,49) ] ))
 design_lfs  <- e.svydesign(data = sample_data, 
                             ids = ~ PSUKEY + HHKEY, 
                          strata = ~ STRATAKEY, 
-                        weights = ~ poids_menage, 
+                        weights = ~ d_weights, 
                             fpc = NULL, 
                    self.rep.str = NULL, 
                      check.data = TRUE)
@@ -309,7 +309,7 @@ sample_data$FINAL_WEIGHT <- weights(calib_lfs)
 
 ###   Calculate the final correction factors
 
-sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$poids_menage
+sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$d_weights
 
 
 View(sample_data)
@@ -349,7 +349,7 @@ save(LFS_CALIBRATION_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_FINAL_WEIGHTS_RDAT
 ### SUMMARY OF DESIGN WEIGHTS
 
 LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS <-
-  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$poids_menage) , 
+  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$d_weights) , 
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 

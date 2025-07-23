@@ -266,7 +266,7 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.345, 4.5),
+                           bounds = c(-2.058, 7.537),
                    aggregate.stage = NULL, 
                              maxit = 100,
                            epsilon = 1e-10, 
@@ -386,4 +386,5 @@ View(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS)
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
+
 

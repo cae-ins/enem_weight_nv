@@ -112,19 +112,49 @@ library("haven")          # to read and write SPSS and STATA datasets
 ##############################################################################################################
 ##############################################################################################################
 
-###   choose the year
+parse_target_quarter <- function(target_quarter) {
+  
+  # Check if input is valid
+  if (is.null(target_quarter) || !is.character(target_quarter)) {
+    stop("target_quarter must be a character string")
+  }
+  
+  # Check format (should be like "T1_2025", "T2_2024", etc.)
+  if (!grepl("^T[1-4]_[0-9]{4}$", target_quarter)) {
+    stop("target_quarter format should be 'TX_YYYY' where X is 1-4 and YYYY is a 4-digit year")
+  }
+  
+  # Extract quarter number and year
+  parts <- strsplit(target_quarter, "_")[[1]]
+  quarter_part <- parts[1]  # "T1", "T2", etc.
+  year_part <- parts[2]     # "2025", "2024", etc.
+  
+  # Extract just the number from quarter part
+  quarter <- as.numeric(gsub("T", "", quarter_part))
+  year <- as.numeric(year_part)
+  
+  # Return as a named list
+  result <- list(
+    quarter = quarter,
+    year = year,
+    original = target_quarter
+  )
+  
+  # Print results
+  cat("Parsed target quarter:\n")
+  cat("Quarter:", quarter, "\n")
+  cat("Year:", year, "\n")
+  
+  return(result)
+}
+source("config/1_config.r")
+source("scripts/02_base_weights/3_indivs_weights.R")
+# Parse the target quarter
+parsed <- parse_target_quarter(TARGET_QUARTER)
 
-year=2024
-
-year 
-
-###   choose the quarter
-
-quarter=2
-
-quarter 
-
-
+# Extract individual components
+quarter <- parsed$quarter  
+year <- parsed$year        
 
 ###   For regenesees: number of constraints X used in the calibration with Regenesees
 
@@ -160,9 +190,6 @@ pathx
 ###
 ###  Lets set the main root/directory on our computer o server (where we have the LFS data and programs )
 
-root_lfs <- "D:/DOCUMENTS/CAE/Calibration/Applications ENEM"
-root_lfs
-
 
 ##############################################################################################################
 ###
@@ -170,7 +197,7 @@ root_lfs
 
                      
 
-dir_data_DV <- paste0( root_lfs , "/DATA/DERIVED_VARIABLES/", year, "/T", quarter , "/" )
+dir_data_DV <- paste0(BASE_DIR , "/data/05_DERIVED_VARIABLES/", year, "/T", quarter , "/" )
 dir_data_DV
 
 
@@ -178,8 +205,24 @@ dir_data_DV
 ##############################################################################################################
 ###
 ###  Let's parameterize the name and path of the csv file with the full sample data "_DER"
+get_weights_path <- function(target_quarter, use_sr = FALSE) {
+  # Choisir le préfixe selon SR ou pas
+  prefix <- if (use_sr) "SR_individu_" else "individu_"
+  
+  file.path(BASE_DIR,
+    "data", "04_weights", target_quarter, "base_weights",
+    paste0(prefix, target_quarter, ".dta")
+  )
+}
 
-FILE_LFS_ILO_DER_DTA  <- paste0(dir_data_DV,"base_finale_ind_menage_wcal.dta")
+# Exemples :
+get_weights_path("T1_2025")          
+# → data/04_weights/T1_2025/base_weights/individu_T1_2025.dta
+
+get_weights_path("T1_2025", use_sr = TRUE) 
+# → data/04_weights/T1_2025/base_weights/SR_individu_T1_2025.dta
+
+FILE_LFS_ILO_DER_DTA  <- get_weights_path(TARGET_QUARTER, use_sr = FALSE) 
 FILE_LFS_ILO_DER_DTA
 
 ###  Let's parameterize the name and path of the RData file with the full sample data 
@@ -192,15 +235,12 @@ FILE_LFS_ILO_DER_RDATA
 ###
 ###  Let's parameterize the path of the directory/folder from which we want to read the population figures 
 
-dir_data_PE <- paste0( root_lfs , "/DATA/POPULATION_ESTIMATES/", year, "/T", quarter , "/" )
+dir_data_PE <- paste0( BASE_DIR , "/data/06_POPULATION_ESTIMATES/", year, "/T", quarter , "/" )
 dir_data_PE
 
 
 ##############################################################################################################
 ###
-###  Let's parameterize the name and path of the csv file with the population figures by regions
-### "W:/2023_ILO_ITC_WEIGHTING/LFS_GSBPM_SW/DATA/560_POPULATION_ESTIMATES/2021/Quarter1/POP_LFS_BY_REGION_SEX_2AGEGR_2021_Q1.csv"
-
 
 FILE_POP_LFS_BY_REGION_SEX_2AGEGR_CSV  <- paste0(dir_data_PE,"POP_LFS_BY_REGION_SEX_2AGEGR_",year,"_T",quarter,".csv")
 FILE_POP_LFS_BY_REGION_SEX_2AGEGR_CSV
@@ -219,31 +259,9 @@ FILE_POP_LFS_BY_REGION_SEX_2AGEGR_RDATA
 
 ##############################################################################################################
 ###
-###  Let's parameterize the name and path of the csv file with the population figures by districts
-###  "W:/2023_ILO_ITC_WEIGHTING/LFS_GSBPM_SW/DATA/560_POPULATION_ESTIMATES/2021/Quarter1/POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_2021_Q1vert.csv"
-
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert_CSV  <- paste0(dir_data_PE,"POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_",year,"_T",quarter,"vert.csv")
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert_CSV
-# 
-# 
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert_XLSX  <- paste0(dir_data_PE,"POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_",year,"_T",quarter,"vert.xlsx")
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert_XLSX
-# 
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_DTA  <- paste0(dir_data_PE,"POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_",year,"_T",quarter,".dta")
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_DTA
-# 
-# ###  Let's parameterize the name and path of the RData file with the population figures 
-# 
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert_RDATA  <- paste0(dir_data_PE,"POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGR_",year,"_T",quarter,"vert.RData")
-# FILE_POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert_RDATA
-
-
-
-##############################################################################################################
-###
 ###  Let's parameterize the path of the working directory where the outputs of the calibration will be stored
 
-dir_data_QW <- paste0( root_lfs , "/DATA/QUARTERLY_WEIGHTING/", year, "/T", quarter , "/" , pathx,"/")
+dir_data_QW <- paste0( BASE_DIR , "/data/07_QUARTERLY_WEIGHTING/", year, "/T", quarter , "/" , pathx,"/")
 dir_data_QW
 
 
@@ -301,15 +319,14 @@ FILE_LFS_KNOWN_TOTALS_XLSX
 ##############################################################################################################
 ###
 ###  Let's parameterize the path of the program folder
-### "W\ILO_LFS_GSBPM\PROG\565_QUARTERLY_WEIGHTING\2021\Quarter1\312X_1D_ALLWR"
 
-dir_prog_QW <- paste0( root_lfs , "/PROG/QUARTERLY_WEIGHTING/", pathx,"/")
+dir_prog_QW <- paste0( BASE_DIR , "/scripts/04_calibration/QUARTERLY_WEIGHTING/", pathx,"/")
 dir_prog_QW
 
 
 ###  Let's parameterize the name and path of the script file that constains the additional functions for ReGenesees
 
-R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS <- paste0( root_lfs , "/PROG/QUARTERLY_WEIGHTING/Other_R_functions_for_Regenesees/Functions_to_Create _X_vector_and_X_Summary_Table.R")
+R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS <- paste0( BASE_DIR , "/scripts/04_calibration/QUARTERLY_WEIGHTING/Other_R_functions_for_Regenesees/Functions_to_Create _X_vector_and_X_Summary_Table.R")
 R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS 
 
 
@@ -378,7 +395,8 @@ FILE_LFS_CALIBRATION_IMAGE_RDATA
 FILE_LFS_ILO_CAL_RDATA  <- paste0(dir_data_QW,"LFS_ILO_",year,"_T",quarter,"_CAL.RData")
 FILE_LFS_ILO_CAL_RDATA
 
-
+FILE_LFS_ILO_CAL_DTA  <- paste0(dir_data_QW,"LFS_ILO_",year,"_T",quarter,"_CAL.dta")
+FILE_LFS_ILO_CAL_DTA
 
 
 ###  Let's parameterize the name and path of the EXCEL file containing the empty template for table 1 already formatted 
@@ -399,7 +417,7 @@ LFS_STD_ERR_EMP_LEVELS_CSV
 
 ###  Let's parameterize the name and path of the EXCEL file containing the empty template for the table of CVs 
 
-LFS_STD_ERR_EMP_LEVEL_TEMPLATE3_XLSX  <- paste0( root_lfs , "/PROG/STANDARD_ERRORS/Templates/Template_CVS_EMP_Levels_ver3.xlsx")
+LFS_STD_ERR_EMP_LEVEL_TEMPLATE3_XLSX  <- paste0( BASE_DIR , "/scripts/04_calibration/STANDARD_ERRORS/Templates/Template_CVS_EMP_Levels_ver3.xlsx")
 LFS_STD_ERR_EMP_LEVEL_TEMPLATE3_XLSX
 
 
@@ -441,10 +459,8 @@ dir_prog_QW
 #  rstudioapi::navigateToFile(paste0( dir_prog_565QW , "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,".R"  ))
 
 ### or run the script below altogether without opening it
-
-#  source( paste0( dir_prog_565QW , "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,".R"  ) )
-
-
+PROG_DIR = paste0( BASE_DIR,"/scripts/04_calibration/QUARTERLY_WEIGHTING" ,"/",year,"/T",quarter,"/",pathx,"/")
+source( paste0( PROG_DIR, "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,".R"  ) )
 
 #######   UPDATE EXCEL SCHEME ON SET OF CONSTRAINTS  #########################################################
 ###
@@ -452,9 +468,9 @@ dir_prog_QW
 ###
 ##############################################################################################################
 
-#  xls = xl.get.excel()
-#  xl.workbook.close(xl.workbook.name = NULL)
-#  xl.workbook.open( paste0( dir_prog_565QW , "01_Set_of_constraints_", setx,".xlsx")   )
+xls = xl.get.excel()
+xl.workbook.close(xl.workbook.name = NULL)
+xl.workbook.open( paste0( PROG_DIR , "01_Set_of_constraints_", setx,".xlsx")   )
 
 
 
@@ -470,7 +486,7 @@ dir_prog_QW
 
 ### or run the script below altogether without opening it 
 
-#  source( paste0( dir_prog_565QW , "02_Prepare_input_sample_data_for_regenesees_", pathx,".R") )
+source( paste0( PROG_DIR , "02_Prepare_input_sample_data_for_regenesees_", pathx,".R") )
 
 
 
@@ -486,7 +502,7 @@ dir_prog_QW
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "03_Prepare_input_pop_figures_for_regenesees_", pathx,".R") )
 
 ### or run the script below altogether without opening it 
-#  source( paste0( dir_prog_565QW , "03_Prepare_input_pop_figures_for_regenesees_", pathx,".R") )
+source( paste0( PROG_DIR , "03_Prepare_input_pop_figures_for_regenesees_", pathx,".R") )
 
 
 
@@ -502,7 +518,7 @@ dir_prog_QW
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "04c_Run_Quarterly_Calibration_with_Regenesees_", pathx,".R") )
 
 ### or run the script below altogether without opening it 
-#  source( paste0( dir_prog_565QW , "04c_Run_Quarterly_Calibration_with_Regenesees_", pathx,".R") )
+source( paste0( PROG_DIR , "04c_Run_Quarterly_Calibration_with_Regenesees_", pathx,".R") )
 
 
 
@@ -518,7 +534,7 @@ dir_prog_QW
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "05_Attach_final_weights_to_full_sample_data_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-#  source( paste0( dir_prog_565QW , "05_Attach_final_weights_to_full_sample_data_", pathx,".R") )
+source( paste0( PROG_DIR , "05_Attach_final_weights_to_full_sample_data_", pathx,".R") )
 
 
 
@@ -533,7 +549,7 @@ dir_prog_QW
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "06_Create_Table1_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-#  source( paste0( dir_prog_565QW , "06_Create_Table1_", pathx,".R"  ) )
+source( paste0( PROG_DIR , "06_Create_Table1_", pathx,".R"  ) )
 
 
 
@@ -547,5 +563,5 @@ dir_prog_QW
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-#  source( paste0( dir_prog_565QW , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R"  ) )
+source( paste0( PROG_DIR , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R"  ) )
 

@@ -378,7 +378,7 @@ tmp_sum_pop_fig1
 #######   CHECK THE POPULATION ESTIMATES OBTAINED WITH THE DESIGN WEIGHTS   ###########################################################################################
 
 tmp_sum_est_pop_dw <- 
-  sum(LFS_ILO_DER$poids_menage)
+  sum(LFS_ILO_DER$d_weights)
 tmp_sum_est_pop_dw
 
 #######   CHECK THE AVERAGE CORRECTION FACTOR FOR THE FINAL WIEGHTS   ###########################################################################################

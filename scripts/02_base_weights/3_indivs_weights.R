@@ -89,18 +89,18 @@ names(individu_q) <- make.names(names(individu_q), unique = TRUE)
 # Join Identifiers
 # ==============================================================================
 menage_ids <- menage_q %>%
-  select(interview_key, hh2, hh3, hh4, hh8, hh7, rgmen) %>%
+  select(interview_key, hh2, hh3, hh4, hh8) %>%
   distinct()
 
 individu_q <- individu_q %>%
-  select(-any_of(c("hh2", "hh3", "hh4", "hh8", "hh7", "rgmen"))) %>%
+  select(-any_of(c("hh2", "hh3", "hh4", "hh8"))) %>%
   left_join(menage_ids, by = "interview_key")
 
 # ==============================================================================
 # Merge Adjusted Weights
 # ==============================================================================
 join_keys <- c("hh2" = "region", "hh3" = "depart", "hh4" = "souspref",
-               "hh8" = "ZD", "hh7" = "segment")
+               "hh8" = "ZD")
 
 menage_q   <- menage_q   %>% left_join(adjusted_data, by = join_keys)
 individu_q <- individu_q %>% left_join(adjusted_data, by = join_keys)
@@ -123,4 +123,3 @@ write_dta(adjusted_data, WEIGHTS_COLUMNS_PATH)
 write_dta(menage_q, MENAGE_COLUMNS_PATH)
 write_dta(individu_q, INDIVIDU_COLUMN_PATH)
 write_dta(individu_q_SR, INDIVIDU_COLUMN_PATH_SR)
-
