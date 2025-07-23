@@ -213,22 +213,8 @@ output_path <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", 
 subset_dataset <- final_dataset %>%
   filter(segment == 1)
 
-# --------------------------------------------------------------------------------------------------------------
-# 11. Traitement spécifique pour les données de T2_2024 dont les fichiers excels de ZDs ne sont plus disponibles
-# --------------------------------------------------------------------------------------------------------------
-
-final_dataset <- update_T2_2024(final_dataset)
-subset_dataset <- update_T2_2024(subset_dataset)
-
-# --------------------------------------------------------------------------------------------------------------
-# 12. Traitement spécifique pour les données de T4_2024 (idem)
-# --------------------------------------------------------------------------------------------------------------
-
-final_dataset <- update_T4_2024(final_dataset)
-subset_dataset <- update_T4_2024(subset_dataset)
-
 # ------------------------------------------------------------------------------
-# 13. Final save
+# 11. Final save
 # ------------------------------------------------------------------------------
 
 glimpse(final_dataset)

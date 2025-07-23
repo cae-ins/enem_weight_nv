@@ -99,10 +99,10 @@ individu_q <- normalize_column_names(individu_q)
 # Prepare Household-Level Counts (nb_mens_enq)
 # ------------------------------------------------------------------------------
 mens_enq_counts <- menage_q %>%
-  group_by(hh2, hh3, hh4, hh8, hh7) %>%
+  group_by(hh2, hh3, hh4, hh8) %>%
   summarise(nb_mens_enq = n(), .groups = "drop") %>%
-  rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
-
+  rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8)
+print(mens_enq_counts,n=475)
 # ------------------------------------------------------------------------------
 # Prepare Individual-Level Counts
 # ------------------------------------------------------------------------------
@@ -126,13 +126,14 @@ indiv_enq_counts <- indiv_with_ids %>%
     .groups = "drop"
   ) %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
+print(indiv_enq_counts,n=475)
 
 
 # ------------------------------------------------------------------------------
 # Load Cleaned Denombrement for Segment-Level Counts (Current + Resurveyed Quarters)
 # ------------------------------------------------------------------------------
 
-source("scripts/02_base_weights/construct_denombrement.r")
+source(file.path(BASE_DIR,"scripts/02_base_weights/4_construct_denombrement.r"))
 
 # ------------------------------------------------------------------------------
 # Merge with Region-Level Data
@@ -146,6 +147,7 @@ nb_men_indiv_ZD <- nb_men_indiv_ZD %>%
 
 final_data <- seg_survey %>%
   left_join(nb_men_indiv_ZD, by = c("region", "depart", "souspref", "ZD"))
+print(final_data,n=475)
 
 # ------------------------------------------------------------------------------
 # Functions and Add quarter phase
@@ -201,10 +203,11 @@ final_data <- final_data %>%
 # Merge in nb_mens_enq, nb_indivs_enq, nb_indiv_enq_elig
 # ------------------------------------------------------------------------------
 combined_counts <- mens_enq_counts %>%
-  full_join(indiv_enq_counts, by = c("region", "depart", "souspref", "ZD", "segment"))
+  full_join(indiv_enq_counts, by = c("region", "depart", "souspref", "ZD"))
 
 final_data <- final_data %>%
-  left_join(combined_counts, by = c("region", "depart", "souspref", "ZD", "segment"))
+  left_join(combined_counts, by = c("region", "depart", "souspref", "ZD")) %>%
+  mutate(segment = 1)
 
 final_data <- final_data %>%
   select(
@@ -395,4 +398,3 @@ write_dta(inconsistent_rows, inconsistent_file)
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_data)
-
