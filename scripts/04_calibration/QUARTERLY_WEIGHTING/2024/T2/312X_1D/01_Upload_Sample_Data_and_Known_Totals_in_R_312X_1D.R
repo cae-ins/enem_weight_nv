@@ -78,7 +78,7 @@ length(unique(LFS_ILO_DER$INDKEY))
 
 ### We can also check how many households we have interviewed by counting the unique households ids (HHKEY)
 
-LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview_key))
+LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview__key))
 
 length(unique(LFS_ILO_DER$HHKEY))
 

@@ -222,7 +222,7 @@ get_weights_path("T1_2025")
 get_weights_path("T1_2025", use_sr = TRUE) 
 # → data/04_weights/T1_2025/base_weights/SR_individu_T1_2025.dta
 
-FILE_LFS_ILO_DER_DTA  <- get_weights_path(TARGET_QUARTER, use_sr = FALSE) 
+FILE_LFS_ILO_DER_DTA  <- get_weights_path(TARGET_QUARTER, use_sr = TRUE) 
 FILE_LFS_ILO_DER_DTA
 
 ###  Let's parameterize the name and path of the RData file with the full sample data 

@@ -215,13 +215,6 @@ get_weights_path <- function(target_quarter, use_sr = FALSE) {
   )
 }
 
-# Exemples :
-get_weights_path("T1_2025")          
-# → data/04_weights/T1_2025/base_weights/individu_T1_2025.dta
-
-get_weights_path("T1_2025", use_sr = TRUE) 
-# → data/04_weights/T1_2025/base_weights/SR_individu_T1_2025.dta
-
 FILE_LFS_ILO_DER_DTA  <- get_weights_path(TARGET_QUARTER, use_sr = FALSE) 
 FILE_LFS_ILO_DER_DTA
 

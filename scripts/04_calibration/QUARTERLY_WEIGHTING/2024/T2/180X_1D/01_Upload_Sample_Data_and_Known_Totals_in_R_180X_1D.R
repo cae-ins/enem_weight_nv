@@ -390,8 +390,7 @@ tmp_sum_pop_fig1 / tmp_sum_est_pop_dw
 
 View(POP_LFS_BY_REGION_SEX_2AGEGR) 
 
-
-
+# View(POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert)
 
 
 
