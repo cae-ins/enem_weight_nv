@@ -95,68 +95,68 @@ list_of_X
 
 # NATIONAL LEVEL - MALE BY URBAN LOCATION AND 12 AGE GROUP
 
-tmpSD$X1[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X2[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X3[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X4[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X5[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X6[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X7[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X8[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X9[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X10[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X11[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
-tmpSD$X12[tmpSD$ageannee>= 65                  & tmpSD$hh6==1 & tmpSD$m5==1]<- 1
+tmpSD$X1[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X2[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X3[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X4[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X5[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X6[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X7[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X8[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X9[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X10[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X11[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X12[tmpSD$ageannee>= 65                  & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
 
 
 # NATIONAL LEVEL - MALE BY RURAL LOCATION AND 12 AGE GROUP
 
-tmpSD$X13[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X14[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X15[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X16[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X17[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X18[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X19[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X20[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X21[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X22[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X23[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
-tmpSD$X24[tmpSD$ageannee>= 65                  & tmpSD$hh6==2 & tmpSD$m5==1]<- 1
+tmpSD$X13[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X14[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X15[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X16[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X17[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X18[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X19[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X20[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X21[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X22[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X23[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+tmpSD$X24[tmpSD$ageannee>= 65                  & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
 
 
 
 # NATIONAL LEVEL - FEMALE BY URBAN LOCATION AND 12 AGE GROUP
 
-tmpSD$X25[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X26[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X27[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X28[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X29[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X30[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X31[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X32[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X33[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X34[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X35[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
-tmpSD$X36[tmpSD$ageannee>= 65                  & tmpSD$hh6==1 & tmpSD$m5==2]<- 1
+tmpSD$X25[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X26[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X27[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X28[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X29[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X30[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X31[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X32[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X33[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X34[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X35[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+tmpSD$X36[tmpSD$ageannee>= 65                  & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
 
 
 # NATIONAL LEVEL - FEMALE BY RURAL LOCATION AND 12 AGE GROUP
 
 
-tmpSD$X37[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X38[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X39[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X40[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X41[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X42[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X43[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X44[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X45[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X46[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X47[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
-tmpSD$X48[tmpSD$ageannee>= 65                  & tmpSD$hh6==2 & tmpSD$m5==2]<- 1
+tmpSD$X37[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X38[ tmpSD$ageannee>= 15 & tmpSD$ageannee <=19 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X39[ tmpSD$ageannee>= 20 & tmpSD$ageannee <=24 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X40[ tmpSD$ageannee>= 25 & tmpSD$ageannee <=29 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X41[ tmpSD$ageannee>= 30 & tmpSD$ageannee <=34 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X42[ tmpSD$ageannee>= 35 & tmpSD$ageannee <=39 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X43[ tmpSD$ageannee>= 40 & tmpSD$ageannee <=44 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X44[ tmpSD$ageannee>= 45 & tmpSD$ageannee <=49 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X45[ tmpSD$ageannee>= 50 & tmpSD$ageannee <=54 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X46[tmpSD$ageannee>= 55 & tmpSD$ageannee <=59 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X47[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+tmpSD$X48[tmpSD$ageannee>= 65                  & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
 
 
 # REGION BY SEX BY URBAN_RURAL LOCATION AND 2 AGE GROUP
@@ -346,7 +346,7 @@ tmpSD$DOMAIN <- as.character(1)
 ### We can create the R dataframe with the sample data 
 ### keeping only the variables needed for weighting and to calculate Precision
 
-LFS_SAMPLE_DATA <- tmpSD[,c("hh2", "hh6", "DOMAIN", "STRATAKEY", "PSUKEY", "HHKEY", "INDKEY", 
+LFS_SAMPLE_DATA <- tmpSD[,c("hh2", "milieu", "DOMAIN", "STRATAKEY", "PSUKEY", "HHKEY", "INDKEY", 
                             "m5", list_of_X, "d_weights")]
 
 head( LFS_SAMPLE_DATA)
@@ -367,7 +367,7 @@ ls()
 
 ### If we have set the working directory for the outputs we can use 
 
-save(LFS_SAMPLE_DATA,file=FILE_LFS_SAMPLE_DATA_RDATA)
+save( LFS_SAMPLE_DATA, file = FILE_LFS_SAMPLE_DATA_RDATA )
 
 
 
@@ -382,7 +382,7 @@ save(LFS_SAMPLE_DATA,file=FILE_LFS_SAMPLE_DATA_RDATA)
 ### and the magritte %>% pipe operators (see https://magrittr.tidyverse.org/reference/pipe.html)
 
 LFS_SAMPLE_DATA  %>%
-  tab_cols(m5, hh6, total()) %>%
+  tab_cols(m5, milieu, total()) %>%
   tab_rows(DOMAIN, total()) %>%
   tab_weight(d_weights) %>%
   tab_stat_sum %>%
@@ -506,5 +506,4 @@ sum(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_EST_DES_WEIGHT[1,seq(50,57)],na.rm = TRUE)
 View(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_EST_DES_WEIGHT)
 
 View(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE)
-
 

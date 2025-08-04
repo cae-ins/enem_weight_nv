@@ -144,7 +144,7 @@ str(LFS_ILO_CAL)
 
 LFS_ILO_CAL %>%
   # tab_cols(ilo_lfs , total()) %>%
-  tab_rows(hh2, total()) %>%
+  tab_rows(HH2, total()) %>%
   tab_weight(d_weights) %>%
   tab_stat_sum %>%
   tab_pivot()
@@ -154,7 +154,7 @@ LFS_ILO_CAL %>%
 
 LFS_ILO_CAL %>%
   # tab_cols(ilo_lfs , total()) %>%
-  tab_rows(hh2, total()) %>%
+  tab_rows(HH2, total()) %>%
   tab_weight(FINAL_WEIGHT) %>%
   tab_stat_sum %>%
   tab_pivot()
