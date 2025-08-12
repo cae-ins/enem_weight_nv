@@ -147,7 +147,7 @@ nb_men_indiv_ZD <- nb_men_indiv_ZD %>%
 
 final_data <- seg_survey %>%
   left_join(nb_men_indiv_ZD, by = c("region", "depart", "souspref", "ZD"))
-print(final_data,n=475)
+print(final_data,n=710)
 
 # ------------------------------------------------------------------------------
 # Functions and Add quarter phase
