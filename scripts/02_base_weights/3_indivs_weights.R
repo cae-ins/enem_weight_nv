@@ -32,35 +32,7 @@ weights_data <- read_dta(WEIGHTS_COLUMNS_PATH)
 # ==============================================================================
 # Function: Adjust for Individual Non-Response
 # ==============================================================================
-adjust_non_response_IND <- function(data) {
-  
-  required_cols <- c("nb_indivs_enq_pot", "nb_indivs_enq_elig", 
-                     "adjusted_weight_HH", "adjusted_weight_HH_WR",
-                     "margin_factor_HH", "margin_factor_HH_WR")
-  
-    if (!all(required_cols %in% names(data))) {
-    missing_cols <- required_cols[!required_cols %in% names(data)]
-    stop(paste("Missing required columns for adjustment:", paste(missing_cols, collapse = ", ")))
-  }
-  
-  data %>%
-    mutate(
-      adjustment_factor_IND = case_when(
-        is.na(nb_indivs_enq_elig) | nb_indivs_enq_elig == 0 ~ NA_real_,
-        TRUE ~ nb_indivs_enq_pot / nb_indivs_enq_elig
-      ),
-      adjusted_weight_IND    = adjusted_weight_HH * margin_factor_HH    * adjustment_factor_IND,
-      adjusted_weight_IND_WR = adjusted_weight_HH_WR * margin_factor_HH_WR * adjustment_factor_IND
-    ) %>%
-    set_variable_labels(
-      adjustment_factor_IND  = "Facteur d'ajustement des non-réponses (individus)",
-      adjusted_weight_IND    = "Poids ajusté des non-réponses (individus)",
-      adjusted_weight_IND_WR = "Poids ajusté des non-réponses (individus) [Trimestre en cours]"
-    )
-}
-
-adjusted_data <- adjust_non_response_IND(weights_data)
-
+#Nothing to do
 # ==============================================================================
 # Load Menage and Individu Datasets
 # ==============================================================================
@@ -102,20 +74,74 @@ individu_q <- individu_q %>%
 join_keys <- c("hh2" = "region", "hh3" = "depart", "hh4" = "souspref",
                "hh8" = "ZD")
 
-menage_q   <- menage_q   %>% left_join(adjusted_data, by = join_keys)
-individu_q <- individu_q %>% left_join(adjusted_data, by = join_keys)
+menage_q   <- menage_q   %>% left_join(weights_data, by = join_keys)
+individu_q <- individu_q %>% left_join(weights_data, by = join_keys)
 
 # Remove dots from column names
 clean_names <- function(df) {
   names(df) <- gsub("\\.", "_", names(df))
   df
 }
+
+# ------------------------------------------------------------------
+# Fonctions utilitaires et traitement conditionnel selon le trimestre
+# ------------------------------------------------------------------
+# Fonction utilitaire pour comparer deux trimestres
+# quarter_after <- function(q1, q2) {
+#   # q1 et q2 au format "Tn_YYYY"
+#   to_num <- function(q) {
+#     parts <- strsplit(q, "_")[[1]]
+#     quarter <- as.integer(sub("T", "", parts[1]))
+#     year <- as.integer(parts[2])
+#     return(year * 10 + quarter)  # ex: 2024T2 -> 20242
+#   }
+#   to_num(q1) > to_num(q2)
+# }
+# 
+# # Si TARGET_QUARTER > T2_2024 → on fait la fusion
+# if (quarter_after(TARGET_QUARTER, "T2_2024")) {
+#   individu_q <- individu_q %>%
+#     left_join(
+#       menage_q %>%
+#         select(interview_key,
+#                v1modintr,
+#                v1interviewkey,
+#                v1interviewkey_next_trim,
+#                v1interviewkey1er),
+#       by = "interview_key"
+#     )
+# }
+# 
+# # Fonction utilitaire pour détecter NA, "", ou "##N/A##"
+# is_empty_or_na <- function(x) {
+#   is.na(x) | trimws(x) == ""
+# }
+# 
+# if (TARGET_QUARTER == "T2_2024") {
+#   # Cas T2_2024 : pas de version v1
+#   individu_q <- individu_q %>%
+#     mutate(
+#       id_gen = paste(interview_key, membres_id, sep = "_")
+#     )
+# } else {
+#   # Autres trimestres : on remplace valeur manquante par la version originale
+#   individu_q <- individu_q %>%
+#     mutate(
+#       id_gen = paste(
+#         ifelse(is_empty_or_na(v1interviewkey), interview_key, v1interviewkey),
+#         ifelse(is_empty_or_na(membre_id_v1), membres_id, membre_id_v1),
+#         sep = "_"
+#       )
+#     )
+# }
+
 menage_q   <- clean_names(menage_q)
 individu_q <- clean_names(individu_q)
-individu_q$d_weights <- individu_q$adjusted_weight_IND 
+
+individu_q$d_weights <- individu_q$corrected_weight_HH 
 individu_q_SR <- individu_q %>%
-  filter(!is.na(adjusted_weight_IND_WR))
-individu_q_SR$d_weights  <- individu_q_SR$adjusted_weight_IND_WR 
+  filter(!is.na(corrected_weight_HH_WR))
+individu_q_SR$d_weights  <- individu_q_SR$corrected_weight_HH_WR 
 # ==============================================================================
 # Save Updated Datasets
 # ==============================================================================

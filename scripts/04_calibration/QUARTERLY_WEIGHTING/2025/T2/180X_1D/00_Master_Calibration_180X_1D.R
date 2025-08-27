@@ -385,7 +385,19 @@ FILE_LFS_ILO_CAL_RDATA
 FILE_LFS_ILO_CAL_DTA  <- paste0(dir_data_QW,"LFS_ILO_",year,"_T",quarter,"_CAL.dta")
 FILE_LFS_ILO_CAL_DTA
 
+# Version plus flexible avec option SR
+get_export_path <- function(target_quarter, quarter, year, use_sr = FALSE) {
+  prefix <- if (use_sr) "SR_individu" else "individu"
+  
+  file.path(BASE_DIR, 
+    "data", "04_weights", target_quarter, "calibrated_weights",
+    paste0(prefix, "_T", quarter, "_", year, "_CAL.dta")
+  )
+}
 
+# Utilisation
+FILE_LFS_ILO_CAL_DTA_EXPORT <- get_export_path(TARGET_QUARTER, quarter, year, use_sr = FALSE)
+FILE_LFS_ILO_CAL_DTA_EXPORT
 ###  Let's parameterize the name and path of the EXCEL file containing the empty template for table 1 already formatted 
 
 FILE_TEMPLATE_TABLE_1_XLSX <- paste0(dir_prog_QW,"Template_table_1.xlsx")

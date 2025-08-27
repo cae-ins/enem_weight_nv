@@ -104,17 +104,17 @@ for (i in seq_len(nrow(new_quarters))) {
   df <- read_dta(file_path) %>%
     clean_names() %>%
     mutate(
-      date1 = suppressWarnings(as_datetime(date1)),
+      date1 = suppressWarnings(as_datetime(Date1)),
       quarter_label = quarter_label,
       quarter_index = quarter_index,
-      region = hh2,
-      depart = hh3,
-      souspref = hh4,
-      zd = hh8,
-      segment = hh7
+      region = HH2,
+      depart = HH3,
+      souspref = HH4,
+      zd = HH8,
+      segment = HH7
     )
   
-  required_vars <- c("interview_key", "v1interviewkey", "date1", "quarter_label","region", "depart", "souspref", "zd", "segment")
+  required_vars <- c("interview_key", "V1interviewkey", "Date1", "quarter_label","region", "depart", "souspref", "zd", "segment")
   available_vars <- intersect(required_vars, names(df))
   
   df <- df[, available_vars, drop = FALSE]

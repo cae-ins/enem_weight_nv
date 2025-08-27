@@ -98,10 +98,19 @@ individu_q <- normalize_column_names(individu_q)
 # ------------------------------------------------------------------------------
 # Prepare Household-Level Counts (nb_mens_enq)
 # ------------------------------------------------------------------------------
-mens_enq_counts <- menage_q %>%
-  group_by(hh2, hh3, hh4, hh8) %>%
-  summarise(nb_mens_enq = n(), .groups = "drop") %>%
+# Donne des noms uniques aux colonnes tout en conservant toutes les versions
+menage_q <- menage_q %>% 
+  dplyr::rename_with(make.unique, everything())
+
+# Vérifie que les colonnes sont uniques maintenant
+names(menage_q)
+
+# Ensuite ton calcul passe sans erreur
+mens_enq_counts <- menage_q %>% 
+  group_by(hh2, hh3, hh4, hh8) %>% 
+  summarise(nb_mens_enq = n(), .groups = "drop") %>% 
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8)
+
 print(mens_enq_counts,n=475)
 # ------------------------------------------------------------------------------
 # Prepare Individual-Level Counts

@@ -35,11 +35,6 @@
 ### 
 ######################################################################################################
 
-getwd()
-setwd(dir_data_QW)
-getwd()
-
-
 ######################################################################################################
 ###  
 ###   STEP 5.2 
@@ -118,6 +113,7 @@ dim(LFS_ILO_CAL_sub)
 # Export en .dta sous le nom spécifié
 
 write_dta(LFS_ILO_CAL_sub, path = FILE_LFS_ILO_CAL_DTA)
+write_dta(LFS_ILO_CAL, path = FILE_LFS_ILO_CAL_DTA_EXPORT)
 
 ######################################################################################################
 ###  
@@ -201,4 +197,6 @@ LFS_ILO_CAL %>%
 #   tab_weight(FINAL_MONTHLY_WEIGHT) %>%
 #   tab_stat_sum %>%
 #   tab_pivot()
+
+
 
