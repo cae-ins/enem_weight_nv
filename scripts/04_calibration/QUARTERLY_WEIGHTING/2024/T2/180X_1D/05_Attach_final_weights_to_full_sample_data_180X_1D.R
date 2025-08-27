@@ -113,6 +113,7 @@ dim(LFS_ILO_CAL_sub)
 # Export en .dta sous le nom spécifié
 
 write_dta(LFS_ILO_CAL_sub, path = FILE_LFS_ILO_CAL_DTA)
+write_dta(LFS_ILO_CAL, path = FILE_LFS_ILO_CAL_DTA_EXPORT)
 
 ######################################################################################################
 ###  

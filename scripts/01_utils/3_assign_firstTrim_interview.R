@@ -58,7 +58,7 @@ for (dir_path in quarter_dirs) {
     mutate(
       firsttriminterview = case_when(
         rgmen == 1 ~ quarter_name,
-        rgmen == 2 ~ mapping_df$quarter_label[match(v1interviewkey, mapping_df$interview_key)],
+        rgmen == 2 ~ mapping_df$quarter_label[match(V1interviewkey, mapping_df$interview_key)],
         TRUE ~ NA_character_
       )
     )

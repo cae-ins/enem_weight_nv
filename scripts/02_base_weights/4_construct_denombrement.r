@@ -123,11 +123,11 @@ traiter_denombr_quarter <- function(q) {
 seg_survey_all <- set_names(all_quarters) %>%
   map(traiter_denombr_quarter)
 
-seg_survey_all$T2_2024
+#seg_survey_all$T2_2024
 
-seg_survey_all$T2_2024 %>%
-  summarise(across(everything(), ~ mean(is.na(.))*100)) %>%
-  pivot_longer(cols = everything(), names_to = "variable", values_to = "pct_NA")
+#seg_survey_all$T2_2024 %>%
+#  summarise(across(everything(), ~ mean(is.na(.))*100)) %>%
+#  pivot_longer(cols = everything(), names_to = "variable", values_to = "pct_NA")
 
 
 # Bind all quarters’ data

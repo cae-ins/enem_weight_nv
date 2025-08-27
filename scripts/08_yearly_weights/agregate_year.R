@@ -9,7 +9,7 @@ DATA_DIR <- file.path(BASE_DIR, "data")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 
 # Types qui nécessitent une agrégation (dans calibrated_weights)
-types_to_aggregate <- c("individu", "SR_individu")
+types_to_aggregate <- c("individu")
 
 message("🚀 Agrégation des fichiers calibrés par année")
 message("📋 Types à agréger : ", paste(types_to_aggregate, collapse = ", "))
