@@ -4,8 +4,6 @@
 Ce projet consiste en une refonte du dispositif de calcule des différentes types de pondérations dans le cadre de l'Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M).
 Il est en phase de test mais est déjà fortement stable. Il est écrit entièrement en R pour tirer avantage des solutions Open Source.
 
-
-
 ## 🧭 Objectifs
 
 RUWTHS vise à :
@@ -14,8 +12,6 @@ RUWTHS vise à :
 - Standardiser le traitement des non-réponses, ajustements, calages et calibration (la calibration est réalisée à partir de **Rgenesees**)
 - Produire des fichiers de pondérations robustes, traçables et reproductibles
 - Générer automatiquement des diagnostics d'erreur et d'incohérences dans les données.
-
-
 
 ## 🎯 De manière spécifique, RUWTHS permet de : 
 
@@ -38,7 +34,6 @@ enem_weight_nv/
 │── README.md # Documentation du projet
 ```
 
-
 ## ⚙️ Méthodologie (niveau conceptuel)
 
 ### 1) Poids de base — `calc_base_weights.R`
@@ -49,13 +44,11 @@ Calcule les **poids de base** (inverse de la probabilité d’inclusion) :
 
 **Idée** : \( \pi_{hi} \) est la probabilité de sélection de l’unité *i* dans la strate (ou segment) *h*; le poids de base est l’inverse de cette probabilité.
 
-
 ### 2) Suivi & appariement — `tracking.R`
 
 - Gère le **suivi longitudinal** des ménages/individus réinterviewés entre trimestres.
 - Harmonise les identifiants et ajoute la variable `finalnumtrimestre`.
 - Produit un fichier prêt pour la pondération (maîtrise de la rotation/panel).
-
 
 ### 3) Ajustement pour non-réponse — `non_response.R`
 
@@ -68,6 +61,7 @@ Formule d’ajustement (par Région × Milieu) appliquée aux poids de base :
 
 où \(N_{rm}\) et \(R_{rm}\) sont respectivement le nombre d’unités **éligibles** et **répondantes** dans la **région** *r* et le **milieu** *m*.
 
+=======
 
 ### 4) Calibrage — `calibration.R`
 
@@ -79,6 +73,8 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 
 ![eq-calib-weight](https://latex.codecogs.com/svg.latex?w^{(2)}_{i}=w^{(1)}_{i}\cdot%20g(x_i))
 
+
+=======
 ### 5) Contrôles qualité — `quality_checks.R`
 
 - Absence de poids nuls/manquants; détection d’outliers (éventuel trimming).
@@ -86,6 +82,8 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - Comparaison distributions **pondérées vs non pondérées**.
 - Génération de diagnostics (tableaux/graphes) dans `dashboard/` et de journaux dans `logs/`.
 
+
+=======
 ## 🔄 Schéma du flux de traitement
 
 ![Flux de pondération](enem_weight_flow.png)
@@ -98,6 +96,7 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - **HTML** : tableaux de bord
 - **Stata** : scripts complémentaires (préparation/validation)
 
+=======
 ## 📊 Résultats attendus
 
 - Fichiers de poids **par trimestre** (ménages & individus).

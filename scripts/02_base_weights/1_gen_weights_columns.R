@@ -57,7 +57,7 @@ WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 
 NB_MEN_INDIV_FILE <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_indivs_ZD.dta")
-POIDS_REGIONAUX <- file.path(PROCESSED_DIR, "RP_2021", "help_poids_regionaux.dta")
+POIDS_REGIONAUX <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_reg_milieu.dta")
 QUARTERS_EXCEL <- file.path(DATA_DIR, "01_raw", "Organisation","quarter_resurvey.xlsx")
 
 # ------------------------------------------------------------------------------
@@ -191,20 +191,20 @@ get_quarter_phase <- function(date_ref) {
 final_data <- final_data %>%
   mutate(quarter_phase = get_quarter_phase(date_ref))
 
-poids_regionaux <- read_dta(POIDS_REGIONAUX) %>%
+poids_regionaux <- read_dta(POIDS_REGIONAUX)%>%
   mutate(
-    region = as.double(CodReg),
-    nb_indivs_reg = as.double(Population)
+    region = as.double(REGION)
   )
 final_data <- final_data %>%
-    left_join(poids_regionaux %>% select(region, nb_indivs_reg), by = "region", suffix = c("", "_from_reg"))
+    left_join(poids_regionaux %>% select(region, milieu, nb_men_reg), by = c("region","milieu"), suffix = c("", "_from_reg"))
+
+
 # ------------------------------------------------------------------------------
 # Fill Missing Region-Level Counts
 # ------------------------------------------------------------------------------
 final_data <- final_data %>%
-  group_by(region) %>%
   mutate(
-    nb_indivs_reg = if_else(is.na(nb_indivs_reg), first(nb_indivs_reg[!is.na(nb_indivs_reg)]), nb_indivs_reg)
+    nb_men_reg = if_else(is.na(nb_men_reg), first(nb_men_reg[!is.na(nb_men_reg)]), nb_men_reg)
   ) %>%
   ungroup()
 
@@ -224,7 +224,7 @@ final_data <- final_data %>%
     nb_indivs_enq, nb_indivs_enq_pot, nb_indivs_enq_elig, 
     nb_mens_enq, nb_indivs_seg, nb_mens_seg,
     nb_indivs_zd, nb_mens_zd,
-    nb_indivs_reg,
+    nb_men_reg,
     quarter_phase, rgmen, first_trim
   )
 
@@ -333,8 +333,8 @@ var_label(final_data$milieu)         <- "Milieu de résidence"
 var_label(final_data$date_ref)       <- "Date de référence du début"
 var_label(final_data$nb_indivs_seg)  <- "Nombre d'individus du segment"
 var_label(final_data$nb_mens_seg)    <- "Nombre de ménages du segment"
-var_label(final_data$nb_indivs_reg)  <- "Nombre d'individus de la région"
-#var_label(final_data$nb_mens_reg)    <- "Nombre de ménages de la région"
+#var_label(final_data$nb_indivs_reg)  <- "Nombre d'individus de la région"
+var_label(final_data$nb_men_reg)    <- "Nombre de ménages de la région"
 var_label(final_data$nb_indivs_zd)   <- "Nombre d'individus de la ZD"
 var_label(final_data$nb_mens_zd)     <- "Nombre de ménages de la ZD"
 var_label(final_data$quarter_phase)  <- "Nombre de trimestres enquêtés"
@@ -407,3 +407,4 @@ write_dta(inconsistent_rows, inconsistent_file)
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_data)
+

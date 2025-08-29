@@ -40,7 +40,7 @@ EXPECTED_HH_PER_SEG <- 12  # Planned number of households per segment
 # Purpose : Adjust base weights using non-response rate at segment level
 # ------------------------------------------------------------------------------
 
-adjust_non_response_HH <- function(data, EXPECTED_HH_PER_SEG = 12, group_vars = c("region", "milieu")) {
+adjust_non_response_HH <- function(data, EXPECTED_HH_PER_SEG = 12, group_vars = c("region")) {
   
   if (!all(c("nb_mens_enq", "nb_mens_seg", "base_weight_HH") %in% names(data))) {
     stop("Missing one or more required columns: 'nb_mens_enq', 'nb_mens_seg', 'base_weight_HH'.")
@@ -56,13 +56,15 @@ adjust_non_response_HH <- function(data, EXPECTED_HH_PER_SEG = 12, group_vars = 
         is.na(nb_mens_seg) ~ NA_real_,
         nb_mens_seg < EXPECTED_HH_PER_SEG ~ nb_mens_seg,
         TRUE ~ EXPECTED_HH_PER_SEG
-      )
+      ),
+      nb_men_theo = EXPECTED_HH_PER_SEG
     ) %>%
     ## Grouper par région et milieu pour les calculs de somme
     group_by(across(all_of(group_vars))) %>%
     mutate(
       ## 1b.  Somme du potentiel par région × milieu
       potentiel_region_milieu = sum(potentiel_de_collecte, na.rm = TRUE),
+      nb_mens_theo_region_milieu = sum(nb_men_theo, na.rm = TRUE),
       
       ## 1c.  Effectif interviewé par région × milieu
       nb_mens_enq_region_milieu = sum(nb_mens_enq, na.rm = TRUE)
@@ -86,7 +88,7 @@ adjust_non_response_HH <- function(data, EXPECTED_HH_PER_SEG = 12, group_vars = 
       ## 2c.  Facteur de correction (potentiel / effectif)
       correction_factor_region_milieu = case_when(
         nb_mens_enq_region_milieu == 0 ~ NA_real_,   # éviter division par 0
-        TRUE ~ potentiel_region_milieu / nb_mens_enq_region_milieu
+        TRUE ~ nb_mens_theo_region_milieu / nb_mens_enq_region_milieu
       ),
       
       ## 2d.  Poids corrigés avec le facteur de correction région×milieu
