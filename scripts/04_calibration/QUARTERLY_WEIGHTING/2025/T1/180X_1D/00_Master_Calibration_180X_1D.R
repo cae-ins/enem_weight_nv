@@ -98,8 +98,7 @@ library("excel.link")     # contains the functions xl.get.excel(), xl.write(), x
 library("readxl")         # to export R dataframes in excel
 library("writexl")        # to export R dataframes in excel
 library("expss")          # contains unctions to create weighted tables
-library("haven")          # to read and write SPSS and STATA datasets 
-
+library("haven")          # to read and write SPSS and STATA datasets 7
 
 
 #######   STEP 1   ###########################################################################################
@@ -148,7 +147,7 @@ parse_target_quarter <- function(target_quarter) {
   return(result)
 }
 source("config/1_config.r")
-source("scripts/02_base_weights/3_indivs_weights.R")
+#source("scripts/02_base_weights/3_indivs_weights.R")
 # Parse the target quarter
 parsed <- parse_target_quarter(TARGET_QUARTER)
 
@@ -352,7 +351,10 @@ FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_RDATA  <- paste0(dir_data_QW,"LFS
 FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_RDATA
 
 
-
+###  Let's parameterize the name and path of the script file containing the formats of the X
+ 
+R_SCRIPT_X_FORMATS <- paste(dir_prog_565QW,"/04f_XFormats_",pathx,".R",sep='')
+R_SCRIPT_X_FORMATS
 
 ##############################################################################################################
 ###

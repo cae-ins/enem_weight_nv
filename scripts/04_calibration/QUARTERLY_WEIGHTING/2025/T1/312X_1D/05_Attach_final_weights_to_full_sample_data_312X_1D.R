@@ -35,11 +35,6 @@
 ### 
 ######################################################################################################
 
-getwd()
-setwd(dir_data_QW)
-getwd()
-
-
 ######################################################################################################
 ###  
 ###   STEP 5.2 
@@ -107,6 +102,18 @@ str(LFS_ILO_CAL)
 
 save(LFS_ILO_CAL, file = FILE_LFS_ILO_CAL_RDATA )
 
+vars_to_keep <- c(
+  "interview_key", "interview_id", "membres_id",
+  "HHKEY", "PSUKEY", "STRATAKEY",
+  "FINAL_CORR_FACTOR", "FINAL_WEIGHT"
+)
+
+LFS_ILO_CAL_sub <- LFS_ILO_CAL[, vars_to_keep]
+dim(LFS_ILO_CAL_sub)
+# Export en .dta sous le nom spécifié
+
+write_dta(LFS_ILO_CAL_sub, path = FILE_LFS_ILO_CAL_DTA)
+write_dta(LFS_ILO_CAL, path = FILE_LFS_ILO_CAL_DTA_EXPORT)
 
 ######################################################################################################
 ###  
@@ -144,8 +151,8 @@ str(LFS_ILO_CAL)
 
 LFS_ILO_CAL %>%
   # tab_cols(ilo_lfs , total()) %>%
-  tab_rows(HH2, total()) %>%
-  tab_weight(poids_menage) %>%
+  tab_rows(hh2, total()) %>%
+  tab_weight(d_weights) %>%
   tab_stat_sum %>%
   tab_pivot()
 
@@ -154,7 +161,7 @@ LFS_ILO_CAL %>%
 
 LFS_ILO_CAL %>%
   # tab_cols(ilo_lfs , total()) %>%
-  tab_rows(HH2, total()) %>%
+  tab_rows(hh2, total()) %>%
   tab_weight(FINAL_WEIGHT) %>%
   tab_stat_sum %>%
   tab_pivot()
@@ -190,3 +197,6 @@ LFS_ILO_CAL %>%
 #   tab_weight(FINAL_MONTHLY_WEIGHT) %>%
 #   tab_stat_sum %>%
 #   tab_pivot()
+
+
+

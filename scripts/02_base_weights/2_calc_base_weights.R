@@ -76,44 +76,40 @@ seg_drop_info = get_seg_drop(INCONSISTENT_PATH, TARGET_CODES)
 # Add the nb_zd_strat variable
 # ------------------------------------------------------------------------------
 
-compute_nb_zd_strat <- function(data, seg_infos) {
-  seg_to_drop_counts <- seg_infos %>%
+compute_nb_zd_strat <- function(data) {
+  # Calcul du nombre de ZD par région
+  nb_zd_summary <- data %>%
     group_by(region) %>%
-    summarise(segment_drop = n(), .groups = "drop")
+    summarise(
+      nb_zd_strat    = n(),
+      nb_zd_strat_wr = sum(rgmen == 1, na.rm = TRUE),
+      .groups = "drop"
+    )
   
+  # Ajout des colonnes au data original
   data <- data %>%
-    left_join(seg_to_drop_counts, by = "region") %>%
+    left_join(nb_zd_summary, by = "region") %>%
     mutate(
-      segment_drop = ifelse(is.na(segment_drop), 0, segment_drop),
-      
-      nb_zd_strat = case_when(
-        region == 10101 ~ (13 * quarter_phase) - segment_drop,
-        TRUE            ~ (7 * quarter_phase)  - segment_drop
-      ),
-      
-      nb_zd_strat_wr = case_when(
-        rgmen == 1 & region == 10101 ~ 13 - segment_drop,
-        rgmen == 1                  ~ 7 - segment_drop,
-        TRUE                        ~ NA_real_
-      )
+      nb_zd_strat    = ifelse(is.na(nb_zd_strat), 0, nb_zd_strat),
+      nb_zd_strat_wr = ifelse(is.na(nb_zd_strat_wr), 0, nb_zd_strat_wr)
     ) %>%
     set_variable_labels(
-      segment_drop     = "Nombre de segments non interrogés dans la région",
-      nb_zd_strat      = "Nombre de segments interrogés dans la région",
-      nb_zd_strat_wr   = "Nombre de segments interrogés dans la région (Trimestre en cours uniquement)"
+      nb_zd_strat    = "Nombre de ZD présentes dans l'échantillon par région",
+      nb_zd_strat_wr = "Nombre de ZD présentes dans l'échantillon par région (rgmen == 1)"
     )
   
   return(data)
 }
 
+
 # ------------------------------------------------------------------------------
 # Compute ZD-level Inclusion Probabilities
 # ------------------------------------------------------------------------------
-compute_pi_zd <- function(region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat) {
-  if (any(is.na(c(region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat))) || nb_indivs_reg == 0)
+compute_pi_zd <- function(region, nb_mens_seg, nb_men_reg, nb_zd_strat) {
+  if (any(is.na(c(region, nb_mens_seg, nb_men_reg, nb_zd_strat))))
     return(NA_real_)
   multiplier <- ifelse(region == 10101, 104, 56)
-  multiplier * (nb_indivs_zd / nb_indivs_reg) * (nb_zd_strat / multiplier)
+  multiplier * ((nb_mens_seg * 6)/ nb_men_reg) * (nb_zd_strat / multiplier)
 }
 
 # ------------------------------------------------------------------------------
@@ -122,8 +118,6 @@ compute_pi_zd <- function(region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat) {
 compute_pi_hh <- function(nb_mens_seg) {
   if (is.na(nb_mens_seg) || nb_mens_seg == 0)
     return(NA_real_)
-  if (NB_MENS_ENQ > nb_mens_seg)
-    return(1)
   (NB_MENS_ENQ / nb_mens_seg) * (1 / 6)
 }
 # ------------------------------------------------------------------------------
@@ -138,7 +132,7 @@ compute_pi_HH <- function(pi_zd, pi_hh) {
 # ------------------------------------------------------------------------------
 append_base_weights <- function(data, resurvey = TRUE) {
   # Mandatory variables for all calculations
-  required_cols <- c("region", "nb_indivs_zd", "nb_indivs_reg", 
+  required_cols <- c("region",  "nb_men_reg", 
                      "nb_zd_strat", "nb_mens_seg")
   if (resurvey) {
     required_cols <- c(required_cols, "proportion")
@@ -151,8 +145,8 @@ append_base_weights <- function(data, resurvey = TRUE) {
   
   data <- data %>%
     mutate(
-      pi_zd     = mapply(compute_pi_zd, region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat),
-      pi_zd_wr  = mapply(compute_pi_zd, region, nb_indivs_zd, nb_indivs_reg, nb_zd_strat_wr),
+      pi_zd     = mapply(compute_pi_zd,region, nb_mens_seg, nb_men_reg, nb_zd_strat),
+      pi_zd_wr  = mapply(compute_pi_zd, region, nb_mens_seg, nb_men_reg, nb_zd_strat_wr),
       pi_hh     = mapply(compute_pi_hh, nb_mens_seg),
       pi_HH     = compute_pi_HH(pi_zd, pi_hh),
       pi_HH_wr  = compute_pi_HH(pi_zd_wr, pi_hh),
@@ -178,20 +172,9 @@ append_base_weights <- function(data, resurvey = TRUE) {
 # Calculate the base weights 
 # ------------------------------------------------------------------------------
 weight_data <- read_dta(WEIGHTS_COLUMNS_PATH)
-weight_data <- compute_nb_zd_strat(weight_data, seg_drop_info)
-
 ## Drop the inconsistent rows
 weight_data <- weight_data %>%
   anti_join(seg_drop_info, by = c("region", "depart", "souspref", "ZD", "segment"))
-
-# Compute weights with or without resurvey logic
-weight_data <- append_base_weights(weight_data, resurvey = FALSE)
-write_dta(weight_data, WEIGHTS_COLUMNS_PATH)
-# ------------------------------------------------------------------------------
-# Save Final Dataset
-# ------------------------------------------------------------------------------
-
-# Ajoute les infos de doublons
 
 # Check final data quality
 cat("\n🔍 Running final quality checks...\n")
@@ -211,6 +194,13 @@ glimpse(weight_data)
 source("scripts/07_correction_quarter/0_apply_quarter_correction.r")
 weight_data <- apply_quarter_correction(weight_data, TARGET_QUARTER)
 
+weight_data <- compute_nb_zd_strat(weight_data)
+
+# Compute weights with or without resurvey logic
+weight_data <- append_base_weights(weight_data, resurvey = FALSE)
+# ------------------------------------------------------------------------------
+# Save Final Dataset
+# ------------------------------------------------------------------------------
 write_dta(weight_data, WEIGHTS_COLUMNS_PATH)
 cat("Base weights calculated and saved to:", WEIGHTS_COLUMNS_PATH, "\n")
 

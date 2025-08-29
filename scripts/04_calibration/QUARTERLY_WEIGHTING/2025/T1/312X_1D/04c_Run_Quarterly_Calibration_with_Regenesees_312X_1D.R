@@ -47,9 +47,9 @@
 ### 
 ######################################################################################################
 
-getwd()
-setwd(dir_data_QW)
-getwd()
+#getwd()
+#setwd(dir_data_QW)
+#getwd()
 
 
 ######################################################################################################
@@ -187,7 +187,7 @@ find.lon.strata(design_lfs)
 
 
 ### install new functions for ReGenesees from the following file
-source( R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS )
+source(R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS )
 
 ###  use the function "constraints_model" to create the list of Xs identifying the calibration cells (Calibration model)
 
@@ -266,11 +266,11 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.02, 3.2),
+                           bounds = c(-0.382, 3.338),
                    aggregate.stage = NULL, 
                              maxit = 100,
                            epsilon = 1e-10, 
-                             force = TRUE)
+                             force = FALSE)
 
 
 ###   Check convergence of calibration: all the "$return.codes" for all DOMAINS from "ecal.status" must always be zero 
@@ -284,7 +284,7 @@ ecal.status
 
 sum(weights(calib_lfs))
 
-
+summary(sample_data$d_weights)
 summary(weights(calib_lfs))
 
 ###   Read the message about convergence  
@@ -386,4 +386,5 @@ View(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS)
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
+
 

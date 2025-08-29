@@ -5,7 +5,6 @@ WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 
 NB_MEN_INDIV_FILE <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_indivs_ZD.dta")
-POIDS_REGIONAUX <- file.path(PROCESSED_DIR, "RP_2021", "help_poids_regionaux.dta")
 QUARTERS_EXCEL <- file.path(DATA_DIR, "01_raw", "Organisation","quarter_resurvey.xlsx")
 
 library(dplyr)
