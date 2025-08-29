@@ -28,56 +28,75 @@ RUWTHS vise à :
 - Supporter à la fois les enquêtes **transversales** et les suivis **longitudinaux**.
 
 ## 📂 Structure du dépôt
-
+```
 enem_weight_nv/
 │── config/ # Paramètres par trimestre, configuration du plan de sondage
 │── data/ # Données brutes et pondérées (ménages, individus, fichiers par trimestre)
 │── scripts/ # Scripts R pour chaque étape du processus de pondération
-│── dashboard/ # Tableaux de bord HTML (diagnostics, visualisations)
+│── dashboard/ # Tableaux de bord Shiny de suivi des incohérences pouvant affecter les pondérations (diagnostics, visualisations)
 │── logs/ # Journaux d’exécution (traçabilité)
-│── formality_BIT.pptx # Présentation méthodologique (BIT/OIT)
 │── README.md # Documentation du projet
-
-
----
-
-## ⚙️ Méthodologie
-
-### 1. `calc_base_weights.R`
-- Calcule les **poids de base** = inverse de la probabilité d’inclusion.  
-\[
-w^{(0)}_{hi} = \frac{1}{\pi_{hi}}
-\]
-
-### 2. `tracking.R`
-- Gère le **suivi longitudinal** des ménages/individus réinterviewés.  
-- Ajoute la variable `finalnumtrimestre`.
-
-### 3. `non_response.R`
-- Ajuste les poids pour **non-réponse**.  
-- Actuellement : ajustement par **Région × Milieu (urbain/rural)**.  
-- Optionnel : ajustement plus fin par **segment**.  
-\[
-w^{(1)}_{i} = w^{(0)}_{i} \cdot \frac{N_{rm}}{R_{rm}}
-\]
-
-### 4. `calibration.R`
-- Calibre les poids sur les **totaux externes (benchmarks démographiques)**.  
-- Utilise la librairie **Rgenesees**.  
-\[
-\sum_i w^{(2)}_{i} x_{i} = X
-\]
-
-### 5. `quality_checks.R`
-- Contrôle qualité :  
-  - pas de poids nuls ou manquants,  
-  - pas de valeurs aberrantes,  
-  - cohérence ménages / individus,  
-  - comparaison distributions pondérées vs non pondérées.
+```
 
 ---
 
-## 🔄 Flux de traitement
+## ⚙️ Méthodologie (niveau conceptuel)
+
+### 1) Poids de base — `calc_base_weights.R`
+
+Calcule les **poids de base** (inverse de la probabilité d’inclusion) :
+
+![eq-base](https://latex.codecogs.com/svg.latex?w^{(0)}_{hi}=\frac{1}{\pi_{hi}})
+
+**Idée** : \( \pi_{hi} \) est la probabilité de sélection de l’unité *i* dans la strate (ou segment) *h*; le poids de base est l’inverse de cette probabilité.
+
+---
+
+### 2) Suivi & appariement — `tracking.R`
+
+- Gère le **suivi longitudinal** des ménages/individus réinterviewés entre trimestres.
+- Harmonise les identifiants et ajoute la variable `finalnumtrimestre`.
+- Produit un fichier prêt pour la pondération (maîtrise de la rotation/panel).
+
+---
+
+### 3) Ajustement pour non-réponse — `non_response.R`
+
+- **Actuel** : ajustement calculé par **Région × Milieu (urbain/rural)**.  
+- **Optionnel** : possibilité de revenir à une définition plus fine **par segment**.
+
+Formule d’ajustement (par Région × Milieu) appliquée aux poids de base :
+
+![eq-nr](https://latex.codecogs.com/svg.latex?w^{(1)}_{i}=w^{(0)}_{i}\cdot\frac{N_{rm}}{R_{rm}})
+
+où \(N_{rm}\) et \(R_{rm}\) sont respectivement le nombre d’unités **éligibles** et **répondantes** dans la **région** *r* et le **milieu** *m*.
+
+---
+
+### 4) Calibrage — `calibration.R`
+
+Aligne les poids sur des **totaux externes** (benchmarks démographiques, ex. âge × sexe × région × milieu), typiquement via **Rgenesees**. On cherche des facteurs de calibration \(g(\cdot)\) tels que :
+
+![eq-calib-constraint](https://latex.codecogs.com/svg.latex?\sum_i%20w^{(2)}_{i}x_{i}=X)
+
+où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
+
+![eq-calib-weight](https://latex.codecogs.com/svg.latex?w^{(2)}_{i}=w^{(1)}_{i}\cdot%20g(x_i))
+
+---
+
+### 5) Contrôles qualité — `quality_checks.R`
+
+- Absence de poids nuls/manquants; détection d’outliers (éventuel trimming).
+- Cohérence **ménage ↔ individu** et checks de doublons.
+- Comparaison distributions **pondérées vs non pondérées**.
+- Génération de diagnostics (tableaux/graphes) dans `dashboard/` et de journaux dans `logs/`.
+
+---
+
+## 🔄 Schéma du flux de traitement
+
+> Placez ce fichier image dans la racine du dépôt, puis référencez-le comme ci-dessous.
 
 ![Flux de pondération](enem_weight_flow.png)
 
@@ -85,17 +104,15 @@ w^{(1)}_{i} = w^{(0)}_{i} \cdot \frac{N_{rm}}{R_{rm}}
 
 ## 🛠 Technologies
 
-- **R** : logique de pondération et calibration.  
-- **Rgenesees** : moteur de calibrage.  
-- **HTML** : dashboards de suivi.  
-- **Stata** : scripts complémentaires de préparation/validation.  
+- **R** : logique de pondération et calibration
+- **Rgenesees** : moteur de calibrage
+- **HTML** : tableaux de bord
+- **Stata** : scripts complémentaires (préparation/validation)
 
 ---
 
-## 📊 Résultats
+## 📊 Résultats attendus
 
-- Production de fichiers de poids par trimestre.  
-- Diagnostics disponibles dans `/dashboard` et `/logs`.  
-- Poids finaux exploitables directement pour l’analyse statistique (ex. emploi, chômage, sous-emploi).
-
----
+- Fichiers de poids **par trimestre** (ménages & individus).
+- Diagnostics reproductibles dans `/dashboard` et `/logs`.
+- Poids finaux utilisables directement pour l’analyse (emploi, chômage, sous-emploi, etc.).
