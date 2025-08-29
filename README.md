@@ -79,8 +79,6 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 
 ![eq-calib-weight](https://latex.codecogs.com/svg.latex?w^{(2)}_{i}=w^{(1)}_{i}\cdot%20g(x_i))
 
----
-
 ### 5) Contrôles qualité — `quality_checks.R`
 
 - Absence de poids nuls/manquants; détection d’outliers (éventuel trimming).
@@ -88,15 +86,10 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - Comparaison distributions **pondérées vs non pondérées**.
 - Génération de diagnostics (tableaux/graphes) dans `dashboard/` et de journaux dans `logs/`.
 
----
-
 ## 🔄 Schéma du flux de traitement
-
-> Placez ce fichier image dans la racine du dépôt, puis référencez-le comme ci-dessous.
 
 ![Flux de pondération](enem_weight_flow.png)
 
----
 
 ## 🛠 Technologies
 
@@ -104,8 +97,6 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - **Rgenesees** : moteur de calibrage
 - **HTML** : tableaux de bord
 - **Stata** : scripts complémentaires (préparation/validation)
-
----
 
 ## 📊 Résultats attendus
 
