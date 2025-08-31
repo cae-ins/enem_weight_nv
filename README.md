@@ -61,8 +61,6 @@ Formule d’ajustement (par Région × Milieu) appliquée aux poids de base :
 
 où \(N_{rm}\) et \(R_{rm}\) sont respectivement le nombre d’unités **éligibles** et **répondantes** dans la **région** *r* et le **milieu** *m*.
 
-=======
-
 ### 4) Calibrage — `calibration.R`
 
 Aligne les poids sur des **totaux externes** (benchmarks démographiques, ex. âge × sexe × région × milieu), typiquement via **Rgenesees**. On cherche des facteurs de calibration \(g(\cdot)\) tels que :
@@ -73,8 +71,6 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 
 ![eq-calib-weight](https://latex.codecogs.com/svg.latex?w^{(2)}_{i}=w^{(1)}_{i}\cdot%20g(x_i))
 
-
-=======
 ### 5) Contrôles qualité — `quality_checks.R`
 
 - Absence de poids nuls/manquants; détection d’outliers (éventuel trimming).
@@ -82,8 +78,6 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - Comparaison distributions **pondérées vs non pondérées**.
 - Génération de diagnostics (tableaux/graphes) dans `dashboard/` et de journaux dans `logs/`.
 
-
-=======
 ## 🔄 Schéma du flux de traitement
 
 ![Flux de pondération](enem_weight_flow.png)
