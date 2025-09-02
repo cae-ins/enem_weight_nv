@@ -89,7 +89,7 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 
 - **R** : logique de pondération et calibration
 - **Rgenesees** : moteur de calibrage
-- **HTML** : tableaux de bord
+- **R Shiny** : tableaux de bord
 - **Stata** : scripts complémentaires (préparation/validation)
 
 ## 📊 Résultats attendus
