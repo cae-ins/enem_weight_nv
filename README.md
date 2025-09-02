@@ -60,7 +60,7 @@ Formule d’ajustement (par Région × Milieu) appliquée aux poids de base :
 
 ![eq-nr](https://latex.codecogs.com/svg.latex?w^{(1)}_{i}=w^{(0)}_{i}\cdot\frac{N_{rm}}{R_{rm}})
 
-où \(![eq-base](https://latex.codecogs.com/svg.latex?\N_{rm}\) et \(![eq-base](https://latex.codecogs.com/svg.latex?\R_{rm}\) sont respectivement le nombre d’unités **éligibles** et **répondantes** dans la **région** *r* et le **milieu** *m*.
+où ![Nrm](https://latex.codecogs.com/svg.latex?N_{rm}) et \(R_{rm}\) sont respectivement le nombre d’unités **éligibles** et **répondantes** dans la **région** *r* et le **milieu** *m*.
 
 ### 4) Calibrage — `calibration.R`
 
