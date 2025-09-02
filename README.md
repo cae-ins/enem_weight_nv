@@ -64,7 +64,8 @@ où ![Nrm](https://latex.codecogs.com/svg.latex?N_{rm}) et  ![Rrm](https://latex
 
 ### 4) Calibrage — `calibration.R`
 
-Aligne les poids sur des **totaux externes** (benchmarks démographiques, ex. âge × sexe × région × milieu), typiquement via **Rgenesees**. On cherche des facteurs de calibration \(g(\cdot)\) tels que :
+Aligne les poids sur des **totaux externes** (benchmarks démographiques, ex. âge × sexe × région × milieu), typiquement via **Rgenesees**. On cherche des facteurs de calibration ![g](https://latex.codecogs.com/svg.latex?g(\cdot))
+tels que :
 
 ![eq-calib-constraint](https://latex.codecogs.com/svg.latex?\sum_i%20w^{(2)}_{i}x_{i}=X)
 
