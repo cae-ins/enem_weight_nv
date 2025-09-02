@@ -42,7 +42,8 @@ Calcule les **poids de base** (inverse de la probabilité d’inclusion) :
 
 ![eq-base](https://latex.codecogs.com/svg.latex?w^{(0)}_{hi}=\frac{1}{\pi_{hi}})
 
-**Idée** : \( \pi_{hi} \) est la probabilité de sélection de l’unité *i* dans la strate (ou segment) *h*; le poids de base est l’inverse de cette probabilité.
+**Idée** : \( ![eq-base](https://latex.codecogs.com/svg.latex?\pi_{hi})
+ \) est la probabilité de sélection de l’unité *i* dans la strate (ou segment) *h*; le poids de base est l’inverse de cette probabilité.
 
 ### 2) Suivi & appariement — `tracking.R`
 
