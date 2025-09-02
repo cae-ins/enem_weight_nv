@@ -92,7 +92,6 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - **HTML** : tableaux de bord
 - **Stata** : scripts complémentaires (préparation/validation)
 
-=======
 ## 📊 Résultats attendus
 
 - Fichiers de poids **par trimestre** (ménages & individus).
