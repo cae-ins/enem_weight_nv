@@ -6,17 +6,31 @@ library(RColorBrewer)
 library(plotly)
 
 # Chargement des données
-fichier_suivi <- read_dta("C:/Users/User/Documents/Travaux de stage/data/02_cleaned/Denombrement_update/denombrement_update_2025-06-24_01-16-41.dta") %>%
-  mutate(
-    region = as_factor(region),
-    depart = as_factor(depart),
-    souspref = as_factor(souspref),
-    ZD = as_factor(ZD),
-    segment = as_factor(segment),
-    quarter = as_factor(quarter)
-  )
+library(haven)
+library(dplyr)
+source("config/1_config.r")
+# Dossier contenant tes fichiers
+CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update")
+# Lister les fichiers .dta qui commencent par "denombrement_update"
+files <- list.files(CLEANED_BASE_DIR, pattern = "^denombrement_update.*\\.dta$", full.names = TRUE)
 
-fichier_followup <- read_dta("C:/Users/User/Documents/Travaux de stage/data/03_processed/Tracking_ID/2025-06-11/followup_matrix_2025-06-13_01-25-21.dta") %>%
+if (length(files) == 0) {
+  stop("⚠️ Aucun fichier 'denombrement_update*.dta' trouvé dans le dossier : ", path_dir)
+}
+
+# Identifier le fichier le plus récent
+file_info <- file.info(files)
+last_file <- rownames(file_info)[which.max(file_info$mtime)]
+
+# Charger le fichier et convertir les variables en facteur
+fichier_suivi <- read_dta(last_file) %>%
+  mutate(across(c(region, depart, souspref, ZD, segment, quarter), as_factor))
+
+# Feedback utilisateur
+cat("✅ Fichier chargé :", last_file, "\n")
+
+
+fichier_followup <- read_dta("C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/03_processed/Tracking_ID/2025-06-11/followup_matrix_2025-06-13_01-25-21.dta") %>%
   mutate(
     region = as_factor(region),
     depart = as_factor(depart),

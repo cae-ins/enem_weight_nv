@@ -1,0 +1,3 @@
+REM To create a virtual disk
+
+subst W: "C:\MYPATH\ILO_STAT_WEBINARS\2025_03_CALIBRATION\"

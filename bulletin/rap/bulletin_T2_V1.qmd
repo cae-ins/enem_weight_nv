@@ -1,0 +1,1857 @@
+---
+title: ""
+edition: source
+format: 
+  docx :
+   reference-doc: Bulletin_T2_ref.docx
+---
+
+\newpage
+
+```{=tex}
+\begin{titlepage}
+\thispagestyle{empty}
+
+% Logos en haut
+\noindent
+\begin{minipage}{0.48\textwidth}
+  \includegraphics[width=4cm]{Anstat image.png}
+  
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+  \raggedleft
+  \includegraphics[width=4cm]{ENE image.png}  %
+\end{minipage}
+
+\vspace{2cm}
+
+ % Bandeau vert clair avec le titre
+\begin{center}
+\colorbox{customgreen}{
+  \parbox{0.9\textwidth}{
+    \centering
+    \textcolor{white}{\bfseries\LARGE BULLETIN TRIMESTRIEL DU MARCHÉ DU TRAVAIL EN CÔTE D’IVOIRE}\\[0.5em]
+    \textcolor{white}{\large Enquête Nationale sur l’Emploi auprès des Ménages (ENE-M)}
+  }
+}
+\end{center}
+
+\vspace{5cm}
+
+% Texte explicatif
+%{\large
+%Proposition de schéma (flow-chart) qui montre la structure de la population\\
+%selon les positions sur le marché du travail.
+%}
+
+\end{titlepage}
+```
+```{=tex}
+\newpage
+\thispagestyle{empty}
+```
+# PREAMBULE
+
+Sur les deux dernières décennies, la Cote d'Ivoire a connu une croissance rapide et soutenue de son économie. Cependant, malgré ces avancées considérables dans plusieurs secteurs, des défis subsistent, notamment en matière d'emploi.
+
+Disposer de statistiques à fréquences réduites et alignées aux standards internationaux pour un diagnostic beaucoup plus complet du marché du travail ivoirien, figure au nombre de ces défis, en vue d'une meilleure information des politiques publiques axées sur l'emploi.
+
+A cet effet, l'Etat Ivoirien, en collaboration avec ses partenaires au développement, a initié une réforme profonde de son dispositif de collecte, d'analyse et de diffusion des données sur l'emploi, portée par son Agence Nationale de la Statistique (ANStat), à travers notamment l'Enquête Nationale sur l'Emploi auprès des Ménages (ENEM).
+
+Ce présent bulletin est consacré à la présentation des principaux indicateurs du marché du travail Ivoirien, au cours du deuxième trimestre de l'année 2024, tirés des données de l'ENEM.
+
+\newpage
+
+```{r setup,include=FALSE}
+#install.packages("ggforce")
+library(here)       
+library(haven)      
+library(dplyr) 
+library(tidyr)
+library(ggplot2)
+library(ggforce)
+library(patchwork)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+```{r include=FALSE}
+#tinytex::install_tinytex(force = TRUE)
+#tinytex::tlmgr_install("pgf")
+
+```
+
+```{r echo=FALSE}
+#library(haven)
+Base_Travail_BT <- read_dta(here("Base_Travail_BT.dta"))
+base_T2<-Base_Travail_BT %>%
+  filter(trimestre=="T2")
+
+```
+
+
+```{r echo=FALSE}
+mean_w <- function(x, w, na.rm = TRUE) {
+  sum(x * w, na.rm = na.rm) / sum(w, na.rm = na.rm)
+}
+
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+
+# CALCUL LA PROPORTION DES PERSONNES EN EMPLOI
+
+base_T2$M0 <- factor(base_T2$MO,
+                               levels = c(1,2),
+                               labels = c("emploi","chomage"))
+
+#Proportion M0 
+ prop_emploi <- base_T2 %>%
+  filter(!is.na(M0)) %>%                
+  summarise(prop_emploi = mean_w(M0 == "emploi", pmencor_ind )* 100) %>%
+  pull(prop_emploi) %>%
+ round(2)
+#View(prop_emploi) 
+
+# CALCUL LA PROPORTION DES PERSONNES EN AGE DE TRAVAILLER 
+base_T2$PAT <- factor(base_T2$PAT,
+                               levels = c(0,1),
+                               labels = c("Non","Oui"))
+
+#Proportion PAT 
+ prop_PAT <- base_T2 %>%
+  filter(!is.na(PAT)) %>%                
+  summarise(prop_PAT = mean_w(PAT == "Oui", pmencor_ind)*100) %>%
+  pull(prop_PAT) %>%
+ round(2)
+#View(prop_PAT) 
+ 
+ 
+# CALCUL LA PROPORTION DES PERSONNES AU CHOMAGE  
+ 
+ base_T2$pop_chomage_dich <- factor(base_T2$SU1,
+                               levels = c(0,1),
+                               labels = c("Non","Oui")) 
+ 
+ # Proportion pop_emp_dich
+ prop_chomage <- base_T2 %>%
+  filter(!is.na(pop_chomage_dich)) %>%      
+  summarise(prop_chomage = mean_w(pop_chomage_dich == "Oui",pmencor_ind)*100) %>%
+  pull(prop_chomage) %>%
+ round(2)
+#View(prop_chomage)
+ 
+ 
+ 
+ # CALCUL LA PARTICIPATION A LA MAIN D'OEUVRE  
+ 
+ base_T2$part_dich <- factor(
+  ifelse(base_T2$statut_MO %in% c(1, 2), 1,
+         ifelse(base_T2$statut_MO == 3, 0, NA)),
+  levels = c(0, 1),
+  labels = c("Non", "Oui")) 
+ 
+ # Calculer la proportion pondérée de participation
+prop_part <- base_T2 %>%
+  filter(!is.na(part_dich)) %>%      
+  summarise(prop_part = mean_w(part_dich == "Oui", pmencor_ind) * 100) %>%
+  pull(prop_part) %>%
+  round(2)
+ 
+ # CALCUL SU3  
+ 
+base_T2$pop_SU3_dich <- factor(base_T2$SU3,
+                               levels = c(0,1),
+                               labels = c("Non","Oui")) 
+ 
+ # Calculer la proportion pondérée de SU3
+prop_SU3 <- base_T2 %>%
+  filter(!is.na(pop_SU3_dich)) %>%      
+  summarise(prop_SU3 = mean_w(pop_SU3_dich == "Oui",pmencor_ind)*100) %>%
+  pull(prop_SU3) %>%
+ round(2)
+ 
+# CALCUL INFORMALITE  
+base_T2$pop_inf_dich <- factor(base_T2$CISE_18_informel_Emp,
+                               levels = c(1,2),
+                               labels = c("Emploi formel","Emploi informel"))
+ 
+ # Calculer la proportion pondérée d'emplois informels
+prop_infor <- base_T2 %>%
+  filter(!is.na(pop_inf_dich)) %>%      
+  summarise(prop_infor = mean_w(pop_inf_dich == "Emploi informel",pmencor_ind)*100) %>%
+  pull(prop_infor) %>%
+ round(2)
+
+ 
+```
+
+```{r , echo=FALSE,fig.width= 7 , fig.height = 3.5}
+
+#library(ggplot2)
+#library(ggforce)
+#library(patchwork)
+
+# Premier cercle : Population en âge de travailler
+#p1 <- ggplot() +
+ # geom_circle(aes(x0 = 0, y0 = 0, r = 1.5), color = "orange", size = 1) +
+  #annotate("text", x = 0, y = 0.1, label = paste0(prop_PAT, " %"), color = "orange", size = 5, fontface = "bold") +
+  #theme_void() +
+  #ggtitle("Population en âge de travailler") +
+  #theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 10, color = "orange"))
+
+# Premier cercle : Participation à la main d'oeuvre
+p1 <- ggplot() +
+ geom_circle(aes(x0 = 0, y0 = 0, r = 1.5), color = "orange", size = 1) +
+  annotate("text", x = 0, y = 0.1, label = paste0(prop_part, " %"), color = "darkgreen", size = 5, fontface = "bold") +
+  theme_void() +
+  ggtitle("Participation à la main d'œuvre") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 9, color = "orange"))
+
+# Deuxième cercle : Nombre de personnes en emploi
+#p2 <- ggplot() +
+  #geom_circle(aes(x0 = 0, y0 = 0, r = 1.5), color = "orange", size = 1) +
+  #annotate("text", x = 0, y = 0.1, label = paste0(prop_emploi, " %"), color = "darkgreen", size = 5, fontface = "bold") +
+  #theme_void() +
+  #ggtitle("Taux d'emploi") +
+  #theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 10, color = "darkgreen"))
+
+# Deuxième cercle : Taux de chomage
+p2 <- ggplot() +
+  geom_circle(aes(x0 = 0, y0 = 0, r = 1.5), color = "orange", size = 1) +
+  annotate("text", x = 0, y = 0.1, label = paste0(prop_chomage, " %"), color = "darkgreen", size = 5, fontface = "bold") +
+  theme_void() +
+  ggtitle("Taux de chomage") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 9, color = "orange"))
+
+
+# Troisième cercle : SU3
+p3 <- ggplot() +
+  geom_circle(aes(x0 = 0, y0 = 0, r = 1.5), color = "orange", size = 1) +
+  annotate("text", x = 0, y = 0.1, label = paste0(prop_SU3, " %"), color = "darkgreen", size = 5, fontface = "bold") +
+  theme_void() +
+  ggtitle("SU3") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 9, color = "orange"))
+
+# Quatrième cercle : Informalité
+p4 <- ggplot() +
+  geom_circle(aes(x0 = 0, y0 = 0, r = 1.5), color = "orange", size = 1) +
+  annotate("text", x = 0, y = 0.1, label = paste0(prop_infor, " %"), color = "darkgreen", size = 5, fontface = "bold") +
+  theme_void() +
+  ggtitle("Taux d'emplois informels") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 9, color = "orange"))
+
+# Assemblage
+(p1 | p2 | p3| p4) +
+  plot_annotation(
+    title = "SYNTHÈSE DES INDICATEURS DU 2ᵉ TRIMESTRE 2024",
+    theme = theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 18 , color = "orange"),
+      plot.background = element_rect(fill = "white", color = NA)
+    )
+  )
+
+```
+
+# EMPLOI
+
+
+
+```{r include=FALSE}
+
+#### GRAPHIQUE POPULATION EN EMPLOI/SEXE 
+
+#library(dplyr)
+#library(ggplot2)
+
+# LABELISATION 
+base_T2$sexe <- factor(base_T2$sexe,
+                              levels = c(1,2),
+                              labels= c("Masculin","Féminin"))
+
+base_T2$M0 <- factor(base_T2$MO,
+                               levels = c(1,2),
+                               labels = c("emploi","chomage"))
+
+# CALCUL DES PROPORTIONS
+df_resume_s <- base_T2 %>%
+  filter(!is.na(M0), !is.na(sexe))%>%
+  group_by(sexe,M0) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(sexe) %>%
+  mutate(prop_emp_sexe= poids_total / sum(poids_total) * 100)
+
+# Calcul taux global
+df_resume_global <- base_T2 %>%
+  filter(!is.na(M0)) %>%
+  group_by(M0) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  mutate(
+    sexe = "Ensemble",
+    prop_emp_sexe = poids_total / sum(poids_total) * 100
+  )
+
+# Fusion
+df_plot <- bind_rows(df_resume_s, df_resume_global)
+
+
+```
+
+
+
+```{r include=FALSE}
+
+library(dplyr)
+#library(tidyverse)
+
+#Proportion des hommes en emploi
+prop_hom <- df_resume_s %>%
+  filter(sexe == "Masculin",  M0 == "emploi") %>%
+  pull(prop_emp_sexe) %>%
+  round(2)
+#View(prop_hom) 
+
+#Proportion des femmes en emploi
+prop_fem <- df_resume_s %>%
+  filter(sexe == "Féminin", M0 == "emploi") %>%
+  pull(prop_emp_sexe) %>%
+  round(2)
+#View(prop_fem)
+
+#Proportion global emploi
+prop_global <- df_resume_s %>%
+  group_by(M0) %>%
+  summarise(poids_total = sum(poids_total), .groups = "drop") %>%
+  mutate(prop = poids_total / sum(poids_total) * 100) %>%
+  filter(M0 == "emploi") %>%
+  pull(prop) %>%
+  round(2)
+View(prop_global)
+
+```
+
+Au deuxième trimestre de l'année 2024 ce sont **`r  prop_global`** % de la main d'œuvre qui sont en emploi. Suivant le sexe, ce sont **`r prop_fem`** % des femmes de la main d'œuvre qui sont en emploi, contre **`r prop_hom`** % chez les hommes **(Figure 1)**.De façon générale, la proportion de personne en emploi augmente avec l'âge **(Figure 2)**.
+
+**Figure 1 :** Population en emploi dans la main d'œuvre selon le sexe
+
+
+```{r echo=FALSE}
+
+# CREATION DU GRAPHIQUE
+ggplot(df_plot, aes(x = sexe, y = prop_emp_sexe, fill = sexe)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(
+    data = df_plot %>% filter(M0 == "emploi"),
+    aes(label = paste0(round(prop_emp_sexe, 1), "%")),
+    position = position_stack(vjust = 0.7),
+    color = "black"
+  ) +
+  scale_fill_manual(values = c("Masculin" = "#1F4E79",
+                               "Féminin" = "#E46C0A",
+                               "Ensemble" = "#6A3D9A")) +
+  scale_y_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    x = "Sexe",
+    y = "Population en emploi T2 (%)",
+    fill = "Sexe"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+
+```
+
+
+
+
+**Figure 2 :** Population en emploi dans la main d'oeuvre par groupe d'age
+
+```{r echo=FALSE }
+#### GRAPHIQUE POPULATION EN EMPLOI/GROUPE D'AGE
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+base_T2$groupe_age4 <- factor(base_T2$groupe_age4,
+                              levels = c(1,2,3,4),
+                              labels = c("16-24 ans", "25-35 ans", "36-64 ans", "65 ans et plus"))
+
+base_T2$M0 <- factor(base_T2$MO,
+                               levels = c(1,2),
+                               labels = c("emploi", "chomage"))
+
+
+
+
+#CALCUL DES PROPORTIONS
+df_resume_GA <- base_T2 %>%
+  filter(!is.na(M0), !is.na(groupe_age4))%>%
+  group_by(groupe_age4,M0) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(groupe_age4) %>%
+  mutate(prop_emp_GA = poids_total / sum(poids_total) * 100)
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_GA, aes(x = groupe_age4, y = prop_emp_GA, fill =groupe_age4 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_GA %>% filter(M0 == "emploi"),
+            aes(label = paste0(round(prop_emp_GA, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("16-24 ans" = "#1F4E79",
+  "25-35 ans" = "#E46C0A",
+  "36-64 ans" = "#548235",
+  "65 ans et plus" = "#00B0F0")) +
+  scale_y_continuous(breaks = seq(0,200, by=20))+
+  labs(
+    x = "Groupe d'âge",
+    y = "Population en emploi T2 (%)",
+    fill = "Groupe d'age"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+
+```
+
+
+
+```{r echo=FALSE}
+
+#### GRAPHIQUE POPULATION EN EMPLOI/MILIEU DE RESIDENCE 
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              levels = c(1,2,3),
+                              labels = c("Abidjan", "Autre urbain", "Rural"))
+
+base_T2$M0 <- factor(base_T2$MO,
+                               levels = c(1,2),
+                               labels = c("emploi", "chomage"))
+
+#CALCUL DES PROPORTIONS
+df_resume_m <- base_T2 %>%
+  filter(!is.na(M0), !is.na(milieu_resid2)) %>%
+  group_by(milieu_resid2, M0) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_emp_m = poids_total / sum(poids_total) * 100)
+
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion des personnes à Abidjan en emploi
+prop_mil_A <- df_resume_m %>%
+  filter(milieu_resid2 == "Abidjan",  M0 == "emploi") %>%
+  pull(prop_emp_m) %>%
+  round(2)
+#View(prop_mil_A) 
+
+#Proportion des personnes dans les autres urbain en emploi
+prop_mil_Ur <- df_resume_m %>%
+  filter(milieu_resid2 == "Autre urbain", M0 == "emploi") %>%
+  pull(prop_emp_m) %>%
+  round(2)
+#View(prop_mil_Ur)
+
+#Proportion des personnes en zone rural emploi
+prop_mil_Ru <- df_resume_m %>%
+  filter(milieu_resid2 == "Rural", M0 == "emploi") %>%
+  pull(prop_emp_m) %>%
+  round(2)
+#View(prop_mil_Ru)
+
+```
+
+Par ailleurs, la **figure 3** présente une désagrégation de la population en emploi dans la main d'œuvre, suivant le milieu de résidence. En effet, `r if(prop_mil_Ru > prop_mil_Ur & prop_mil_Ru > prop_mil_A){"l’on note plus de personnes en emploi en milieu rural qu’en milieu urbain"}else if(prop_mil_A > prop_mil_Ru & prop_mil_A > prop_mil_ur){"l’on note plus de personnes en emploi à Abidjan qu'en milieu rural et les autres zones urbaines"}else if(prop_mil_ur > prop_mil_Ru & prop_mil_ur > prop_mil_A){"l’on note plus de personnes en emploi dans les autres zones urbaines qu’en milieu rural et à Abidjan"}` en termes de proportions : **`r prop_mil_Ru`** % ; **`r prop_mil_Ur`** % et **`r prop_mil_A`** % respectivement en milieu rural, dans les autres zones urbaines et à Abidjan.
+
+**Figure 3 :** Population en emploi dans la main d'oeuvre selon le milieu de residence
+
+```{r echo=FALSE}
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_m  %>% filter(M0 == "emploi"), aes(x = milieu_resid2, y = prop_emp_m, fill =milieu_resid2 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_m %>% filter(M0 == "emploi"), aes(label = paste0(round(prop_emp_m, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  scale_y_continuous(breaks = seq(0,200, by=20))+
+  labs(
+    x = "Milieu de residence",
+    y = "Population en emploi T2 (%)",
+    fill = "Milieu de residence"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+
+```
+
+
+## Statut de l'emploi
+
+```{r echo=FALSE,fig.width=6 , fig.height=4}
+
+#### GRAPHIQUE POPULATION EN EMPLOI/STATUT 
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+base_T2$sit_empEP_Autorite <- factor(base_T2$sit_empEP_Autorite,
+                              levels = c(1,2,4),
+                              labels = c("Travailleurs indépendants", "Travailleurs dépendants", "Non classé"))
+
+base_T2$pop_emp_dich <- factor(base_T2$pop_emp_dich,
+                               levels = c(1,0),
+                               labels = c("emploi", "chomage"))
+
+#CALCUL DES PROPORTIONS
+df_resume_st <- base_T2 %>%
+  filter((pop_emp_dich== "emploi" ), !is.na(sit_empEP_Autorite))%>%
+  group_by(sit_empEP_Autorite) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  mutate(prop_emp_st = poids_total / sum(poids_total) * 100)
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion des travailleurs indépendants en emploi
+prop_Ti <- df_resume_st %>%
+  filter(sit_empEP_Autorite == "Travailleurs indépendants") %>%
+  pull(prop_emp_st) %>%
+  round(2)
+#View(prop_Ti) 
+
+#Proportion des travailleurs dépendants en emploi
+prop_Td <- df_resume_st %>%
+  filter(sit_empEP_Autorite == "Travailleurs dépendants") %>%
+  pull(prop_emp_st) %>%
+  round(2)
+#View(prop_Td)
+```
+\vspace{5cm}
+
+Parmi les personnes en emploi au deuxième trimestre de l'année 2024,`r if(prop_Ti > prop_Td){"l'on note plus de travailleurs indépendants que de travailleurs dépendants "}else{"l'on note plus de travailleurs dépendants que de travailleurs indépendants"}` Avec **`r prop_Ti`** % de travailleurs indépendants contre **`r prop_Td`** % de travailleurs dépendants **(Figure 4)**.
+
+Ces travailleurs indépendants n'emploient pas et résident principalement en milieu rural; les employés quant à eux, résidant en milieu urbain **(Figure 5)**.
+
+**Figure 4 :** Population en emploi dans la main d'oeuvre par statut
+
+```{r echo=FALSE,fig.width=6 , fig.height=4}
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_st, aes(x = sit_empEP_Autorite, y = prop_emp_st, fill = sit_empEP_Autorite)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data =df_resume_st, aes(label = paste0(round(prop_emp_st, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Travailleurs indépendants" = "#1F4E79",
+  "Travailleurs dépendants" = "#E46C0A")) +
+  scale_y_continuous(breaks = seq(0,200, by=20))+
+  labs(
+    x = "Statut dans l'emploi",
+    y = "Population en emploi T2 (%)",
+    fill = "Statut"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+
+
+```
+
+
+**Figure 5 :** Population en emploi par statut et milieu de residence
+
+```{r echo=FALSE}
+
+#### GRAPHIQUE POPULATION EN EMPLOI PAR STATUT/MILIEU DE RESIDENCE
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+base_T2$CISE_18_new <- factor(base_T2$CISE_18_new,
+                              levels = c(1,2,3,4,5),
+                              labels = c("Employeurs", "Trvlleurs indép sans employés", "Non-salariés dép", "Employés","Trvlleurs familiaux"))
+
+#base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              #levels = c(1,2,3),
+                              #labels = c("Abidjan", "Autre urbain", "Rural"))
+
+#CALCUL DES PROPORTIONS
+df_resume_statut <- base_T2 %>%
+  filter(!is.na(milieu_resid2),!is.na(CISE_18_new)) %>%
+  group_by(milieu_resid2,CISE_18_new) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_st = poids_total / sum(poids_total) * 100)
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_statut, aes(x = prop_st, y = CISE_18_new, fill =milieu_resid2 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  labs(
+    x = "Population en emploi T2 (%)",
+    y = "Statut de l'emploi",
+    fill = "Milieu de residence"
+  ) +
+theme_minimal()
+
+```
+\newpage
+
+## Branches d'activités
+
+Au deuxième trimestre de l'année 2024, la grande majorité des personnes en emploi exercent principalement dans les secteurs agricole et des services, avec le secteur industriel comptant la plus faible proportion de personne en emploi **(Figure 6)**. 
+
+**Figure 6 :** Population en emploi par branche d'activité
+
+```{r echo=FALSE, fig.widht=4.5 , fig.height=4}
+
+#### GRAPHIQUE POPULATION EN EMPLOI/Branche d'activité
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+base_T2$branche1 <- factor(base_T2$branche1,
+                              levels = c(1,2,3,4),
+                              labels = c("Agriculture", "Industrie", "Commerce", "Autres services"))
+
+#base_T2$M0 <- factor(base_T2$MO,
+                               #levels = c(1,2),
+                               #labels = c("emploi", "chomage"))
+
+#CALCUL DES PROPORTIONS
+df_resume_br <- base_T2 %>%
+  filter(M0=="emploi", !is.na(branche1))%>%
+  group_by(branche1) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  #group_by(branche1) %>%
+  mutate(prop_emp_br = poids_total / sum(poids_total) * 100)
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_br, aes(x = branche1, y = prop_emp_br, fill =branche1 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_br,
+            aes(label = paste0(round(prop_emp_br, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Agriculture" = "#1F4E79",
+  "Industrie" = "#E46C0A",
+  "Commerce" = "#548235",
+  "Autres services" = "#00B0F0")) +
+  scale_y_continuous(breaks = seq(0,200, by=10))+
+  labs(
+    x = "Branche d'activité",
+    y = "Population en emploi T2 (%)",
+    fill = "Branche d'activité"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+```
+
+```{r echo=FALSE,fig.width=5.5, fig.height=3}
+
+#### GRAPHIQUE POPULATION EN EMPLOI/Branche d'activité
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+#base_T2$branche1 <- factor(base_T2$branche1,
+                              #levels = c(1,2,3,4),
+                              #labels = c("Agriculture", "Industrie", "Commerce", "Autres services"))
+
+#base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              #levels = c(1,2,3),
+                              #labels = c("Abidjan", "Autre urbain", "Rural"))
+
+#CALCUL DES PROPORTIONS
+df_resume_br_m <- base_T2 %>%
+  filter(!is.na(milieu_resid2), !is.na(branche1))%>%
+  group_by(branche1,milieu_resid2) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_emp_br_m = poids_total / sum(poids_total) * 100)
+
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion des personnes à Abidjan dans le secteur agricole
+prop_mil_A_br <- df_resume_br_m %>%
+  filter(milieu_resid2 == "Abidjan",  branche1 == "Agriculture") %>%
+  pull(prop_emp_br_m) %>%
+  round(2)
+#View(prop_mil_A_br) 
+
+#Proportion des personnes dans d'autre urbain dans le secteur agricole
+prop_mil_ur_br <- df_resume_br_m %>%
+  filter(milieu_resid2 == "Autre urbain", branche1 == "Agriculture") %>%
+  pull(prop_emp_br_m) %>%
+  round(2)
+#View(prop_mil_ur_br)
+
+#Proportion des personnes en zone rural dans le secteur agricole
+prop_mil_Ru_br <- df_resume_br_m %>%
+  filter(milieu_resid2 == "Rural", branche1 == "Agriculture") %>%
+  pull(prop_emp_br_m) %>%
+  round(2)
+#View(prop_mil_Ru_br)
+```
+
+Suivant le milieu de résidence **(Figure 7)**, `r if(prop_mil_Ru_br > prop_mil_ur_br & prop_mil_Ru_br > prop_mil_A_br){"il ressort que les emplois tenus dans le secteur agricole sont principalement exercés en milieu rural"}else if(prop_mil_A_br > prop_mil_Ru_br & prop_mil_A_br > prop_mil_ur_br){"il ressort que les emplois tenus dans le secteur agricole sont principalement exercés à Abidjan"}else if(prop_mil_ur_br > prop_mil_Ru_br & prop_mil_ur_br > prop_mil_A_br){"il ressort que les emplois tenus dans le secteur agricole sont principalement exercés en zone urbaine"}` (**`r prop_mil_Ru_br`** %) Avec seulement **`r prop_mil_A_br`** % des emplois dans ce secteur qui sont tenues à Abidjan , et **`r prop_mil_ur_br`** % dans les autres zones urbaines.
+
+Cependant, pour tous les autres secteurs d'activités : Industrie, commerce et les services, la majorité des emplois sont tenus à Abidjan principalement, et dans les autres milieux urbains.
+
+**Figure 7 :** Population en emploi par branche d'activité et suivant le milieu de residence
+
+```{r echo=FALSE, fig.widht=4.5 , fig.height=4}
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_br_m, aes(x = branche1, y = prop_emp_br_m, fill =milieu_resid2 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  scale_y_continuous(breaks = seq(0,200, by=10))+
+  labs(
+    x = "Branche d'activité",
+    y = "Population en emploi T2 (%)",
+    fill = "Milieu de residence"
+  ) +
+theme_minimal()
+
+```
+
+
+\newpage
+
+## Pluriactivité
+
+```{r echo=FALSE,fig.width=4 , fig.height=4}
+
+#### GRAPHIQUE PLURIACTIVITE/SEXE
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION 
+#base_T2$sexe <- factor(base_T2$sexe,
+                              #levels = c(1,2),
+                              #labels= c("Masculin","Féminin"))
+
+base_T2$pluriactivite <- factor(base_T2$pluriactivite,
+                               levels = c(0,1),
+                               labels = c("Non","Oui"))
+
+
+# CALCUL DES PROPORTIONS
+df_resume_pl <- base_T2 %>%
+  filter(!is.na(pluriactivite), !is.na(sexe))%>%
+  group_by(sexe,pluriactivite) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(sexe) %>%
+  mutate(prop_pl_sexe= poids_total / sum(poids_total) * 100)
+
+
+# Calcul du total global (ensemble)
+df_pl_total <- base_T2 %>%
+  filter(!is.na(pluriactivite)) %>%
+  group_by(pluriactivite) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  mutate(sexe = "Ensemble",
+         prop_pl_sexe = poids_total / sum(poids_total) * 100)
+
+# Combiner les deux
+df_pl_ens <- bind_rows(df_resume_pl, df_pl_total)
+
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion des hommes en pluriactivité
+prop_pl_hom <- df_resume_pl %>%
+  filter(sexe == "Masculin", pluriactivite == "Oui") %>%
+  pull(prop_pl_sexe) %>%
+  round(2)
+#View(prop_pl_hom) 
+
+#Proportion des femmes en pluriactivité
+prop_pl_Fem <- df_resume_pl %>%
+  filter(sexe == "Féminin", pluriactivite == "Oui") %>%
+  pull(prop_pl_sexe) %>%
+  round(2)
+#View(prop_pl_Fem)
+
+prop_global_pl <- df_resume_pl %>%
+  group_by(pluriactivite) %>%
+  summarise(poids_total = sum(poids_total, na.rm = TRUE), .groups = "drop") %>%
+  mutate(prop = poids_total / sum(poids_total) * 100) %>%
+  filter(pluriactivite == "Oui") %>%
+  pull(prop) %>%
+  round(2)
+
+```
+
+Parmi les personnes en emploi au deuxième trimestre de l'année 2024, **`r prop_global_pl`** % tiennent au moins un emploi supplémentaire en plus de leur emploi principale. De plus, `r if(prop_pl_hom > prop_pl_Fem){"l’on note plus d’hommes que de femmes en situation de pluriactivité, parmi les personnes en emploi"}else{"l’on note plus de femmes que d'hommes en situation de pluriactivité, , parmi les personnes en emploi"}` Avec **`r prop_pl_hom`** % des hommes en emploi exercant au moins une activité supplémentaire, contre **`r prop_pl_Fem`** % des femmes en emploi **(Figure 8)**.
+
+**Figure 8 :** Pluriactivité par sexe
+
+```{r echo=FALSE,fig.width=4 , fig.height=4}
+
+# CREATION DU GRAPHIQUE
+  
+  ggplot(df_pl_ens %>% filter(pluriactivite == "Oui"),
+       aes(x = factor(sexe), y = prop_pl_sexe, fill = factor(sexe))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_pl_ens %>% filter(pluriactivite == "Oui"),
+            aes(label = paste0(round(prop_pl_sexe, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "black") +
+  scale_fill_manual(values = c("Masculin" = "#1F4E79","Féminin"= "#E46C0A")) +
+  scale_y_continuous(breaks = seq(0,300, by=10))+
+  labs(
+    x = "sexe",
+    y = "Travailleurs en pluriactivité T2 (%)",
+    fill = "Sexe"
+  ) +
+  theme_minimal() + theme(legend.position = "none")
+
+```
+
+
+```{r echo=FALSE}
+
+#### GRAPHIQUE PLURIACTIVITE/MILIEU DE RESIDENCE 
+
+library(dplyr)
+library(ggplot2)
+
+
+# LABELISATION
+#base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              #levels = c(1,2,3),
+                              #labels = c("Abidjan", "Autre urbain", "Rural"))
+
+#base_T2$pluriactivite <- factor(base_T2$pluriactivite,
+                               #levels = c(0,1),
+                               #labels = c("Non", "Oui"))
+
+#CALCUL DES PROPORTIONS
+
+df_resume_pl_m <- base_T2 %>%
+  filter(!is.na(milieu_resid2),!is.na(pluriactivite))%>%
+  group_by(pluriactivite,milieu_resid2) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_pl_m = poids_total / sum(poids_total) * 100)
+
+
+
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion d'emploi informel à Abidjan 
+prop_pl_Abj <- df_resume_pl_m %>%
+  filter(milieu_resid2== "Abidjan", pluriactivite == "Oui") %>%
+  pull(prop_pl_m) %>%
+  round(2)
+View(prop_pl_Abj) 
+
+#Proportion d'emploi informel en milieu rural
+prop_pl_mil_ru <- df_resume_pl_m %>%
+  filter(milieu_resid2== "Rural", pluriactivite == "Oui") %>%
+  pull(prop_pl_m) %>%
+  round(2)
+View(prop_pl_mil_ru)
+
+#Proportion d'emploi informel dans les zones urbaines
+prop_pl_urb <- df_resume_pl_m %>%
+  filter(milieu_resid2 == "Autre urbain", pluriactivite == "Oui") %>%
+  pull(prop_pl_m) %>%
+  round(2)
+View(prop_pl_urb)
+
+
+```
+
+
+Par ailleurs, `r if(prop_pl_mil_ru > prop_pl_Abj & prop_pl_mil_ru > prop_pl_urb){"il est plus probable pour les personnes en emploi résidant en milieu rural d'etre en situation de pluriactivité, en comparaison des personnes en emploi vivant en milieu urbain"}else if(prop_pl_Abj > prop_pl_mil_ru & prop_pl_Abj > prop_pl_urb){"il est plus probable pour les personnes en emploi résidant à Abidjan d'etre en situation de pluriactivité, en comparaison des personnes en emploi vivant dans les autres milieux urbains et en milieu rural"}else if(prop_pl_urb > prop_pl_mil_ru & prop_pl_urb > prop_pl_Abj){"il est plus probable pour les personnes en emploi résidant dans les autres milieux urbains d'etre en situation de pluriactivité, en comparaison des personnes en emploi vivant à Abidjan et en milieu rural"}` **(Figure 9)**.
+
+**Figure 9 :** Pluriactivité suivant le milieu de residence
+
+```{r echo=FALSE}
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_pl_m %>% filter(pluriactivite == "Oui"), aes(x = milieu_resid2, y = prop_pl_m, fill = milieu_resid2 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_pl_m %>% filter(pluriactivite == "Oui"), aes(label = paste0(round(prop_pl_m, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  scale_y_continuous(breaks = seq(0,200, by=10))+
+  labs(
+    x = "Milieu de residence",
+    y = "Travailleur en pluriactivité T2 (%)",
+    fill = "Milieu de residence"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+```
+
+
+\newpage
+
+# INFORMALITE
+
+```{r echo=FALSE, fig.width=4 , fig.height=4}
+
+#### GRAPHIQUE EMPLOI INFORMEL/SEXE
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION 
+#base_T2$sexe <- factor(base_T2$sexe,
+                              #levels = c(1,2),
+                              #labels= c("Masculin","Féminin"))
+
+base_T2$CISE_18_informel_Emp <- factor(base_T2$CISE_18_informel_Emp,
+                               levels = c(1,2),
+                               labels = c("Emploi formel","Emploi informel"))
+
+# CALCUL DES PROPORTIONS
+df_resume_inf_s <- base_T2 %>%
+  filter(!is.na(CISE_18_informel_Emp), !is.na(sexe))%>%
+  group_by(sexe,CISE_18_informel_Emp) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(sexe) %>%
+  mutate(prop_inf_sexe = poids_total / sum(poids_total) * 100)
+
+
+# Calcul du total global
+df_resume_inf_total <- base_T2 %>%
+  filter(!is.na(CISE_18_informel_Emp)) %>%
+  group_by(CISE_18_informel_Emp) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  mutate(sexe = "Ensemble",
+         prop_inf_sexe = poids_total / sum(poids_total) * 100)
+
+# Combiner les deux
+df_resume_inf_s2 <- bind_rows(df_resume_inf_s, df_resume_inf_total)
+
+```
+
+```{r include=FALSE}
+
+library(dplyr)
+#library(tidyverse)
+
+#Proportion des hommes en emploi informel
+prop_inf_hom <- df_resume_inf_s %>%
+  filter(sexe == "Masculin", CISE_18_informel_Emp == "Emploi informel") %>%
+  pull(prop_inf_sexe) %>%
+  round(2)
+#View(prop_inf_hom) 
+
+#Proportion des femmes en emploi informel 
+prop_inf_Fem <- df_resume_inf_s %>%
+  filter(sexe == "Féminin", CISE_18_informel_Emp == "Emploi informel") %>%
+  pull(prop_inf_sexe) %>%
+  round(2)
+#View(prop_inf_Fem)
+
+#Proportion global 
+prop_inf_global <- df_resume_inf_s2 %>%
+  filter(sexe == "Ensemble",CISE_18_informel_Emp == "Emploi informel") %>%
+  pull(prop_inf_sexe) %>%
+  round(2)
+#View(prop_inf_Fem)
+
+
+```
+
+Au deuxième trimestre de l'année 2024, **`r prop_inf_global`** % des emplois tenus sont informels. `r if(prop_inf_hom < prop_inf_Fem){"L’on note plus d’emplois informels chez les femmes"}else{"L’on note plus d’emplois informels chez les hommes"}` avec **`r prop_inf_hom`** % d'emplois informels chez les hommes contre **`r prop_inf_Fem`** % chez les femmes **(Figure 10)**.
+
+**Figure 10 :** informalité de l'emploi suivant le sexe
+
+```{r echo=FALSE, fig.width=4 , fig.height=4}
+
+# Graphique
+ggplot(df_resume_inf_s2, aes(x = sexe, y = prop_inf_sexe, fill = sexe)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_inf_s2 %>% filter(CISE_18_informel_Emp == "Emploi informel"),
+            aes(label = paste0(round(prop_inf_sexe, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Masculin" = "#1F4E79", 
+                               "Féminin" = "#E46C0A", 
+                               "Ensemble" = "#6A737B")) +
+  scale_y_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    x = "Sexe",
+    y = "Proportion d'emplois informels (%)",
+    fill = "Sexe"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+
+```{r echo=FALSE}
+
+#### GRAPHIQUE EMPLOI INFORMEL/MILIEU DE RESIDENCE 
+
+#library(dplyr)
+#library(ggplot2)
+
+# LABELISATION
+#base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              #l#evels = c(1,2,3),
+                              #labels = c("Abidjan", "Autre urbain", "Rural"))
+
+#base_T2$CISE_18_informel_Emp <- factor(base_T2$CISE_18_informel_Emp,
+                              #levels = c(1,2),
+                               #labels = c("Emploi formel","Emploi informel"))
+
+#CALCUL DES PROPORTIONS
+df_resume_inf_m <- base_T2 %>%
+  filter(!is.na(CISE_18_informel_Emp), !is.na(milieu_resid2))%>%
+  group_by(milieu_resid2, CISE_18_informel_Emp) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_inf_m = poids_total / sum(poids_total) * 100)
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion d'emploi informel à Abidjan 
+prop_inf_Abj <- df_resume_inf_m %>%
+  filter(milieu_resid2== "Abidjan", CISE_18_informel_Emp == "Emploi informel") %>%
+  pull(prop_inf_m) %>%
+  round(2)
+#View(prop_inf_Abj) 
+
+#Proportion d'emploi informel en milieu rural
+prop_inf_mil_ru <- df_resume_inf_m %>%
+  filter(milieu_resid2== "Rural", CISE_18_informel_Emp == "Emploi informel") %>%
+  pull(prop_inf_m) %>%
+  round(2)
+#View(prop_inf_mil_ru)
+
+#Proportion d'emploi informel dans les zones urbaines
+prop_inf_urb <- df_resume_inf_m %>%
+  filter(milieu_resid2 == "Autre urbain", CISE_18_informel_Emp == "Emploi informel") %>%
+  pull(prop_inf_m) %>%
+  round(2)
+#View(prop_inf_urb)
+
+```
+
+`r if(prop_inf_mil_ru > prop_inf_urb & prop_inf_mil_ru > prop_inf_Abj){"Le milieu rural est la zone géographique regorgeant la plus grande proportion d’emplois informels"}else if(prop_inf_Abj > prop_inf_mil_ru & prop_inf_Abj > prop_inf_urb){"Abidjan est la zone géographique regorgeant la plus grande proportion d’emplois informels"}else if(prop_inf_urb > prop_inf_mil_ru & prop_inf_urb > prop_inf_Abj){"Les zones urbaines, en dehors de la ville d'Abidjan sont les zones géographiques regorgeant la plus grande proportion d’emplois informels"}`.En effet,  **`r prop_inf_mil_ru`** % des emplois tenus en milieu rural le sont dans un cadre informel, contre **`r prop_inf_Abj`** % à Abidjan et **`r prop_inf_urb`** % dans les autres zones urbaines **(Figure 11)**.
+
+**Figure 11 :** Informalité de l'emploi suivant le milieu de résidence
+
+```{r echo=FALSE}
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_inf_m, aes(x = milieu_resid2, y = prop_inf_m, fill =milieu_resid2 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_inf_m %>% filter(CISE_18_informel_Emp == "Emploi informel"), aes(label = paste0(round(prop_inf_m, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  scale_y_continuous(breaks = seq(0,200, by=10))+
+  labs(
+    x = "Proportion d'emplois informels",
+    y = "Population en emploi T2 (%)",
+    fill = "Milieu de residence"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+
+```
+
+Par ailleurs, les personnes moins instruites sont plus enclines à tenir des emplois informels **(Figure 12)**.
+
+**Figure 12 :** Informalité de l'emploi suivant le niveau d'instruction
+
+```{r echo=FALSE, fig.width= 8.5, fig.height=3}
+#### GRAPHIQUE EMPLOI INFORMEL/NIVEAU D'EDUCATION
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION 
+base_T2$Niv_inst_AG3 <- factor(base_T2$Niv_inst_AG3,
+                              levels = c(1,2,3,4,5),
+                              labels= c("Aucun","Primaire","Secondaire 1er Cycle","Secondaire 2nd Cycle","Superieur"))
+
+#base_T2$CISE_18_informel_Emp <- factor(base_T2$CISE_18_informel_Emp,
+                               #levels = c(1,2),
+                               #labels = c("Emploi formel","Emploi informel"))
+
+# CALCUL DES PROPORTIONS
+df_inf_niv <- base_T2 %>%
+  filter(!is.na(CISE_18_informel_Emp), !is.na(Niv_inst_AG3))%>%
+  group_by(Niv_inst_AG3,CISE_18_informel_Emp) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Niv_inst_AG3) %>%
+  mutate(prop_inf_niv= poids_total / sum(poids_total) * 100)
+
+# CREATION DU GRAPHIQUE
+ggplot(df_inf_niv  %>% filter(CISE_18_informel_Emp=="Emploi informel"), aes(x = Niv_inst_AG3, y = prop_inf_niv, fill = Niv_inst_AG3)) + geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_inf_niv  %>% filter(CISE_18_informel_Emp=="Emploi informel"), aes(label = paste0(round(prop_inf_niv, 1), "%")),
+            position = position_stack(vjust = 0.7),
+            color = "black") +
+  scale_fill_manual(values = c("Aucun" = "#1F4E79",
+  "Primaire" = "#E46C0A",
+  "Secondaire 1er Cycle" = "#548235",
+  "Secondaire 2nd Cycle" = "#00B0F0",
+  "Superieur" = "#92389F")) +
+  scale_y_continuous(breaks = seq(0,300, by=10))+
+  labs(
+    x = "Proportion d'emplois informels",
+    y = "Population en emploi T2 (%)",
+    fill = "Niveau d'education"
+  ) +
+  theme_minimal() + theme(legend.position = "none") 
+
+```
+
+
+\newpage
+
+# SOUS- UTILISATION DE LA MAIN D'OEUVRE
+
+## Taux de chomage
+
+```{r echo=FALSE, fig.width=4 , fig.height=3}
+
+#### GRAPHIQUE POPULATION CHOMAGE/SEXE
+
+#library(dplyr)
+#library(ggplot2)
+
+# LABELISATION 
+#base_T2$sexe <- factor(base_T2$sexe,
+                              #levels = c(1,2),
+                              #labels= c("Masculin","Féminin"))
+
+#base_T2$pop_chomage_dich <- factor(base_T2$SU1,
+                               #levels = c(0,1),
+                               #labels = c("Non","Oui"))
+
+# CALCUL DES PROPORTIONS
+df_ch_s_g <- base_T2 %>%
+  filter(!is.na(pop_chomage_dich), !is.na(sexe))%>%
+  group_by(sexe,pop_chomage_dich) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(sexe) %>%
+  mutate(prop_ch_sexe= poids_total / sum(poids_total) * 100)
+
+
+# Calcul du total global (ensemble)
+df_ch_total <- base_T2 %>%
+  filter(!is.na(pop_chomage_dich)) %>%
+  group_by(pop_chomage_dich) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  mutate(sexe = "Ensemble",
+         prop_ch_sexe = poids_total / sum(poids_total) * 100)
+
+# Combiner les deux
+df_ch_s_g2 <- bind_rows(df_ch_s_g, df_ch_total)
+
+```
+
+```{r include=FALSE}
+
+library(dplyr)
+#library(tidyverse)
+
+#Proportion des hommes au chomage
+prop_hom_c <- df_ch_s_g %>%
+  filter(sexe == "Masculin", pop_chomage_dich =="Oui") %>%
+  pull(prop_ch_sexe) %>%
+  round(2)
+#View(prop_hom_c) 
+
+#Proportion des femmes au chomage
+prop_fem_c <- df_ch_s_g %>%
+  filter(sexe == "Féminin", pop_chomage_dich =="Oui") %>%
+  pull(prop_ch_sexe) %>%
+  round(2)
+#View(prop_fem_c)
+
+#Proportion global chomage
+prop_global_chom <- df_ch_s_g %>%
+  group_by(pop_chomage_dich) %>%
+  summarise(poids_total = sum(poids_total, na.rm = TRUE), .groups = "drop") %>%
+  mutate(prop = poids_total / sum(poids_total) * 100) %>%
+  filter(pop_chomage_dich == "Oui") %>%
+  pull(prop) %>%
+  round(2)
+#View(prop_global_chom)
+```
+
+Au deuxième trimestre de l'année 2024, le taux de chomage s'établit à **`r prop_global_chom`** %. Avec un taux de **`r prop_hom_c`** % chez les hommes contre  **`r prop_fem_c`** % chez les femmes **(Figure 13)**, `r if(prop_hom_c < prop_fem_c){"Le taux de chomage chez les femmes est plus élevé que celui des  hommes."}else{"Le taux de chomage chez les hommes est plus élevé que celui des femmes."}`
+
+**Figure 13 :** Taux de chomage suivant le sexe
+
+```{r echo=FALSE, fig.width=4 , fig.height=3}
+
+# Création du graphique
+ggplot(df_ch_s_g2 %>% filter(pop_chomage_dich == "Oui"),
+       aes(x = factor(sexe), y = prop_ch_sexe, fill = factor(sexe))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_ch_s_g2 %>% filter(pop_chomage_dich == "Oui"),
+            aes(label = paste0(round(prop_ch_sexe, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "black") +
+  scale_fill_manual(values = c("Masculin" = "#1F4E79", 
+                               "Féminin"= "#E46C0A",
+                               "Ensemble" = "#6A737B")) +
+  scale_y_continuous(breaks = seq(0, 300, by = 10)) +
+  labs(
+    x = "sexe",
+    y = "Population au chomage T2 (%)",
+    fill = "Sexe"
+  ) +
+  theme_minimal() + 
+  theme(legend.position = "none")
+
+```
+
+Par ailleurs, le taux de chomage décroît avec l'âge **(Figure 14)** et augmente (plus ou moins) avec le niveau d'instruction **(Figure 15)**.
+
+**Figure 14 :** Taux de chomage suivant l'age
+
+```{r echo=FALSE, fig.width=5 , fig.height=3}
+
+#### GRAPHIQUE POPULATION CHOMAGE/GROUPE D'AGE
+
+#library(dplyr)
+#library(ggplot2)
+
+# LABELISATION
+#base_T2$groupe_age4 <- factor(base_T2$groupe_age4,
+                              #levels = c(1,2,3,4),
+                              #labels = c("16-24 ans", "25-35 ans", "36-64 ans", "65 ans et plus"))
+
+#base_T2$pop_chomage_dich <- factor(base_T2$SU1,
+                               #levels = c(0,1),
+                               #labels = c("Non", "Oui"))
+
+#CALCUL DES PROPORTIONS
+df_ch_GA <- base_T2 %>%
+  filter(!is.na(pop_chomage_dich), !is.na(groupe_age4))%>%
+  group_by(pop_chomage_dich,groupe_age4) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(groupe_age4) %>%
+  mutate(prop_ch_GA = poids_total / sum(poids_total) * 100)
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_ch_GA %>%
+  filter(pop_chomage_dich == "Oui"), aes(x = factor(groupe_age4), y = prop_ch_GA, fill = factor(groupe_age4))) + geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_ch_GA %>%
+  filter(pop_chomage_dich == "Oui") , aes(label = paste0(round(prop_ch_GA, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "black")  +
+  scale_fill_manual(values = c("16-24 ans" = "#1F4E79",
+  "25-35 ans" = "#E46C0A",
+  "36-64 ans" = "#548235",
+  "65 ans et plus" = "#00B0F0")) +
+  scale_y_continuous(breaks = seq(0,200, by=10))+
+  labs(
+    x = "Groupe d'âge",
+    y = "Population au chomage T2 (%)",
+    fill = "Groupe d'age"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+```
+
+**Figure 15 :** Taux de chomage suivant le niveau d'instruction
+
+```{r echo=FALSE, fig.width=5  ,fig.height=3.5}
+
+#### GRAPHIQUE POPULATION CHOMAGE/NIVEAU D'EDUCATION
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION 
+#base_T2$Niv_inst_AG2 <- factor(base_T2$Niv_inst_AG2,
+                              #l#evels = c(1,2,3,4),
+                              #labels= c("Aucun","Primaire","Secondaire","Superieur"))
+
+#base_T2$pop_chomage_dich <- factor(base_T2$SU1,
+                               #levels = c(0,1),
+                               #labels = c("Non","Oui"))
+
+# CALCUL DES PROPORTIONS
+df_ch_niv <- base_T2 %>%
+  filter(!is.na(pop_chomage_dich), !is.na(Niv_inst_AG3))%>%
+  group_by(pop_chomage_dich,Niv_inst_AG3) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Niv_inst_AG3) %>%
+  mutate(prop_ch_niv= poids_total / sum(poids_total) * 100)
+
+# CREATION DU GRAPHIQUE
+ggplot(df_ch_niv %>%
+  filter(pop_chomage_dich == "Oui"), aes(x = factor(Niv_inst_AG3), y = prop_ch_niv, fill = factor(Niv_inst_AG3))) + geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_ch_niv %>%
+  filter(pop_chomage_dich == "Oui") , aes(label = paste0(round(prop_ch_niv, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "black") +
+  scale_fill_manual(values = c("Aucun" = "#1F4E79",
+  "Primaire" = "#E46C0A",
+  "Secondaire 1er Cycle" = "#548235",
+  "Secondaire 2nd Cycle" = "#00B0F0",
+  "Superieur" = "#92389F")) +
+  scale_y_continuous(breaks = seq(0,300, by=10))+
+  labs(
+    x = "Niveau d'education",
+    y = "Population au chomage T2 (%)",
+    fill = "Niveau d'education"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r echo=FALSE, fig.width=4 , fig.height=4}
+
+#### GRAPHIQUE POPULATION AU CHOMAGE/MILIEU DE RESIDENCE
+
+#library(dplyr)
+#library(ggplot2)
+
+
+# LABELISATION
+#base_T2$pop_chomage_dich <- factor(base_T2$pop_chomage_dich,
+                              #levels = c(0,1),
+                               #labels = c("Non","Oui"))
+
+#base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              #levels = c(1,2,3),
+                              #labels = c("Abidjan", "Autre urbain", "Rural"))
+
+#CALCUL DES PROPORTIONS
+df_ch_m <- base_T2 %>%
+  filter(!is.na(milieu_resid2),!is.na(pop_chomage_dich))%>%
+  group_by(pop_chomage_dich,milieu_resid2) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_ch_m = poids_total / sum(poids_total) * 100)
+
+```
+
+```{r include =FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion des personnes au chomage à Abidjan 
+prop_ch_Abj <- df_ch_m %>%
+  filter(milieu_resid2== "Abidjan", pop_chomage_dich =="Oui") %>%
+  pull(prop_ch_m) %>%
+  round(2)
+#View(prop_ch_Abj) 
+
+#Proportion des personnes au chomage milieu rural
+prop_ch_mil_ru <- df_ch_m %>%
+  filter(milieu_resid2== "Rural",pop_chomage_dich =="Oui") %>%
+  pull(prop_ch_m) %>%
+  round(2)
+#View(prop_ch_mil_ru)
+
+#Proportion des personnes au chomage dans les zones urbaines
+
+prop_ch_urb <- df_ch_m %>%
+  filter(milieu_resid2 == "Autre urbain",pop_chomage_dich =="Oui") %>%
+  pull(prop_ch_m) %>%
+  round(2)
+#View(prop_ch_urb)
+
+```
+
+Aussi, avec un taux de chomage de **`r prop_ch_Abj`** % à Abidjan , **`r prop_ch_urb`** % dans les autres milieux urbains et  **`r prop_ch_mil_ru`** % en milieu rural **(Figure 16)**,`r if(prop_ch_mil_ru < prop_ch_urb & prop_ch_mil_ru < prop_ch_Abj){"le taux de chomage en milieu rural demeure le plus faible suivant une désagrégation par milieu de résidence"}else if(prop_ch_Abj < prop_ch_mil_ru & prop_ch_Abj < prop_inf_urb){"le taux de chomage à Abidjan demeure le plus faible suivant une désagrégation par milieu de résidence"}else if(prop_ch_urb < prop_ch_mil_ru & prop_ch_urb < prop_ch_Abj){"le taux de chomage dans les zones urbaines demeurent les plus faibles suivant une désagrégation par milieu de résidence"}`, présentant un taux de chomage de **`r prop_ch_Abj`** % à Abidjan , un taux de chomage de **`r prop_ch_urb`** % dans les zones urbaines et un taux de chomage de **`r prop_ch_mil_ru`** % dans le milieu rural **(Figure 16)**.
+
+**Figure 16 :** Taux de chomage suivant le milieu de residence
+
+```{r echo=FALSE, fig.width=4 , fig.height=4}
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_ch_m %>%
+  filter(pop_chomage_dich == "Oui"), aes(x = factor(milieu_resid2), y = prop_ch_m, fill = factor(milieu_resid2))) + geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_ch_m %>%
+  filter(pop_chomage_dich == "Oui") , aes(label = paste0(round(prop_ch_m, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "black") +
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  labs(
+    x = "Milieu de residence",
+    y = "Population au chomage T2 (%) ",
+    fill = "Milieu"
+  ) +
+theme_minimal() + theme(legend.position = "none")
+
+
+```
+
+
+## Taux combiné du chomage et de la main d'oeuvre potentielle
+
+**Figure 17 :** Indicateurs du chomage et la sous-utilisation de la main d'oeuvre
+
+```{r echo=FALSE, fig.height=3 , fig.width=4}
+
+#### INDICATEUR DU CHOMAGE 
+
+#library(dplyr)
+#library(ggplot2)
+#library(tidyr)
+#library(haven)
+
+
+
+base_T2_prep <- base_T2 %>%
+  mutate(across(all_of(c("SU1","SU2","SU3","SU4")), ~ {
+    x <- .x
+    # si déjà numérique 0/1 -> garde
+    if (is.numeric(x)) return(as.numeric(x))
+    # sinon convertit "Oui"/"Non" (insensible à la casse) en 1/0
+    xch <- tolower(trimws(as.character(x)))
+    dplyr::case_when(
+      xch %in% c("oui","o","yes","y","1") ~ 1,
+      xch %in% c("non","n","no","0")      ~ 0,
+      TRUE                                ~ NA_real_
+    )
+  }))
+
+# 2) passer en long (on garde pmencor_ind répété pour chaque ligne pivotée)
+df_long <- base_T2_prep %>%
+  select(all_of(c("SU1","SU2","SU3","SU4","pmencor_ind"))) %>%
+  pivot_longer(cols = starts_with("SU"),
+               names_to = "indicateur",
+               values_to = "valeur") %>%
+  filter(!is.na(valeur))
+
+# 3) calcul pondéré des proportions
+df_prop <- df_long %>%
+  group_by(indicateur) %>%
+  summarise(
+    w_yes  = sum((valeur == 1) * pmencor_ind, na.rm = TRUE),
+    w_tot  = sum(pmencor_ind * (!is.na(valeur)), na.rm = TRUE),
+    prop   = w_yes / w_tot * 100,
+    .groups = "drop"
+  ) %>%
+  # labeliser proprement pour le graphique
+  mutate(label = case_when(
+    indicateur == "SU1" ~ "Taux de chômage",
+    indicateur == "SU2" ~ "SU2",
+    indicateur == "SU3" ~ "SU3",
+    indicateur == "SU4" ~ "SU4",
+    TRUE ~ indicateur
+  ))
+
+# 4) graphique
+ggplot(df_prop, aes(
+  x = factor(label, levels = c("Taux de chômage", "SU2", "SU3", "SU4")),
+  y = prop,
+  fill = label
+)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = sprintf("%.1f%%", prop)), vjust = -0.5, size = 3, , position = position_stack(vjust = 0.5)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  scale_fill_manual(values = c(
+    "Taux de chômage" = "#1F4E79",
+    "SU2" = "#E46C0A",
+    "SU3" = "#548235",
+    "SU4" = "#00B0F0"
+  )) +
+  labs(
+    x = "Indicateurs de la sous utilisation de la main-d’œuvre",
+    y = "Taux (%)"
+  ) +
+  theme_minimal() + theme(legend.position = "none")
+
+```
+
+```{r include=FALSE}
+
+val_su3 <- df_prop %>% 
+  filter(indicateur == "SU3") %>% 
+  pull(prop) %>%
+  round(2)
+
+
+```
+
+Le taux combiné du chomage et de la main d'oeuvre potentielle est de **`r val_su3`** %.  
+
+\newpage
+
+# JEUNE NI EN EMPLOI, NI EN EDUCATION ET NI EN FORMATION
+
+```{r echo=FALSE, fig.width=4}
+
+#### GRAPHIQUE PROPORTIONS DES NEETS (15-24 Ans)/SEXE
+
+#library(dplyr)
+#library(ggplot2)
+
+# LABELISATION 
+#base_T2$sexe <- factor(base_T2$sexe,
+                              #levels = c(1,2),
+                              #labels= c("Masculin","Féminin"))
+
+base_T2$NEET15_24_bis <- factor(base_T2$NEET15_24_bis,
+                               levels = c(0,1),
+                               labels = c("Non","Oui"))
+
+# CALCUL DES PROPORTIONS PAR SEXE
+df_resume_NE <- base_T2 %>%
+  filter(!is.na(NEET15_24_bis), !is.na(sexe)) %>%
+  group_by(sexe, NEET15_24_bis) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  group_by(sexe) %>%
+  mutate(prop = poids_total / sum(poids_total) * 100)
+
+# CALCUL DU TAUX POUR "ENSEMBLE"
+df_ensemble <- base_T2 %>%
+  filter(!is.na(NEET15_24_bis)) %>%
+  group_by(NEET15_24_bis) %>%
+  summarise(poids_total = sum(pmencor_ind, na.rm = TRUE), .groups = "drop") %>%
+  mutate(sexe = "Ensemble") %>% # Ajoute une fausse variable sexe
+  group_by(sexe) %>%
+  mutate(prop = poids_total / sum(poids_total) * 100)
+
+# COMBINER LES DEUX
+df_final <- bind_rows(df_resume_NE, df_ensemble)
+
+# FILTRER SEULEMENT LES "NEET = Oui"
+df_NEET_only <- df_final %>% filter(NEET15_24_bis == "Oui")
+
+df_NEET_only$sexe <- factor(df_NEET_only$sexe,
+                            levels = c("Masculin", "Féminin", "Ensemble"))
+
+max_y <- ceiling(max(df_NEET_only$prop))
+
+```
+
+```{r include=FALSE}
+
+library(dplyr)
+#library(tidyverse)
+
+#Proportion des NEET15_24 masculin 
+prop_NEET15_24_M <- df_NEET_only %>%
+  filter(sexe == "Masculin", NEET15_24_bis == "Oui") %>%
+  pull(prop) %>%
+  round(2)
+View(prop_NEET15_24_M) 
+
+#Proportion des NEET15_24 Féminin
+prop_NEET15_24_F <- df_NEET_only %>%
+  filter(sexe == "Féminin", NEET15_24_bis == "Oui") %>%
+  pull(prop) %>%
+  round(2)
+View(prop_NEET15_24_F)
+
+#Proportion des NEET15_24 Ensemble
+
+prop_NEET15_24_E <- df_NEET_only %>%
+  filter(sexe == "Ensemble", NEET15_24_bis == "Oui") %>%
+  pull(prop) %>%
+  round(2)
+View(prop_NEET15_24_E)
+```
+
+Au deuxième trimestre de l'année 2024, la proportion de jeunes ni en emploi, ni en éducation et ni en formation (NEETs) âgés de 16 à 24 ans était de **`r prop_NEET15_24_E`** %.`r if(prop_NEET15_24_M < prop_NEET15_24_F){"La proportion de NEETs est plus élevée chez les jeunes femmes de cette tranche d'âge par rapport aux hommes."}else{"La proportion de NEETs est plus élevée chez les jeunes hommes de cette tranche d'âge par rapport aux femmes"}` avec **`r prop_NEET15_24_M`** % chez les hommes et **`r prop_NEET15_24_M`** % chez les femmes **(Figure 18)**.
+
+**Figure 18 :** Proportion des NEETs ches les 16-24ans
+
+```{r echo=FALSE, fig.width=4}
+
+# GRAPHIQUE
+ggplot(df_NEET_only %>% filter(NEET15_24_bis == "Oui"), aes(x = sexe, y = prop , fill = sexe)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  geom_text(aes(label = paste0(round(prop, 1), "%")),
+            vjust = 3, color = "Black", size = 3) +
+  scale_fill_manual(values = c("Masculin" = "#1F4E79",
+                               "Féminin" = "#E46C0A",
+                               "Ensemble" = "#548235")) +
+  scale_y_continuous(breaks = seq(0,300, by = 10), limits= c(0,max_y,5))+
+  labs(
+    x = "Sexe",
+    y = "Taux de NEETs(16-24 Ans) (%)",
+    fill = "Sexe"
+    )+
+  theme_minimal() + theme(legend.position = "none")
+
+```
+
+
+
+```{r hide_neet2, echo=FALSE, eval=FALSE}
+
+**Figure 19 :** Proportions des NEETs chez les 15-35 ans
+```
+
+
+
+```{r include=FALSE}
+
+#### GRAPHIQUE PROPORTIONS DES NEETS (15-35 Ans)/SEXE
+
+library(dplyr)
+library(ggplot2)
+
+
+# LABELISATION 
+base_T2$sexe <- factor(base_T2$sexe,
+                              levels = c(1,2),
+                              labels= c("Masculin","Féminin"))
+
+base_T2$NEET15_35_bis <- factor(base_T2$NEET15_35_bis,
+                               levels = c(0,1),
+                               labels = c("Non","Oui"))
+
+# CALCUL DES PROPORTIONS PAR SEXE
+df_resume_NE <- base_T2 %>%
+  filter(!is.na(NEET15_35_bis), !is.na(sexe)) %>%
+  group_by(sexe, NEET15_35_bis) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(sexe) %>%
+  mutate(prop_N = n / sum(n) * 100)
+
+# CALCUL DU TAUX POUR "ENSEMBLE"
+df_ensemble <- base_T2 %>%
+  filter(!is.na(NEET15_35_bis)) %>%
+  group_by(NEET15_35_bis) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(sexe = "Ensemble") %>%
+  group_by(sexe) %>%
+  mutate(prop_N = n / sum(n) * 100)
+
+# COMBINER LES DEUX
+df_final <- bind_rows(df_resume_NE, df_ensemble)
+
+# FILTRER SEULEMENT LES "NEET = Oui"
+df_NEET_only <- df_final %>% filter(NEET15_35_bis == "Oui")
+
+df_NEET_only$sexe <- factor(df_NEET_only$sexe,
+                            levels = c("Masculin", "Féminin", "Ensemble"))
+
+
+# GRAPHIQUE
+ggplot(df_NEET_only %>% filter(NEET15_35_bis == "Oui"), aes(x = sexe, y = prop_N, fill = sexe)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  geom_text(aes(label = paste0(round(prop_N, 1), "%")),
+            vjust = 3, color = "Black", size = 3) +
+  scale_fill_manual(values = c("Masculin" = "#1F4E79",
+                               "Féminin" = "#E46C0A",
+                               "Ensemble" = "#548235")) +
+  scale_y_continuous(breaks = seq(0,300, by = 10), limits = c(0, max_y + 5))+
+  labs(
+    x = "Sexe",
+    y = "Taux de NEETs(15-35 Ans) (%)",
+    fill = "Sexe"
+  ) +
+  theme_minimal()
+
+```
+
+```{r include=FALSE}
+
+library(dplyr)
+#library(tidyverse)
+
+#Proportion des NEET15_24 masculin 
+prop_NEET15_35_M <- df_NEET_only %>%
+  filter(sexe == "Masculin", NEET15_35_bis == "Oui") %>%
+  pull(prop_N) %>%
+  round(2)
+#View(prop_NEET15_35_M) 
+
+#Proportion des NEET15_24 Féminin
+prop_NEET15_35_F <- df_NEET_only %>%
+  filter(sexe == "Féminin", NEET15_35_bis == "Oui") %>%
+  pull(prop_N) %>%
+  round(2)
+#View(prop_NEET15_35_F)
+
+#Proportion des NEET15_24 Ensemble
+
+prop_NEET15_35_E <- df_NEET_only %>%
+  filter(sexe == "Ensemble", NEET15_35_bis == "Oui") %>%
+  pull(prop_N) %>%
+  round(2)
+#View(prop_NEET15_35_E)
+
+```
+
+
+```{r hide_neet, echo=FALSE, eval=FALSE}
+
+Concernant les autres groupes d'âge (15-35 et 15-40), `r if(prop_NEET15_35_M < prop_NEET15_35_F){"la même tendance est à observer : la proportion de NEETS est plus élevée chez les femmes"}else{"la même tendance est à observer : la proportion de NEETS est plus élevée chez les hommes"}` **(Figure 19)**.
+
+
+
+**Figure 21 :** Proportions des NEETs chez les 15-24 ans suivant le milieu de residence
+```
+
+
+```{r include=FALSE}
+
+#### GRAPHIQUE PROPORTIONS DES NEETS (15-24 Ans)/MILIEU DE RESIDENCE 
+
+library(dplyr)
+library(ggplot2)
+
+
+# LABELISATION
+base_T2$NEET15_24_bis <- factor(base_T2$NEET15_24_bis,
+                              levels = c(0,1),
+                               labels = c("Non","Oui"))
+
+base_T2$milieu_resid2 <- factor(base_T2$milieu_resid2,
+                              levels = c(1,2,3),
+                              labels = c("Abidjan", "Autre urbain", "Rural"))
+
+#CALCUL DES PROPORTIONS
+df_resume_NE <- base_T2 %>%
+  filter(!is.na(milieu_resid2),!is.na(NEET15_24_bis))%>%
+  group_by(milieu_resid2,NEET15_24_bis) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(milieu_resid2) %>%
+  mutate(prop_N2 = n / sum(n) * 100)
+
+# REALISATION DU GRAPHIQUE 
+ggplot(df_resume_NE %>% filter(NEET15_24_bis == "Oui"), aes(x = milieu_resid2 , y = prop_N2, fill =milieu_resid2 )) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(data = df_resume_NE %>% filter(NEET15_24_bis == "Oui"), aes(label =   paste0(round(prop_N2, 1), "%")), position = position_stack(vjust = 0.7),
+            color = "black")+
+  scale_fill_manual(values = c("Abidjan" = "#1F4E79",
+  "Autre urbain" = "#E46C0A",
+  "Rural" = "#548235")) +
+  labs(
+    x = "Milieu de residence",
+    y = "Taux de NEETs(15-24 Ans)(%) ",
+    fill = "Milieu"
+  ) +
+theme_minimal()
+```
+
+```{r include=FALSE}
+
+#library(dplyr)
+#library(tidyverse)
+
+#Proportion des NEET15_24 Abidjan 
+prop_NEET15_24_Abj <- df_resume_NE %>%
+  filter(milieu_resid2 == "Abidjan", NEET15_24_bis == "Oui") %>%
+  pull(prop_N2) %>%
+  round(2)
+#View(prop_NEET15_24_Abj) 
+
+#Proportion des NEET15_24 Autre urbain
+prop_NEET15_24_urb <- df_resume_NE %>%
+  filter(milieu_resid2 == "Autre urbain", NEET15_24_bis == "Oui") %>%
+  pull(prop_N2) %>%
+  round(2)
+#View(prop_NEET15_24_urb)
+
+#Proportion des NEET15_24 Rural
+
+prop_NEET15_24_Ru <- df_resume_NE %>%
+  filter(milieu_resid2 == "Rural", NEET15_24_bis == "Oui") %>%
+  pull(prop_N2) %>%
+  round(2)
+#View(prop_NEET15_24_Ru)
+
+```
+
+
+```{r hide_neet1, echo=FALSE, eval=FALSE}
+
+Chez les jeunes de 15 à 24 ans, `r if(prop_NEET15_24_Ru > prop_NEET15_24_urb & prop_NEET15_24_Ru > prop_NEET15_24_Abj){"la proportion de NEETs est plus élevée en milieu rural, qu’à Abidjan et dans les autres milieux urbains"}else if(prop_NEET15_24_Abj > prop_NEET15_24_Ru & prop_NEET15_24_Abj > prop_NEET15_24_urb){"la proportion de NEETs est plus élevée à Abidjan, que dans les milieux rural et dans les autres milieux urbains"}else if(prop_NEET15_24_urb > prop_NEET15_24_Ru & prop_NEET15_24_urb > prop_NEET15_24_Abj){"la proportion de NEETs est plus élevée dans les zones urbaines, que dans les milieux rural et à Abidjan"}` , Avec un taux de **`r prop_NEET15_24_Ru`** % chez les NEETs de 15 à 24 ans dans le milieu rural , un taux de **`r prop_NEET15_24_urb`** % chez les NEETs de 15 à 24 ans dans les zones urbaines et un taux de **`r prop_NEET15_24_Abj`** % pour les NEETs de 15 à 24 ans à Abidjan.
+
+```
+
+
+\newpage
+
+```{=tex}
+\newpage
+\thispagestyle{empty}
+```
+# LEXIQUE
+
+**Personne au chômage ou Chômeur :** Un chômeur est une personne âgée d'au moins 15 ans qui est sans emploi au cours de la semaine de référence, disponible pour travailler au plus tard dans les deux semaines à venir et qui a effectué une démarche active de recherche d'emploi au cours des quatre semaines antérieures à la semaine de référence. Dans notre cas, nous considérons les personnes âgées de 16 ans ou plus étant donné l'âge obligatoire de scolarité en Côte d'Ivoire qui est de 6 à 16 ans.
+
+**Population en âge de travailler :** La population en âge de travailler regroupe l'ensemble des individus du territoire national âgé de 16 ans ou plus.
+
+**Pluriactivité :** Personnes déjà en emploi tenant au moins une activité supplémentaire.
+
+**Emploi formel :** Emploi bénéficiant d'une reconnaissance légale et une régulation officielle par les institutions du travail.
+
+**Emploi informel :** Au sens du BIT, il s'agit d'un emploi reconnu légalement, avec un contrat de travail officiel, des protection sociales complètes et des conditions de travail conformes aux normes réglementaires. Emploi précaire et vulnérable : Au sens du BIT, il s'agit d'emplois associés à une instabilité élevée, un manque de protections sociales, des conditions de travail défavorables et des revenus incertains.
+
+**Main d'œuvre potentielle :** Ce sont l'ensemble des personnes en âge de travailler et capables de travailler mais ne faisant pas partir de la population active. Il s'agit des personnes inactives au sens du BIT, souhaitant travailler mais n'étant pas considéré au chômage car n'étant pas en recherche ou indisponible pour tenir un emploi sur la période considérée.
+
+**Jeunes Ni-Ni ou NEETS :** Jeunes ni à l'école, ni en formation, ni en emploi.
+
+**SU :** Taux de sous-utilisation de la main d'œuvre
+
+**SU1 :** Taux de chômage (personnes en âge de travailler, n'étant pas en emploi, mais étant en recherche active d'emploi et disponible pour travailler).
+
+**SU2 :** Taux de chômage élargi à la sous-utilisation de la main d'œuvre.
+
+**SU3 :** Taux de chômage élargi à la main d'œuvre potentielle (chômeur découragé ; ne faisant pas de recherche d'emploi).
+
+**SU4 :** Taux de chômage élargi à la sous-utilisation de la main d'œuvre et à la main d'œuvre potentielle
