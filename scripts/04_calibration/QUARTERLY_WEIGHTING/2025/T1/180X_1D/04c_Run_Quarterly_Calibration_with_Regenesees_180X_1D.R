@@ -268,7 +268,7 @@ X_Summary_Table <- X_Summaries( numX = xnum,
                                 des_initial = design_lfs, 
                                 des_total = popdataframe,
                                 L_trsld_corr_fact = 0.95,
-                                H_trsld_corr_fact = 1.05, 
+                                H_trsld_corr_fact = 1.65, 
                                 L_trsld_sample_size = 30,
                                 calc_tot = TRUE)
  
@@ -391,8 +391,8 @@ X_Summary_Table <- X_Summaries( numX = xnum,
                                 des_total = popdataframe,
                                 des_final = calib_lfs,
                                 L_trsld_corr_fact = 0.95,
-                                H_trsld_corr_fact = 1.09, 
-                                L_trsld_sample_size = 100,
+                                H_trsld_corr_fact = 1.65, 
+                                L_trsld_sample_size = 30,
                                 calc_tot = TRUE)
  
 ### ATTACH THE FORMATS TO THE Xs
@@ -505,12 +505,19 @@ LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS <-
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 
+LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU <-
+  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$d_weights) , 
+              by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA,milieu = LFS_CALIBRATION_FINAL_WEIGHTS$milieu),
+              FUN = summary )
+View(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU)
+
 View(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS)
 
 save(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_RDATA)
+save(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU, file = LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_CSV)
-
+write.csv(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU, file = LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_CSV)
 
 ### SUMMARY OF CORRECTION FACTORS
 
@@ -519,11 +526,18 @@ LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS <-
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 
+LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU <-
+  aggregate(  x = list( FINAL_CORR_FACTOR = LFS_CALIBRATION_FINAL_WEIGHTS$FINAL_CORR_FACTOR ) , 
+              by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA,milieu = LFS_CALIBRATION_FINAL_WEIGHTS$milieu),
+              FUN = summary )              
+glimpse(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU)
 View(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS)
 
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_RDATA)
+save(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_CSV)
+write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_CSV)
 
 
 ### SUMMARY OF FINAL WEIGHTS
@@ -533,9 +547,18 @@ LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS <-
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 
+LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU <-
+  aggregate(  x = list( FINAL_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$FINAL_WEIGHT ) , 
+              by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA, milieu= LFS_CALIBRATION_FINAL_WEIGHTS$milieu),
+              FUN = summary )
+
 View(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS)
 
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA)
+save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_RDATA)
+
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
+write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV)
+
 

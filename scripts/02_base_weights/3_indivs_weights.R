@@ -83,58 +83,6 @@ clean_names <- function(df) {
   df
 }
 
-# ------------------------------------------------------------------
-# Fonctions utilitaires et traitement conditionnel selon le trimestre
-# ------------------------------------------------------------------
-# Fonction utilitaire pour comparer deux trimestres
-# quarter_after <- function(q1, q2) {
-#   # q1 et q2 au format "Tn_YYYY"
-#   to_num <- function(q) {
-#     parts <- strsplit(q, "_")[[1]]
-#     quarter <- as.integer(sub("T", "", parts[1]))
-#     year <- as.integer(parts[2])
-#     return(year * 10 + quarter)  # ex: 2024T2 -> 20242
-#   }
-#   to_num(q1) > to_num(q2)
-# }
-# 
-# # Si TARGET_QUARTER > T2_2024 → on fait la fusion
-# if (quarter_after(TARGET_QUARTER, "T2_2024")) {
-#   individu_q <- individu_q %>%
-#     left_join(
-#       menage_q %>%
-#         select(interview_key,
-#                v1modintr,
-#                v1interviewkey,
-#                v1interviewkey_next_trim,
-#                v1interviewkey1er),
-#       by = "interview_key"
-#     )
-# }
-# 
-# # Fonction utilitaire pour détecter NA, "", ou "##N/A##"
-# is_empty_or_na <- function(x) {
-#   is.na(x) | trimws(x) == ""
-# }
-# 
-# if (TARGET_QUARTER == "T2_2024") {
-#   # Cas T2_2024 : pas de version v1
-#   individu_q <- individu_q %>%
-#     mutate(
-#       id_gen = paste(interview_key, membres_id, sep = "_")
-#     )
-# } else {
-#   # Autres trimestres : on remplace valeur manquante par la version originale
-#   individu_q <- individu_q %>%
-#     mutate(
-#       id_gen = paste(
-#         ifelse(is_empty_or_na(v1interviewkey), interview_key, v1interviewkey),
-#         ifelse(is_empty_or_na(membre_id_v1), membres_id, membre_id_v1),
-#         sep = "_"
-#       )
-#     )
-# }
-
 menage_q   <- clean_names(menage_q)
 individu_q <- clean_names(individu_q)
 

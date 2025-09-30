@@ -104,7 +104,7 @@ length(unique(LFS_ILO_DER$hh2))
 
 ### to open the manual of the function table 
 
-table(LFS_ILO_DER$hh2)
+table(LFS_ILO_DER$hh2, LFS_ILO_DER$milieu)
 
 # table(LFS_ILO_DER$YEAR , LFS_ILO_DER$QUARTER )
 # 

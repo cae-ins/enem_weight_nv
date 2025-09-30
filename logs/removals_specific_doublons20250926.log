@@ -1,0 +1,11 @@
+Suppression de 1 lignes spécifiques le 2025-09-26
+Détails des lignes supprimées :
+# A tibble: 1 × 21
+  region        depart             souspref     ZD    segment milieu  date_ref  
+  <dbl+lbl>     <dbl+lbl>          <dbl+lbl>    <chr>   <dbl> <dbl+l> <date>    
+1 10524 [FOLON] 10524081 [KANIASS… 1.05e9 [MAH… 6017        1 2 [Rur… 2024-10-02
+# ℹ 14 more variables: nb_indivs_enq <dbl>, nb_indivs_enq_pot <dbl>,
+#   nb_indivs_enq_elig <dbl>, nb_mens_enq <dbl>, nb_indivs_seg <dbl>,
+#   nb_mens_seg <dbl>, nb_indivs_zd <dbl>, nb_mens_zd <dbl>, nb_men_reg <dbl>,
+#   quarter_phase <dbl>, rgmen <dbl>, first_trim <chr>, nb_indivs_milieu <dbl>,
+#   nb_mens_milieu <dbl>
