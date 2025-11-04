@@ -29,11 +29,4 @@ Prochaine action suggérée (optionnelle)
 - Générer `docs/headers/` (extraction des premiers 200 lignes par script) — utile pour les revues rapides.
 - Intégrer ces métadonnées directement dans `01_scripts_R.md` si vous préférez centraliser toute la doc en un seul fichier.
 
----
-
-Fichiers ajoutés/édités dans cette étape
-
-- `docs/scripts_summary.csv` (mise à jour) — ajouté des lignes pour les designs `180X_1D`, `312X_1D`, `444X_1D`.
-- `docs/scripts_summary.md` (nouveau) — résumé lisible du CSV et prochaines étapes.
-
-Si vous souhaitez que j'exécute l'extraction automatique des en-têtes (option 1 ci‑dessus), dites "extraire les headers" ; si vous préférez le parsing complet pour remplir toutes les colonnes automatiquement, dites "parser tous les scripts" et je lancerai l'opération (peut prendre un peu plus de temps).
+- Mettre à jour régulièrement `docs/scripts_summary.csv` via un script automatisé (par exemple, un script R qui scanne `scripts/` et régénère le CSV).
