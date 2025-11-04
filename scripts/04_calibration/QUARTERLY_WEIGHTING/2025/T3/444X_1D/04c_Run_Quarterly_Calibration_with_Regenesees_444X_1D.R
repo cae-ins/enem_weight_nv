@@ -378,7 +378,7 @@ bounds.h
 
 ### Create the calibrated object (ignore the message "Warning in e.calibrate.....")
 ### It appears because we are not using the standard way used by the author of the package to build the known totals
-#  [0.498, 4.332]
+#  [0.453, 4.874]
 calib_lfs   <-  e.calibrate(design = design_lfs, 
                      df.population = popdataframe, 
                           calmodel = constrains_x,
@@ -609,7 +609,5 @@ save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATIO
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV)
-
-
 
 

@@ -74,9 +74,19 @@ individu_q <- individu_q %>%
 join_keys <- c("hh2" = "region", "hh3" = "depart", "hh4" = "souspref",
                "hh8" = "ZD")
 
+dim(menage_q)
+dim(individu_q)
 menage_q   <- menage_q   %>% left_join(weights_data, by = join_keys)
 individu_q <- individu_q %>% left_join(weights_data, by = join_keys)
-
+dim(menage_q)
+dim(individu_q)
+individu_q %>%
+  count(interview_key, membres_id) %>%
+  filter(n > 1)
+individu_q <- individu_q %>%
+  distinct(interview_key, membres_id, .keep_all = TRUE)
+dim(menage_q)
+dim(individu_q)
 # Remove dots from column names
 clean_names <- function(df) {
   names(df) <- gsub("\\.", "_", names(df))
@@ -85,6 +95,9 @@ clean_names <- function(df) {
 
 menage_q   <- clean_names(menage_q)
 individu_q <- clean_names(individu_q)
+
+individu_q <- individu_q %>%
+  filter(!is.na(corrected_weight_HH))
 
 individu_q$d_weights <- individu_q$corrected_weight_HH 
 individu_q_SR <- individu_q %>%
@@ -97,3 +110,5 @@ write_dta(adjusted_data, WEIGHTS_COLUMNS_PATH)
 write_dta(menage_q, MENAGE_COLUMNS_PATH)
 write_dta(individu_q, INDIVIDU_COLUMN_PATH)
 write_dta(individu_q_SR, INDIVIDU_COLUMN_PATH_SR)
+ 
+

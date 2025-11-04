@@ -111,7 +111,7 @@ mens_enq_counts <- menage_q %>%
   summarise(nb_mens_enq = n(), .groups = "drop") %>% 
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8)
 
-print(mens_enq_counts,n=475)
+print(mens_enq_counts,n=nrow(mens_enq_counts))
 # ------------------------------------------------------------------------------
 # Prepare Individual-Level Counts
 # ------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ nb_men_indiv_ZD <- nb_men_indiv_ZD %>%
 
 final_data <- seg_survey %>%
   left_join(nb_men_indiv_ZD, by = c("region", "depart", "souspref", "ZD"))
-print(final_data,n=710)
+print(final_data,n=nrow(final_data))
 
 # ------------------------------------------------------------------------------
 # Functions and Add quarter phase

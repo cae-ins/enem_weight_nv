@@ -17,7 +17,7 @@ library(dplyr)
 df <- df %>%
   mutate(
     # Create the 'age' variable using a condition
-    age = if_else(AgeAnnee < 13, AgeAnnee, M4Confirm)
+    age = if_else(ageannee < 13, ageannee, m4confirm)
   )
 
 # Display a frequency table for age, including missing values (NA)
@@ -160,7 +160,7 @@ print(table(df$jeune15_40, useNA = "ifany"))
 # --- Sex (sexe) ---
 # Description: Create the sex variable from the source variable M5.
 df <- df %>%
-  mutate(sexe = M5) # Assumes M5 is already a factor with labels "Homme", "Femme"
+  mutate(sexe = m5) # Assumes M5 is already a factor with labels "Homme", "Femme"
 print(table(df$sexe, useNA = "ifany"))
 
 
@@ -172,8 +172,8 @@ print(table(df$sexe, useNA = "ifany"))
 df <- df %>%
   mutate(
     scolarise = case_when(
-      age >= 3 & EF1 == 2 ~ "Jamais scolarisé",
-      age >= 3 & EF1 == 1 ~ "Déjà scolarisé",
+      age >= 3 & ef1 == 2 ~ "Jamais scolarisé",
+      age >= 3 & ef1 == 1 ~ "Déjà scolarisé",
       TRUE ~ NA_character_
     ),
     scolarise = factor(scolarise)
@@ -185,10 +185,10 @@ print(table(df$scolarise, useNA = "ifany"))
 df <- df %>%
   mutate(
     niveau_instruction_code = case_when(
-      EF1 == 2 & age >= 3 ~ -99,
-      EF6 == 1 & EF1 == 1 & age >= 3 ~ EF7,
-      EF10 == 1 & EF6 != 1 & EF1 == 1 & age >= 3 ~ EF11,
-      EF6 != 1 & EF10 != 1 & EF1 == 1 & age >= 3 ~ EF3,
+      ef1 == 2 & age >= 3 ~ -99,
+      ef6 == 1 & ef1 == 1 & age >= 3 ~ ef7,
+      ef10 == 1 & ef6 != 1 & ef1 == 1 & age >= 3 ~ ef11,
+      ef6 != 1 & ef10 != 1 & ef1 == 1 & age >= 3 ~ ef3,
       TRUE ~ NA_real_
     ),
     niveau_instruction = factor(niveau_instruction_code,
@@ -262,10 +262,10 @@ print(table(df$Niv_inst_AG3, useNA = "ifany"))
 df <- df %>%
   mutate(
     classe_atteint_code = case_when(
-      EF1 == 2 & age >= 3 ~ -99,
-      EF6 == 1 & EF1 == 1 & age >= 3 ~ EF8,
-      EF10 == 1 & EF6 != 1 & EF1 == 1 & age >= 3 ~ EF12,
-      EF10 != 1 & EF6 != 1 & EF1 == 1 & age >= 3 ~ EF4,
+      ef1 == 2 & age >= 3 ~ -99,
+      ef6 == 1 & ef1 == 1 & age >= 3 ~ ef8,
+      ef10 == 1 & ef6 != 1 & ef1 == 1 & age >= 3 ~ ef12,
+      ef10 != 1 & ef6 != 1 & ef1 == 1 & age >= 3 ~ ef4,
       TRUE ~ NA_real_
     )
     # The list of labels is very long; creating a factor is recommended
@@ -313,7 +313,7 @@ print(paste("Mean number of years of study:", mean_years))
 # --- Highest Diploma (haut_diplome) ---
 df <- df %>%
   mutate(
-    haut_diplome = if_else(age >= 3, EF4_1, NA_real_) # Using NA_real_ for numeric missing
+    haut_diplome = if_else(age >= 3, ef4_1, NA_real_) # Using NA_real_ for numeric missing
   )
 print(table(df$haut_diplome, useNA = "ifany"))
 
@@ -324,7 +324,7 @@ print(table(df$haut_diplome, useNA = "ifany"))
 
 # --- Residence Area (milieu_residence) ---
 df <- df %>%
-  mutate(milieu_residence = HH6)
+  mutate(milieu_residence = milieu)
 print(table(df$milieu_residence, useNA = "ifany"))
 
 
@@ -336,9 +336,9 @@ abidjan_codes <- c(1010100211, 1010100212, 1010100213, 1010100214, 1010100215,
 df <- df %>%
   mutate(
     milieu_resid2 = case_when(
-      HH6 == 1 & HH4 %in% abidjan_codes ~ "Abidjan",
-      HH6 == 1 ~ "Autre urbain",
-      HH6 == 2 ~ "Rural",
+      milieu == 1 & hh4 %in% abidjan_codes ~ "Abidjan",
+      milieu == 1 ~ "Autre urbain",
+      milieu == 2 ~ "Rural",
       TRUE ~ NA_character_
     ),
     milieu_resid2 = factor(milieu_resid2, levels = c("Abidjan", "Autre urbain", "Rural"))
@@ -348,12 +348,12 @@ print(table(df$milieu_resid2, useNA = "ifany"))
 
 # --- Region ---
 df <- df %>%
-  mutate(region = HH2)
+  mutate(region = hh2)
 print(table(df$region, useNA = "ifany"))
 
 # --- District ---
 df <- df %>%
-  mutate(district = HH1)
+  mutate(district = hh1)
 print(table(df$district, useNA = "ifany"))
 
 

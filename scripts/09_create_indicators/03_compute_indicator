@@ -1,0 +1,32 @@
+# ==============================================================================
+# Libraries
+# ==============================================================================
+library(dplyr)
+library(haven)
+
+# ==============================================================================
+# Paths and Parameters
+# ==============================================================================
+source("config/1_config.r")
+
+DATA_DIR       <- file.path(BASE_DIR, "data")
+PROCESSED_DIR  <- file.path(DATA_DIR, "03_Processed")
+WEIGHTS_DIR    <- file.path(DATA_DIR, "04_weights")
+
+# File Paths
+WEIGHTS_COLUMNS_PATH <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("base_weights_", TARGET_QUARTER, ".dta"))
+MENAGE_COLUMNS_PATH  <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("menage_", TARGET_QUARTER, ".dta"))
+INDIVIDU_COLUMN_PATH <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("individu_", TARGET_QUARTER, ".dta"))
+INDIVIDU_COLUMN_PATH_SR <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("SR_individu_", TARGET_QUARTER, ".dta")) 
+INDIVIDU_COLUMN_CALIBRATED <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "calibrated_weights",
+                                  paste0("individu_", TARGET_QUARTER, "_CAL.dta"))  
+
+
+final_data <- read_dta(INDIVIDU_COLUMN_CALIBRATED)
+df = final_data
+
+source(file.path(BASE_DIR,"scripts/09_create_indicators/01_variables_objectives.R"))

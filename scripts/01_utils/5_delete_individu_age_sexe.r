@@ -24,16 +24,28 @@ individu_file <- list.files(individu_path, pattern = "^individu.*\\.dta$", full.
 # Lire la base
 menage   <- read_dta(menage_file)
 individu <- read_dta(individu_file) 
+
+# Helper function to rename columns if needed
+normalize_column_names  <- function(df) {
+  names(df) <- names(df) %>%
+    tolower() %>%
+    gsub("__", "_", .)
+  return(df)
+}
+
+menage <- normalize_column_names(menage)
+individu <- normalize_column_names(individu)
+
 dim(individu)
 # Nettoyage : suppression des lignes où ageanne ou m5 sont NA
 individu_cleaned <- individu %>%
-  filter(!is.na(AgeAnnee)) %>%
-  filter(!is.na(M5)) %>%
-  filter(AgeAnnee != -9998)
+  filter(!is.na(ageannee)) %>%
+  filter(!is.na(m5)) %>%
+  filter(ageannee != -9998)
 
 
 cat(glue("Initial rows: Menage = {nrow(menage)}, Individu = {nrow(individu_cleaned)}\n"))
-join_key <- "interview__key" 
+join_key <- "interview_key" 
 matched_keys <- intersect(menage[[join_key]], individu[[join_key]])
 cat(glue("Number of matched rows: {length(matched_keys)}\n"))
 
