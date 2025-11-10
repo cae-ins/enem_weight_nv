@@ -456,7 +456,7 @@ LFS_TABLE_CVS_EMP_LEVEL_TEMPLATE3_XLSX
  
 ###  Let's parameterize the name and path of the script file containing the formats of the X
  
-R_SCRIPT_X_FORMATS <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/scripts/04_calibration/QUARTERLY_WEIGHTING/2025/T1/444X_1D/04f_XFormats_444X_1D.R"
+R_SCRIPT_X_FORMATS <- paste0(BASE_DIR,"/scripts/04_calibration/QUARTERLY_WEIGHTING/2025/T1/444X_1D/04f_XFormats_444X_1D.R")
 #R_SCRIPT_X_FORMATS  = paste0(dir_prog_QW,year,"_T",quarter, xnum, "/", "04f_XFormats_",pathx,".R")
 
  

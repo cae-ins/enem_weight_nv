@@ -1,7 +1,7 @@
 # Project root (use `here::here()` if working in RStudio)
-BASE_DIR <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"  
+BASE_DIR <- "C:/Users/aj.kouassi/Downloads/DOCUMENTS/CAE/ENE_SURVEY_WEIGHTS"  
 setwd(BASE_DIR)
-TARGET_QUARTER <- "T2_2025"
+TARGET_QUARTER <- "T3_2025"
 
 # Install required packages if not already installed
 required_packages <- c("dplyr", "haven", "labelled", "readxl", "stringr", "purrr","paws","aws.signature","jsonlite")
@@ -85,3 +85,4 @@ apply_if_exists <- function(env, fn_name, data) {
   }
   return(data)
 }
+

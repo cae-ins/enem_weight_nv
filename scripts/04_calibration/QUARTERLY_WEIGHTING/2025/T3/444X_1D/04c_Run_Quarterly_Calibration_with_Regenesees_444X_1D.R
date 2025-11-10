@@ -94,28 +94,30 @@ ls()
 ######################################################################################################
 
 sample_data <-  	LFS_SAMPLE_DATA
-sample_data$X88 <- 0
-sample_data$X94 <- 0
-sample_data$X400 <- 0
-sample_data$X406 <- 0
-sample_data$X328 <- 0
-sample_data$X334 <- 0
+# sample_data$X88 <- 0
+# sample_data$X94 <- 0
+# sample_data$X400 <- 0
+# sample_data$X406 <- 0
+# sample_data$X328 <- 0
+# sample_data$X334 <- 0
+# 
+# pairs <- list(
+#   c(89, 90),
+#   c(401, 402),
+#   c(407, 408),
+#   c(329, 330),
+#   c(335, 336),
+#   c(95, 96)
+# )
+# 
+# for (p in pairs) {
+#   col_keep <- paste0("X", p[1])
+#   col_add  <- paste0("X", p[2])
+#   sample_data[[col_keep]] <- sample_data[[col_keep]] + sample_data[[col_add]]
+#   sample_data[[col_add]]  <- 0
+# }	
 
-pairs <- list(
-  c(89, 90),
-  c(401, 402),
-  c(407, 408),
-  c(329, 330),
-  c(335, 336),
-  c(95, 96)
-)
 
-for (p in pairs) {
-  col_keep <- paste0("X", p[1])
-  col_add  <- paste0("X", p[2])
-  sample_data[[col_keep]] <- sample_data[[col_keep]] + sample_data[[col_add]]
-  sample_data[[col_add]]  <- 0
-}			  
 ###   transform some variables as factor as required by the routines used later
 
 sample_data$DOMAIN    <- as.factor(sample_data$DOMAIN)
@@ -146,29 +148,31 @@ sum(sample_data$d_weights)
 ######################################################################################################
 
 known_totals <-  	LFS_KNOWN_TOTALS
-known_totals$X88 <- 0
-known_totals$X94 <- 0
-known_totals$X400 <- 0
-known_totals$X406 <- 0
-known_totals$X328 <- 0
-known_totals$X334 <- 0
+# known_totals$X88 <- 0
+# known_totals$X94 <- 0
+# known_totals$X400 <- 0
+# known_totals$X406 <- 0
+# known_totals$X328 <- 0
+# known_totals$X334 <- 0
+# 
+# 
+# pairs <- list(
+#   c(89, 90),
+#   c(401, 402),
+#   c(407, 408),
+#   c(329, 330),
+#   c(335, 336),
+#   c(95, 96)
+# )
+# 
+# for (p in pairs) {
+#   col_keep <- paste0("X", p[1])
+#   col_add  <- paste0("X", p[2])
+#   known_totals[[col_keep]] <- known_totals[[col_keep]] + known_totals[[col_add]]
+#   known_totals[[col_add]]  <- 0
+# }	
 
 
-pairs <- list(
-  c(89, 90),
-  c(401, 402),
-  c(407, 408),
-  c(329, 330),
-  c(335, 336),
-  c(95, 96)
-)
-
-for (p in pairs) {
-  col_keep <- paste0("X", p[1])
-  col_add  <- paste0("X", p[2])
-  known_totals[[col_keep]] <- known_totals[[col_keep]] + known_totals[[col_add]]
-  known_totals[[col_add]]  <- 0
-}	
 ###  transform some vairables as factor as required by the routines used later
 
 known_totals$DOMAIN <- as.factor(known_totals$DOMAIN)
@@ -378,14 +382,14 @@ bounds.h
 
 ### Create the calibrated object (ignore the message "Warning in e.calibrate.....")
 ### It appears because we are not using the standard way used by the author of the package to build the known totals
-#  [0.453, 4.874]
+
 calib_lfs   <-  e.calibrate(design = design_lfs, 
                      df.population = popdataframe, 
                           calmodel = constrains_x,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.01, 9),
+                           bounds = c(0.01, 38), # [0.646, 6.099]
                    aggregate.stage = NULL, 
                              maxit = 30,
                            epsilon = 1e-6, 
@@ -610,4 +614,22 @@ save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATIO
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV)
 
+### Verify the differences greater than 100 at the national and regional levels
 
+tab_sample <- sample_data  %>%
+              tab_rows(mdset(X49 %to% get("last_X")), mdset(X1 %to% X48)) %>%
+              tab_cols(DOMAIN) %>%
+              tab_weight(FINAL_WEIGHT) %>%
+              tab_stat_sum %>%
+              tab_pivot() %>%
+              as.data.frame() %>%
+              rename(Somme_final_weight = names(.)[2]) %>%
+              select(Somme_final_weight)
+
+
+table_check <- cbind(POP_LFS_BY_REGION_SEX_3AGEGR, tab_sample) %>%
+               mutate(ecart = abs(Nombre - Somme_final_weight),
+                      checing = ifelse(ecart > 100, "> 100", "")
+                      )
+
+view(table_check)

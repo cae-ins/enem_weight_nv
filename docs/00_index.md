@@ -75,8 +75,7 @@ Le projet contient les données, scripts et rapports liés au calcul des pondér
 
 ## Remarques finales
 
-- Ce fichier est une vue d'ensemble minimaliste ; pour des détails techniques, se référer aux README locaux des dossiers (`scripts/`, `data/`, `reports/`) et aux scripts eux-mêmes.
-- En cas de doute, contacter l'auteur principal du projet ou la personne responsable des weights (voir `README.md`).
+
 
 
 
