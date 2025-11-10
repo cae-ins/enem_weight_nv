@@ -62,6 +62,13 @@ Dans `scripts/04_calibration/QUARTERLY_WEIGHTING/`, ouvrez le dossier correspond
 
 But : exécuter les étapes 4 et 5 seulement après validation de l'étape 3. Vérifier les sorties dans `data/04_weights/` et les diagnostics dans `reports/` ou `logs/`.
 
+
+### (vi) Calculs de poids ménages finaux
+Dans `scripts/04_calibration/`, exécuter :
+- `scripts/04_calibration/household_weights.r`  
+
+Ce script calcule les poids ménages finaux basés sur les poids individuels calibrés. Vérifiez les sorties et logs pour confirmer le succès de l'exécution.  
+
 ---
 
 ## Exemples de commandes (PowerShell / R)
