@@ -17,3 +17,6 @@
 # Ignorer tous les dossiers nommés data, à n'importe quel niveau
 **/data/
 *.zip
+
+**/*.docx
+**/*.doc
