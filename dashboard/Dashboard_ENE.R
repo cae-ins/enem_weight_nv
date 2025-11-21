@@ -969,10 +969,11 @@ table_agg <- table_agg %>%
 
 
 # Appli Shiny
+
 ui <- fluidPage(
   
   fluidRow(
-    column(width = 2, tags$img(src = "Logo_ANStat.png", height = "50px")),
+    column(width = 2, tags$img(src = "LOGO_ANStat.png", height = "50px")),
     column(width = 10, tags$h2(paste0("Point de tabulation sur les effectifs Région x Sexe x Milieu de résidence x groupe âge - ", str_extract(base_ENE_path, "T[1-4]_\\d{4}")), style = "text-align: center;font-family: 'Montserrat';"))
   ),
   
@@ -1009,7 +1010,7 @@ server <- function(input, output, session) {
   ##### Premier affichage avec le bouton radio
   
   
-  ########## Tables statics 
+  ########## Tables fixes 
   
   table_size <- table_agg %>%
       mutate(statut = ifelse(Sample_size < 30, "Small size", "Good size")) %>%
