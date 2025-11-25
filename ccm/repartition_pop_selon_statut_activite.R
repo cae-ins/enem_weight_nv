@@ -1,6 +1,6 @@
 # =======================================================================
 # Répartition emploi / chômage / hors main d'œuvre - Barres empilées 100 %
-# (Version professionnelle avec transparence)
+# (Version professionnelle avec transparence + labels sans %)
 # =======================================================================
 
 library(ggplot2)
@@ -38,20 +38,28 @@ data_long$Categorie <- factor(
 # -----------------------------------------------------------------------
 ggplot(data_long, aes(x = Periode, y = Pourcentage, fill = Categorie)) +
   geom_bar(stat = "identity", width = 0.7, alpha = 0.70) +  # transparence légère
-  geom_text(aes(label = paste0(sprintf("%.1f", Pourcentage), "%")),
-            position = position_stack(vjust = 0.5),
-            color = "black", size = 7, fontface = "bold") +
+  
+  # ❗ Labels SANS le signe %
+  geom_text(
+    aes(label = sprintf("%.1f", Pourcentage)),
+    position = position_stack(vjust = 0.5),
+    color = "black", size = 7, fontface = "bold"
+  ) +
+  
   scale_fill_manual(values = c(
     "Emploi" = "#1B4F72",        # Bleu foncé institutionnel
     "Chômage" = "#A93226",       # Rouge bordeaux
     "Hors main d'œuvre" = "#BDC3C7"  # Gris clair neutre
   )) +
+  
   scale_y_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +
+  
   labs(
     title = "Répartition de la population selon le statut d'activité",
-    subtitle = "En pourcentage du total (100 %)",
+    subtitle = "En proportion du total (100)",
     x = NULL, y = NULL, fill = NULL
   ) +
+  
   theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5),

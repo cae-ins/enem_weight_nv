@@ -13,55 +13,33 @@ donnees_su3 <- data.frame(
 )
 
 # --- Génération du graphique avec tidyplots ---
-graphe_su3_tidy <- donnees_su3 %>%
-  # 1. Base du graphique
-  tidyplot(
-    x = Periode,
-    y = Taux_SU3
-  ) %>%
-  # 2. Ajout des barres (geom_col)
-  add_bar(
-    fill = "grey50",
-    width = 0.7 # Ajustement de la largeur
-  ) %>%
-  # 3. Ajout de la ligne et des points (geom_line + geom_point)
-  # tidyplots combine ces deux géométries en une seule fonction
-  add_line_points(
-    size = 1.5,
-    point_size = 3, # Taille du point
-    colour = "black"
-  ) %>%
-  # 4. Ajout des étiquettes de données (geom_text)
-  # Utilisation d'une fonction plus concise pour étiqueter
-  add_riser_data_labels(
-    y_labels_suffix = "%",
-    nudge_y = 0.5, # Vjust = -0.5
-    size = 4
-  ) %>%
-  # 5. Personnalisation des titres
-  add_labs(
+# --- Génération du graphique avec ggplot2 standard ---
+graphe_su3_tidy <- ggplot(donnees_su3, aes(x = Periode, y = Taux_SU3)) +
+  # 1. Barres (geom_col)
+  geom_col(fill = "grey50", width = 0.7) +
+  # 2. Ligne et points (geom_line + geom_point)
+  geom_line(aes(group = 1), size = 1.5, colour = "black") +
+  geom_point(size = 3, colour = "black") +
+  # 3. Étiquettes de données (geom_text)
+  geom_text(aes(label = Taux_SU3), vjust = -1, size = 4) +
+  # 4. Titres
+  labs(
     title = "Évolution de la sous-utilisation de la main-d'œuvre (SU3)",
     y = "Taux SU3 (%)",
     x = "Période"
-  ) %>%
-  # 6. Ajout des lignes de quadrillage horizontales (simplifié)
-  add_gridlines(
-    direction = "horizontal",
-    colour = "gray80",
-    linetype = "dashed",
-    linewidth = 0.5
-  ) %>%
-  # 7. Mise à l'échelle Y (utilise toujours ggplot2)
+  ) +
+  # 5. Mise à l'échelle Y
   scale_y_continuous(
     limits = c(0, 20),
     breaks = seq(0, 20, by = 2.5),
     expand = expansion(mult = c(0, 0.05))
   ) +
-  # 8. Thème et ajustements finaux (utilise toujours ggplot2)
+  # 6. Thème et ajustements finaux
   theme_classic() +
   theme(
     axis.line.x = element_blank(),
-    plot.title = element_text(hjust = 0.5, face = "bold")
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    panel.grid.major.y = element_line(colour = "gray80", linetype = "dashed", linewidth = 0.5)
   )
 
 # Afficher le graphique
