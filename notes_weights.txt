@@ -1,6 +1,0 @@
-Estimate of the populations that i get with weights
-
-Compare the weights 48X and 48X knowntotals not exceed 100 units.
-
-And the same régions by milieu by sex by age_group to knowntotals concerned not exceed 100 units and decides the estimâtes for those régions.
-
