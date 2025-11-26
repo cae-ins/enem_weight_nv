@@ -31,6 +31,7 @@ Le projet contient les données, scripts et rapports liés au calcul des pondér
 - `dashboard/` : code et ressources pour tableaux de bord (Dash, Shiny, Quarto, ou équivalent). Sous-dossiers pour différents tableaux de bord trimestriels ou de suivi.
 
 - `data/` : arborescence organisée par étapes du pipeline :
+
   - `01_raw/` : données brutes importées (ne pas modifier les fichiers originaux).
   - `02_cleaned/` : données nettoyées et réconciliées.
   - `03_processed/` : jeux de données transformés prêts pour l'analyse.
@@ -58,6 +59,7 @@ Le projet contient les données, scripts et rapports liés au calcul des pondér
   - `07_correction_quarter/` : corrections spécifiques par trimestre.
   - `08_yearly_weights/` : traitements annuels.
   - `09_create_indicators/` : génération d'indicateurs à partir des jeux pondérés.
+  - `10_data_management/` : système de gestion des données.
 
 ## Conventions et bonnes pratiques
 
@@ -74,8 +76,3 @@ Le projet contient les données, scripts et rapports liés au calcul des pondér
 4. Vérifier les jeux de données dans `data/` (respecter l'ordre `01_raw` → `02_cleaned` → `03_processed`).
 
 ## Remarques finales
-
-
-
-
-
