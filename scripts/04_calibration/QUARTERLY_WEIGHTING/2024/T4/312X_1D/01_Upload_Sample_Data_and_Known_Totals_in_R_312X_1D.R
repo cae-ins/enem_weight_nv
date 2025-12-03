@@ -35,7 +35,7 @@
 ######################################################################################################
 
 LFS_ILO_DER <- read_dta(file = FILE_LFS_ILO_DER_DTA)
-
+LFS_ILO_DER$ageannee[(LFS_ILO_DER$interview_key=="88-92-29-08") & (LFS_ILO_DER$membres_id==2)] <- 35
 ###  show the first 6 lines of the dataset 
 
 head(LFS_ILO_DER)
@@ -59,22 +59,23 @@ str(LFS_ILO_DER)
 
 dim(LFS_ILO_DER)
 
+
 ### Individuals in the frame must have a unique identification code (INDKEY) hence let's verify it using the following instruction
 
 
-LFS_ILO_DER$INDKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview__key, "-", LFS_ILO_DER$membres__id))
+LFS_ILO_DER$INDKEY <- as.factor(paste0(LFS_ILO_DER$hh2, "-",LFS_ILO_DER$hh3, "-", LFS_ILO_DER$hh4, "-", LFS_ILO_DER$hh8, "-", LFS_ILO_DER$interview_key, "-", LFS_ILO_DER$membres_id))
 
 length(unique(LFS_ILO_DER$INDKEY))
 
 ### We can also check how many households we have interviewed by counting the unique households ids (HHKEY)
 
-LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8, "-", LFS_ILO_DER$interview__key))
+LFS_ILO_DER$HHKEY <- as.factor(paste0(LFS_ILO_DER$hh2, "-",LFS_ILO_DER$hh3, "-", LFS_ILO_DER$hh4, "-", LFS_ILO_DER$hh8, "-", LFS_ILO_DER$interview_key))
 
 length(unique(LFS_ILO_DER$HHKEY))
 
 ### and the number of enumeration areas (PSUKEY)
 
-LFS_ILO_DER$PSUKEY <- as.factor(paste0(LFS_ILO_DER$HH2, "-",LFS_ILO_DER$HH3, "-", LFS_ILO_DER$HH4, "-", LFS_ILO_DER$HH8))
+LFS_ILO_DER$PSUKEY <- as.factor(paste0(LFS_ILO_DER$hh2, "-",LFS_ILO_DER$hh3, "-", LFS_ILO_DER$hh4, "-", LFS_ILO_DER$hh8))
 
 
 length(unique(LFS_ILO_DER$PSUKEY))
@@ -86,7 +87,7 @@ length(unique(LFS_ILO_DER$HHKEY)) / length(unique(LFS_ILO_DER$PSUKEY))
 
 ### The number of strata (STRATAKEY)
 
-LFS_ILO_DER$STRATAKEY <- as.factor(LFS_ILO_DER$HH2)
+LFS_ILO_DER$STRATAKEY <- as.factor(LFS_ILO_DER$hh2)
 
 length(unique(LFS_ILO_DER$STRATAKEY))
 
@@ -96,16 +97,15 @@ length(unique(LFS_ILO_DER$STRATAKEY))
 
 ### The number of regions (REGION)
 
-length(unique(LFS_ILO_DER$HH2))
+length(unique(LFS_ILO_DER$hh2))
 
 
 
 ### We can also tabulate the actual sample size in several ways, for example using the function "table"
 
 ### to open the manual of the function table 
-help(table) 
 
-table(LFS_ILO_DER$HH2)
+table(LFS_ILO_DER$hh2, LFS_ILO_DER$milieu)
 
 # table(LFS_ILO_DER$YEAR , LFS_ILO_DER$QUARTER )
 # 
@@ -122,9 +122,9 @@ table(LFS_ILO_DER$HH2)
 
 
 LFS_ILO_DER %>%
-  tab_cols(M5, HH6, total()) %>%
-  tab_rows(HH2, total()) %>%
-  tab_weight(poids_menage) %>%
+  tab_cols(m5, milieu, total()) %>%
+  tab_rows(hh2, total()) %>%
+  tab_weight(d_weights) %>%
   tab_stat_sum %>%
   tab_pivot()
 
@@ -188,10 +188,10 @@ save(LFS_ILO_DER ,file= FILE_LFS_ILO_DER_RDATA)
 
 ###  Read the xlsx file stored in a specific directory 
 
-POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR <- read_xlsx(FILE_POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR_XLSX)
-# POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR <- read_dta(FILE_POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR_DTA)
+POP_LFS_BY_REGION_SEX_2AGEGR <- read_xlsx(FILE_POP_LFS_BY_REGION_SEX_2AGEGR_XLSX)
+# POP_LFS_BY_REGION_SEX_2AGEGR <- read_dta(FILE_POP_LFS_BY_REGION_SEX_2AGEGR_DTA)
 
-#  View(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR)
+View(POP_LFS_BY_REGION_SEX_2AGEGR)
 
 
 
@@ -203,7 +203,7 @@ POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR <- read_xlsx(FILE_POP_LFS_BY_REGION_UR
 ### 
 ######################################################################################################
 
-save(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR,file = FILE_POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR_RDATA)
+save(POP_LFS_BY_REGION_SEX_2AGEGR,file = FILE_POP_LFS_BY_REGION_SEX_2AGEGR_RDATA)
 
 ###  Check now within destination folder. We now have a new file named "POP_LFS_BY_REGION_URBAIN_RURAL_SEX_12AGEGR_2021_Q1.RData"
 
@@ -360,7 +360,7 @@ save(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR,file = FILE_POP_LFS_BY_REGION_URB
 
 ### from the first population dataframe
 tmp_sum_pop_fig1 <-
-  sum(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR$Nombre)
+  sum(POP_LFS_BY_REGION_SEX_2AGEGR$Nombre)/2
 tmp_sum_pop_fig1
 
 ### from the second population dataframe
@@ -372,7 +372,7 @@ tmp_sum_pop_fig1
 #######   CHECK THE POPULATION ESTIMATES OBTAINED WITH THE DESIGN WEIGHTS   ###########################################################################################
 
 tmp_sum_est_pop_dw <- 
-  sum(LFS_ILO_DER$poids_menage)
+  sum(LFS_ILO_DER$d_weights)
 tmp_sum_est_pop_dw
 
 #######   CHECK THE AVERAGE CORRECTION FACTOR FOR THE FINAL WIEGHTS   ###########################################################################################
@@ -382,9 +382,10 @@ tmp_sum_pop_fig1 / tmp_sum_est_pop_dw
 
 #######   VISUALIZE THE OUTPUTS OF THIS STEP   ###########################################################################################
 
-View(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR) 
+View(POP_LFS_BY_REGION_SEX_2AGEGR) 
 
 # View(POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert)
+
 
 
 

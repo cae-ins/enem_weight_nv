@@ -35,8 +35,8 @@ library(janitor)
 # Define paths
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
-PARENT_DIR <- file.path(BASE_DIR, "data/01_raw", "Denombrement", "T2_2024")
-OUTPUT_DIR <- file.path(BASE_DIR, "data/02_cleaned", "Denombrement", "T2_2024")
+PARENT_DIR <- file.path(BASE_DIR, "data/01_raw", "Denombrement", TARGET_QUARTER)
+OUTPUT_DIR <- file.path(BASE_DIR, "data/02_cleaned", "Denombrement", TARGET_QUARTER)
 
 # Ensure output directory exists
 dir_create(OUTPUT_DIR)

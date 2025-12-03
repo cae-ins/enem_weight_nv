@@ -139,6 +139,55 @@ for (ftype in types_to_aggregate) {
         year_data <- combined_data %>% 
           filter(annee == year)
         
+        # Calculer le nombre de trimestres pour cette année
+        nb_trimestres <- length(unique(year_data$trimestre))
+        message("\n   🧮 Calcul du poids annuel pour ", year)
+        message("      - Nombre de trimestres : ", nb_trimestres)
+        
+        # Créer la variable poids_annuel dynamiquement
+        var_name <- paste0("poids_annuel_", year)
+        
+        # Vérifier si FINAL_WEIGHTS existe (avec différentes casses possibles)
+        weight_col <- NULL
+        possible_names <- c("FINAL_WEIGHT")
+        
+        for (col_name in possible_names) {
+          if (col_name %in% names(year_data)) {
+            weight_col <- col_name
+            break
+          }
+        }
+        
+        if (!is.null(weight_col)) {
+          # Calculer le poids annuel
+          year_data <- year_data %>%
+            mutate(!!var_name := !!sym(weight_col) / nb_trimestres)
+          
+          message("      ✅ Variable '", var_name, "' créée")
+          message("      📊 Formule : ", weight_col, " / ", nb_trimestres)
+          
+          # Statistiques sur le poids annuel
+          stats_poids <- year_data %>%
+            summarise(
+              min = min(!!sym(var_name), na.rm = TRUE),
+              mean = mean(!!sym(var_name), na.rm = TRUE),
+              max = max(!!sym(var_name), na.rm = TRUE),
+              na_count = sum(is.na(!!sym(var_name)))
+            )
+          
+          message("      📈 Stats ", var_name, " :")
+          message("         Min  : ", round(stats_poids$min, 4))
+          message("         Mean : ", round(stats_poids$mean, 4))
+          message("         Max  : ", round(stats_poids$max, 4))
+          if (stats_poids$na_count > 0) {
+            message("         NA   : ", stats_poids$na_count)
+          }
+          
+        } else {
+          message("      ⚠️  Colonne FINAL_WEIGHTS non trouvée")
+          message("      📋 Colonnes disponibles : ", paste(head(names(year_data), 10), collapse = ", "), "...")
+        }
+        
         # Créer le dossier de l'année si nécessaire
         year_dir <- file.path(WEIGHTS_DIR, as.character(year))
         dir_create(year_dir)
@@ -151,6 +200,7 @@ for (ftype in types_to_aggregate) {
           write_dta(year_data, output_file)
           message("   💾 Sauvegardé : ", basename(output_file))
           message("      - Lignes : ", nrow(year_data))
+          message("      - Colonnes : ", ncol(year_data))
           message("      - Trimestres : ", paste(sort(unique(year_data$trimestre)), collapse = ", "))
           
         }, error = function(e) {
@@ -174,6 +224,7 @@ message(rep("=", 60))
 # Rapport final
 message("\n📊 RAPPORT FINAL :")
 message("✅ Fichiers calibrés agrégés par année")
+message("✅ Variables poids_annuel_YYYY créées (FINAL_WEIGHTS / nb_trimestres)")
 message("📁 Les autres fichiers restent dans base_weights/ (pas d'agrégation nécessaire)")
 
 # Lister les fichiers créés
@@ -212,5 +263,5 @@ message("   │   ├── base_weights_*.dta")
 message("   │   ├── inconsistent_rows_*.dta")
 message("   │   └── menage_*.dta")
 message("   └── YYYY/                   ← Fichiers calibrés agrégés")
-message("       ├── individu_calibrated_YYYY.dta")
-message("       └── SR_individu_calibrated_YYYY.dta")
+message("       ├── individu_calibrated_YYYY.dta  (+ poids_annuel_YYYY)")
+message("       └── SR_individu_calibrated_YYYY.dta  (+ poids_annuel_YYYY)")

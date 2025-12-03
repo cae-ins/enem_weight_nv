@@ -295,52 +295,6 @@ tmpSD$X179[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 14 & tmpSD$m5== 2& tmpSD$hh2=
 tmpSD$X180[ tmpSD$ageannee>= 15 & tmpSD$m5== 2& tmpSD$hh2==10833] <- 1
 
 
-
-
-######################################################################################################
-###  
-###   STEP 2.5 - CREATE THE DUMMY VARIABLES NEEDED TO CALCULATE THE MAIN LFS INDICATORS AND THEIR PRECISION  
-### 
-######################################################################################################
-
-
-###   Respondents in working age 15 plus   
-
-# tmpSD$POP_15plus <- 0
-# tmpSD$POP_15plus[tmpSD$AGE>=15] <- 1
-
-
-###   Respondents in Labour Force
-
-# tmpSD$LF_15plus <- 0
-# tmpSD$LF_15plus[tmpSD$AGE>=15 & (tmpSD$ilo_lfs==1 | tmpSD$ilo_lfs==2 ) ] <- 1
-# 
-# tmpSD$LF_15plus_100 <- tmpSD$LF_15plus * 100 
-
-###   Respondents in Employment
-
-# tmpSD$EMP_15plus <- 0
-# tmpSD$EMP_15plus[tmpSD$AGE>=15 & tmpSD$ilo_lfs==1 ] <- 1
-# 
-# tmpSD$EMP_15plus_100 <- tmpSD$EMP_15plus * 100
-
-###   Respondents in Unemployment
-
-# tmpSD$UNE_15plus <- 0
-# tmpSD$UNE_15plus[tmpSD$AGE>=15 & tmpSD$ilo_lfs==2 ] <- 1
-# 
-# tmpSD$UNE_15plus_100  <- tmpSD$UNE_15plus * 100
-# 
-# names(tmpSD)
-
-
-######################################################################################################
-###  
-###   STEP 2.7 - CREATE THE R DATAFRAME WITH THE SAMPLE DATA THAT ARE USED AS FIRST INPUT BY REGENESEES  
-### 
-######################################################################################################
-
-
 tmpSD$DOMAIN <- as.character(1)
 
 ### We can create the R dataframe with the sample data 
@@ -406,11 +360,6 @@ LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE <- aggregate(   x = LFS_SAMPLE_DATA[, 
 
 #  View(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE)
 
-
-
-###   Save permanently the object in the destination folder  
-###   If we have set the working directory for the outputs we can use 
-
 #save( LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE , file = "LFS_SAMPLE_DATA_2021_Q1_94X_4D_ALLWR_np_SUMMARY_OF_Xs_SAMPLE_SIZE.RData")
 save( LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE , file = FILE_LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE_RDATA)
                                                   
@@ -426,22 +375,6 @@ write_xlsx(LFS_SAMPLE_DATA_SUMMARY_OF_Xs_SAMPLE_SIZE, FILE_LFS_SAMPLE_DATA_SUMMA
 ###   STEP 2.11 - SUMMARIZE BY DOMAIN TO SAVE IN A DATAFRAME THE ESTIMATES OBTAINED USING THE DESIGN WEIGHT
 ###  
 ######################################################################################################
-
-
-### Create a table (stored in the object "LFS_SAMPLE_DATA_2021_Q1_94X_4D_ALLWR_np_SUMMARY_OF_Xs_EST_DES_WEIGHT" ). 
-### Now, we need to weight the X
-
-
-### the following is a version that is not parameterised (last X is X136 ). 
-
-# LFS_SAMPLE_DATA_SUMMARY_OF_Xs_EST_DES_WEIGHT <-
-#   LFS_SAMPLE_DATA  %>%
-#   tab_cols(mdset(X1 %to% X136),total()) %>%
-#   tab_rows(DOMAIN, total()) %>%
-#   tab_weight(DESIGN_WEIGHT) %>%
-#   tab_stat_sum %>%
-#   tab_pivot() %>%
-#   as.data.frame()
 
 
 

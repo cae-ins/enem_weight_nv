@@ -43,42 +43,11 @@
 ########################################################################################################################.
 
 
-###  Lets first remove all the objects from the memory of the current session
-
-
 #######   INSTALL PACKAGES  ##################################################################################
 ###
 ###    THE PACKAGES BELOW HAVE TO BE INSTALLED ONLY ONCE. THEN THE CODE CAN BE COMMENTED USING THE HASHTAG  
 ###
 ##############################################################################################################
-
-# install.packages("rstudioapi")
-
-### To install Regenesees 
-# install.packages("devtools")
-# devtools::install_github("DiegoZardetto/ReGenesees")
-
-### or also  
-# install.packages("remotes")
-# remotes::install_github("DiegoZardetto/ReGenesees")
-# remotes::install_github("DiegoZardetto/ReGenesees.GUI")
-
-# remotes::install_github("dcomtois/summarytools")
-# install.packages("summarytools")
-
-# install.packages("dplyr")
-# install.packages("excel.link")
-# install.packages("writexl")
-
-### install the library to create multidimensional tables with weighted data 
-# install.packages("expss")
-
-### to read and write SPSS and STATA datasets 
-# install.packages("haven")
-
-
-
-
 
 
 #######   ACTIVATE PACKAGES   #################################################################################
@@ -95,8 +64,7 @@ library("excel.link")     # contains the functions xl.get.excel(), xl.write(), x
 library("readxl")         # to export R dataframes in excel
 library("writexl")        # to export R dataframes in excel
 library("expss")          # contains unctions to create weighted tables
-library("haven")          # to read and write SPSS and STATA datasets 
-
+library("haven")          # to read and write SPSS and STATA datasets 7
 
 
 #######   STEP 1   ###########################################################################################
@@ -145,7 +113,7 @@ parse_target_quarter <- function(target_quarter) {
   return(result)
 }
 source("config/1_config.r")
-source("scripts/02_base_weights/3_indivs_weights.R")
+#source("scripts/02_base_weights/3_indivs_weights.R")
 # Parse the target quarter
 parsed <- parse_target_quarter(TARGET_QUARTER)
 
@@ -334,6 +302,14 @@ FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV
 FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_FINAL_WEIGHTS.RData")
 FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA
 
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_FINAL_WEIGHTS_MILIEU.csv")
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV
+
+###  Let's parameterize the name and path of the RDATA file with the summary statistics on the final weights
+
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_RDATA  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_FINAL_WEIGHTS_MILIEU.RData")
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_RDATA
+
 
 
 ##############################################################################################################
@@ -348,8 +324,20 @@ FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_CSV
 FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_RDATA  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_DESIGN_WEIGHTS.RData")
 FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_RDATA
 
+LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_CSV  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU.csv")
+LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_CSV
+
+###  Let's parameterize the name and path of the RDATA file with the summary statistics on the DESIGN weights
+
+LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_RDATA  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU.RData")
+LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_RDATA
 
 
+
+###  Let's parameterize the name and path of the script file containing the formats of the X
+ 
+R_SCRIPT_X_FORMATS <- paste(dir_prog_QW,year,"/","T",quarter,"/04f_XFormats_",pathx,".R",sep='')
+R_SCRIPT_X_FORMATS
 
 ##############################################################################################################
 ###
@@ -363,6 +351,13 @@ FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_CSV
 FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_RDATA  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_FINAL_CORR_FACTORS.RData")
 FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_RDATA
 
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_CSV  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU.csv")
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_CSV
+
+###  Let's parameterize the name and path of the RDATA file with the summary statistics on the CORRECTION FACTORS
+
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_RDATA  <- paste0(dir_data_QW,"LFS_CALIBRATION_",year,"_T",quarter,"_", pathx ,"_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU.RData")
+FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_RDATA
 
 ##############################################################################################################
 ###
@@ -422,7 +417,30 @@ LFS_STD_ERR_EMP_LEVEL_TEMPLATE3_XLSX
 LFS_TABLE_CVS_EMP_LEVEL_TEMPLATE3_XLSX  <- paste0( dir_data_QW ,"Table_CVS_EMPL_Levels_ver3_",year,"_T",quarter,"_", pathx ,".xlsx") 
 LFS_TABLE_CVS_EMP_LEVEL_TEMPLATE3_XLSX
 
+##############################################################################################################
+###
+###       ADDITIONAL PARAMETERS TO CREATE A SUMMARY PF STATISTICS FRO EACH OF THE Xs WITHIN DOMAINS
+###
+##############################################################################################################
+ 
+ 
+###  Let's parameterize the name and path of the script file containing the formats of the X
+ 
+R_SCRIPT_X_FORMATS <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/scripts/04_calibration/QUARTERLY_WEIGHTING/2024/T2/180X_1D/04f_XFormats_180X_1D.R"
+R_SCRIPT_X_FORMATS
 
+ 
+###  Let's parameterize the name and path of the XLSX file with the summary statistics on the Xs
+ 
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_XLSX  <-paste(dir_data_QW,"LFS_CALIBRATION_",year,"_Q",quarter,"_", pathx ,"_SUMMARY_OF_Xs_STATS.xlsx",sep='')
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_XLSX  
+ 
+ 
+###  Let's parameterize the name and path of the RDATA file with the summary statistics on the Xs
+ 
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_RDATA  <-paste(dir_data_QW,"LFS_CALIBRATION_",year,"_Q",quarter,"_", pathx ,"_SUMMARY_OF_Xs_STATS.RData",sep='')
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_RDATA  
+ 
 
 
 

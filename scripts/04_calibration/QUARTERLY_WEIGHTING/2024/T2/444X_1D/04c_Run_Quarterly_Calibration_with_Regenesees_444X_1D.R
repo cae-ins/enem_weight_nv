@@ -30,28 +30,6 @@
 ########################################################################################################################.
 ########################################################################################################################.
 
-
-########################################################################################################################
-###  
-###   STEP 4.0 -  THE PACKAGES BELOW HAVE TO BE INSTALLED ONLY ONCE. THEN THE CODE CAN BE COMMENTED USING THE HASHTAG 
-### 
-########################################################################################################################
-
-# install.packages("remotes")
-# remotes::install_github("DiegoZardetto/ReGenesees")
-# remotes::install_github("DiegoZardetto/ReGenesees.GUI")
-
-######################################################################################################
-###  
-###   STEP 4.1 - SET THE WORKING DIRECTORY WHERE THE OUPUTS ARE STORED 
-### 
-######################################################################################################
-
-getwd()
-setwd(dir_data_QW)
-getwd()
-
-
 ######################################################################################################
 ###  
 ###   STEP 4.2 - LOAD THE R OBJECTS CONTAINING SAMPLE DATA AND KNOWN TOTAL FROM THE WORKING DIRECTORY 
@@ -94,7 +72,44 @@ ls()
 ######################################################################################################
 
 sample_data <-  	LFS_SAMPLE_DATA
-			  
+
+
+sample_data$X301 <- 0
+sample_data$X307 <- 0
+sample_data$X325 <- 0
+sample_data$X331 <- 0
+sample_data$X337 <- 0
+sample_data$X343 <- 0
+sample_data$X373 <- 0 
+sample_data$X379 <- 0
+sample_data$X397 <- 0
+sample_data$X403 <- 0
+sample_data$X421 <- 0
+sample_data$X427 <- 0
+
+pairs <- list(
+  c(302, 303),
+  c(308, 309),
+  c(326, 327),
+  c(332, 333),
+  c(338, 339),
+  c(344, 345),
+  c(374, 375),
+  c(380, 381),
+  c(398, 399),
+  c(404, 405),
+  c(422, 423),
+  c(428, 429)
+)
+
+for (p in pairs) {
+  col_keep <- paste0("X", p[1])
+  col_add  <- paste0("X", p[2])
+  sample_data[[col_keep]] <- sample_data[[col_keep]] + sample_data[[col_add]]
+  sample_data[[col_add]]  <- 0
+}
+
+
 ###   transform some variables as factor as required by the routines used later
 
 sample_data$DOMAIN    <- as.factor(sample_data$DOMAIN)
@@ -107,8 +122,9 @@ sample_data$INDKEY    <- as.factor(sample_data$INDKEY)
 
 sample_data$ONES      <- 1
 
-
 ###  show the entire dataset
+sample_data
+summary(sample_data)
 View(sample_data)
 
 ### in case we need to rename some variables whose name was not correctly read from the csv
@@ -116,26 +132,59 @@ View(sample_data)
 #head(sample_data)
 
 ###  Check the total of the estimates using the design weights (before final calibration) 
-sum(sample_data$poids_menage)
+sum(sample_data$d_weights)
 
 
 ######################################################################################################
 ###  
 ###   STEP 4.7 -  Read the known totals that has been created with the R scripts "03_......R"   
 ###  
-######################################################################################################
+#####################################################################################################
 
 known_totals <-  	LFS_KNOWN_TOTALS
+known_totals$X301 <- 0
+known_totals$X307 <- 0
+known_totals$X325 <- 0
+known_totals$X331 <- 0
+known_totals$X337 <- 0
+known_totals$X343 <- 0
+known_totals$X373 <- 0
+known_totals$X379 <- 0
+known_totals$X397 <- 0
+known_totals$X403 <- 0
+known_totals$X421 <- 0
+known_totals$X427 <- 0  
 
+pairs <- list(
+  c(302, 303),
+  c(308, 309),
+  c(326, 327),
+  c(332, 333),
+  c(338, 339),
+  c(344, 345),
+  c(374, 375),
+  c(380, 381),
+  c(398, 399),
+  c(404, 405),
+  c(422, 423),
+  c(428, 429)
+)
+
+for (p in pairs) {
+  col_keep <- paste0("X", p[1])
+  col_add  <- paste0("X", p[2])
+  known_totals[[col_keep]] <- known_totals[[col_keep]] + known_totals[[col_add]]
+  known_totals[[col_add]]  <- 0
+}
 ###  transform some vairables as factor as required by the routines used later
 
 known_totals$DOMAIN <- as.factor(known_totals$DOMAIN)
 known_totals
 
-
 ###  Check the total of the known total population 
 ###  Calculates the sum of the X by rows (the total for each domain) and then adds over the domains to get the total for the country 
 sum(rowSums( known_totals[, seq(2,49) ] ))
+sum(rowSums( known_totals[, seq(50,445) ] ))
 
 
 
@@ -152,7 +201,7 @@ sum(rowSums( known_totals[, seq(2,49) ] ))
 design_lfs  <- e.svydesign(data = sample_data, 
                             ids = ~ PSUKEY + HHKEY, 
                          strata = ~ STRATAKEY, 
-                        weights = ~ poids_menage, 
+                        weights = ~ d_weights, 
                             fpc = NULL, 
                    self.rep.str = NULL, 
                      check.data = TRUE)
@@ -162,6 +211,7 @@ design_lfs  <- e.svydesign(data = sample_data,
 ###  if everything is we will get the message "#No lonely PSUs found!"
 
 find.lon.strata(design_lfs)
+
 
 
 ######################################################################################################
@@ -187,7 +237,7 @@ find.lon.strata(design_lfs)
 
 
 ### install new functions for ReGenesees from the following file
-source( R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS )
+source(R_SCRIPT_NEW_FUNCTIONS_FOR_X_CONSTRAINS )
 
 ###  use the function "constraints_model" to create the list of Xs identifying the calibration cells (Calibration model)
 
@@ -219,6 +269,83 @@ popdataframe
 
 ###  Check the total of the known total population 
 sum(rowSums( popdataframe[, seq(2,49) ] ))
+
+
+####################################################################################################################
+###  
+###    STEP 4.11 
+###
+###    CALCULATE AND CHECK SUMMARY STATISTICS ON THE Xs CONSTRAINTS (CALIBRATION CELLS) BEFORE CALIBRATION 
+###
+#####################################################################################################################
+ 
+ 
+### firstly, let's create a design object as in STEP 6, but using the variable ONES as weight instead of DESIGN_WEIGHT 
+### It will be used below to calculate the sample size in each adjustment cell for the different domains
+ 
+design_size  <- e.svydesign(data = sample_data, 
+                            ids = ~ PSUKEY + HHKEY, 
+                            strata = ~ STRATAKEY, 
+                            weights = ~ ONES, 
+                            fpc = NULL, 
+                            self.rep.str = NULL, 
+                            check.data = TRUE)
+ 
+ 
+###############################################################################################################
+###
+###    CHECK SUMMARY STASTISTICS ON THE X CONSTRAINTS (CALIBRATION CELLS) BY DOMAIN:
+###    CREATE A TABLE THAT FOR EACH DOMAIN AND X SHOWS:
+###    - THE SAMPLE SIZE, 
+###    - THE INITIAL ESTIMATES OBTAINED USING THE INITIAL WEIGHTS (DESIGN OR INTERMEDIATE WEIGHTS), 
+###    - THE KNOWN TOTALS (BENCHMARKS), 
+###    - THE MEAN CORRECTION FACTOR, 
+###    - A FLAG INDICATING WHETHER THE CORRECTION FACTOR IS HIGHER THAN A THRESHOLD,
+###    - A FLAG INDICATING WHETHER THE SAMPLE SIZE IS TOO LOW FOR A GIVEN X 
+###
+###############################################################################################################
+ 
+ 
+### Calculate the sample size for each calibration cell X for the different domains (ignore the messages "Warning in aux.estimates ....")
+### Within the function there are the following parameters that can be changed as needed
+### L_trsld_corr_fact=0.5  will highlight the Xs that will have a mean correction factor lower than 0.5
+### H_trsld_corr_fact=1.5  will highlight the Xs that will have a mean correction factor higher than 1.5
+### L_trsld_sample_size=30 will highlight the Xs that have a sample size of 30 or less 
+### calc_tot
+ 
+X_Summary_Table <- X_Summaries( numX = xnum, 
+                                des_size = design_size, 
+                                des_initial = design_lfs, 
+                                des_total = popdataframe,
+                                L_trsld_corr_fact = 0.95,
+                                H_trsld_corr_fact = 1.65, 
+                                L_trsld_sample_size = 30,
+                                calc_tot = TRUE)
+ 
+### ATTACH THE FORMATS TO THE Xs
+ 
+source(R_SCRIPT_X_FORMATS)
+ 
+### To visualize results
+ 
+View(X_Summary_Table)
+ 
+ 
+### To visualize only the Xs that have some error in the construction (e.g. the known total is >0 and sample_size=0)
+X_Summaries_Filter_View(X_Summary_Table, Error_in_X=TRUE)
+ 
+### To visualize only the Xs that have a low sample size
+X_Summaries_Filter_View(X_Summary_Table, Small_sample_size=TRUE)
+ 
+### To visualize only the Xs that have a too high or too low correction factors
+X_Summaries_Filter_View(X_Summary_Table, High_corr_factor=TRUE)
+
+save( X_Summary_Table , file = FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_RDATA)
+ 
+### Export in excel the tables with the summary statistics and flags for each calibration cell X for the different domains
+ 
+write_xlsx( X_Summary_Table , FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_XLSX)
+ 
 
 
 ######################################################################################################
@@ -259,31 +386,90 @@ bounds.h
 
 ### Create the calibrated object (ignore the message "Warning in e.calibrate.....")
 ### It appears because we are not using the standard way used by the author of the package to build the known totals
- 
+#  [0.134, 8.407]
 calib_lfs   <-  e.calibrate(design = design_lfs, 
                      df.population = popdataframe, 
                           calmodel = constrains_x,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.181, 4),
+                           bounds = c(0.0001, 50),
                    aggregate.stage = NULL, 
                              maxit = 50,
-                           epsilon = 1e-06, 
-                             force = TRUE)
+                           epsilon = 1e-4, 
+                             force = FALSE)
+ecal.status
+library(parallel)
+calibrate_adaptive <- function(
+  design, 
+  df.population, 
+  calmodel, 
+  partition = ~1, 
+  calfun = "logit",
+  bounds_base = c(0.6, 6),   # bornes suggérées de départ
+  expand_factor = 2,         # facteur d'élargissement
+  max_expand = 1e3,          # borne haute max (sécurité)
+  maxit = 30, 
+  epsilon = 1e-4
+) {
+  bounds <- bounds_base
+  
+  repeat {
+    message("🔎 Tentative calibration avec bounds = [", 
+            paste(bounds, collapse = ", "), "] ...")
+    
+    res <- try(
+      e.calibrate(
+        design = design,
+        df.population = df.population,
+        calmodel = calmodel,
+        partition = partition,
+        calfun = calfun,
+        bounds = bounds,
+        aggregate.stage = NULL,
+        maxit = maxit,
+        epsilon = epsilon,
+        force = FALSE
+      ),
+      silent = TRUE
+    )
+    
+    if (!inherits(res, "try-error") && exists("ecal.status", inherits = TRUE) && ecal.status == 0) {
+      message("✅ Calibration réussie avec bounds = [", 
+              paste(bounds, collapse = ", "), "]")
+      return(res)
+    }
+    
+    # élargir bornes
+    bounds <- bounds * expand_factor
+    
+    # sécurité : ne pas aller trop loin
+    if (bounds[2] > max_expand) {
+      stop("❌ Pas de convergence trouvée, même après élargissement jusqu’à ", max_expand)
+    }
+  }
+}
 
+calib_lfs <- calibrate_adaptive(
+  design = design_lfs,
+  df.population = popdataframe,
+  calmodel = constrains_x,
+  partition = ~DOMAIN,
+  bounds_base = c(0.624, 5.85)  # valeurs suggérées
+)
 
 ###   Check convergence of calibration: all the "$return.codes" for all DOMAINS from "ecal.status" must always be zero 
 
 ###   If one or more codes are different from 0 the procedure did not converge and the final weights are not correctly calculated
 ###   and the constraints/benchmarks (the set of X) or the DOMAINS need to be revised
 
-ecal.status
+
 
 ###   Check that the sum of the final weights is equal to the population benchmarks  
 
 sum(weights(calib_lfs))
 
+summary(sample_data$d_weights)
 summary(weights(calib_lfs))
 
 ###   Read the message about convergence  
@@ -293,6 +479,88 @@ check.cal(calib_lfs)
 ###   Read the message about strata and clusters    
 
 calib_lfs
+
+
+#######   STEP 4.14 - CALCULATE  SUMMARY STATISTICS ON THE Xs AFTER CALIBRATION     ###################################
+###
+###    AS IN STEP 9:
+###    CHECK SUMMARY STASTISTICS ON THE X CONSTRAINTS (CALIBRATION CELLS) BY DOMAIN:
+###    CREATE A TABLE THAT FOR EACH DOMAIN AND X SHOWS:
+###    - THE SAMPLE SIZE, 
+###    - THE INITIAL ESTIMATES OBTAINED USING THE INITIAL WEIGHTS (DESIGN OR INTERMEDIATE WEIGHTS), 
+###    - THE KNOWN TOTALS (BENCHMARKS), 
+###    - THE MEAN CORRECTION FACTOR, 
+###    - A FLAG INDICATING WHETHER THE CORRECTION FACTOR IS HIGHER THAN A THRESHOLD,
+###    - A FLAG INDICATING WHETHER THE SAMPLE SIZE IS TOO LOW FOR A GIVEN X 
+###
+###    USING THE ADDITIONAL PARAMETER "des_final = calib_lfs" THE FOLLOWING INFORMATION IS ADDED
+###    - THE FINAL ESTIMATES OBTAINED USING THE FINAL WEIGHTS 
+###    - THE DIFFERENCE DETWEEN THE FINAL ESTIMATE AND THE KNOWN TOTALS (BENCHMARKS). NEED TO BE ZERO 
+###
+###############################################################################################################
+ 
+ 
+X_Summary_Table <- X_Summaries( numX = xnum, 
+                                des_size = design_size, 
+                                des_initial = design_lfs, 
+                                des_total = popdataframe,
+                                des_final = calib_lfs,
+                                L_trsld_corr_fact = 0.95,
+                                H_trsld_corr_fact = 1.65, 
+                                L_trsld_sample_size = 30,
+                                calc_tot = TRUE)
+ 
+### ATTACH THE FORMATS TO THE Xs
+ 
+source(R_SCRIPT_X_FORMATS)
+ 
+ 
+### Visualize the results and check that the "Diff_Known_Tot_Final_Est" is zero for all the X because that means that
+### the procedure converged correctly and the final weights will produce estimates benchmarked to the known total.
+ 
+View(X_Summary_Table)
+
+### Visualize info on average correction factors 
+summary(X_Summary_Table$Mean_corr_factor) #A faire par région et milieu
+ 
+### To visualize only the Xs that have not converged (Diff_Known_Tot_Final_Est different from zero)
+X_Summaries_Filter_View(X_Summary_Table, X_diff_not_zero=TRUE)
+ 
+### To visualize only the Xs that have some error in the construction (e.g. the known total is >0 and sample_size=0)
+ 
+X_Summaries_Filter_View(X_Summary_Table, Error_in_X=TRUE)
+ 
+ 
+### Visualize only the Xs that have a low sample size (based on the parameter defined in the function X_Summaries)
+# X_Summaries_Filter_View(X_Summary_Table, Small_sample_size=TRUE)
+ 
+### Visualize only the Xs that have a low sample size based on a different threshold (defined below)  
+X_Summaries_Filter_View(X_Summary_Table, Small_sample_size=TRUE, L_trsld_sample_size=200)
+ 
+### To visualize only the Xs that have a too high or too low correction factors
+ 
+### Visualize only the Xs that a too high or too low correction factors (based on the parameter defined in the function X_Summaries)
+# X_Summaries_Filter_View(X_Summary_Table, High_corr_factor=TRUE)
+ 
+### To visualize only the Xs that have a too high or too low correction factors based on different thresholds (defined below) 
+X_Summaries_Filter_View(X_Summary_Table, High_corr_factor=TRUE, H_trsld_corr_fact=1.25)
+ 
+X_Summaries_Filter_View(X_Summary_Table, High_corr_factor=TRUE, L_trsld_corr_fact=0.95)
+ 
+X_Summaries_Filter_View(X_Summary_Table, High_corr_factor=TRUE, H_trsld_corr_fact=1.15, L_trsld_corr_fact=0.95)
+ 
+ 
+ 
+### SAVE THE RESULTS AS RDATA AND EXCEL FILE
+ 
+### SAve as Rdata
+ 
+save( X_Summary_Table , file = FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_RDATA)
+ 
+### Export in excel the tables with the summary statistics and flags for each calibration cell X for the different domains
+ 
+write_xlsx( X_Summary_Table , FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_XLSX)
+ 
 
 ######################################################################################################
 ###  
@@ -308,7 +576,7 @@ sample_data$FINAL_WEIGHT <- weights(calib_lfs)
 
 ###   Calculate the final correction factors
 
-sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$poids_menage
+sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$d_weights
 
 
 View(sample_data)
@@ -348,16 +616,23 @@ save(LFS_CALIBRATION_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_FINAL_WEIGHTS_RDAT
 ### SUMMARY OF DESIGN WEIGHTS
 
 LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS <-
-  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$poids_menage) , 
+  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$d_weights) , 
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
+
+LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU <-
+  aggregate(  x = list( DESIGN_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$d_weights) , 
+              by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA,milieu = LFS_CALIBRATION_FINAL_WEIGHTS$milieu),
+              FUN = summary )
+View(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU)
 
 View(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS)
 
 save(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_RDATA)
+save(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU, file = LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_CSV)
-
+write.csv(LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU, file = LFS_CALIBRATION_SUMMARY_OF_DESIGN_WEIGHTS_MILIEU_CSV)
 
 ### SUMMARY OF CORRECTION FACTORS
 
@@ -366,11 +641,18 @@ LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS <-
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 
+LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU <-
+  aggregate(  x = list( FINAL_CORR_FACTOR = LFS_CALIBRATION_FINAL_WEIGHTS$FINAL_CORR_FACTOR ) , 
+              by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA,milieu = LFS_CALIBRATION_FINAL_WEIGHTS$milieu),
+              FUN = summary )              
+glimpse(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU)
 View(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS)
 
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_RDATA)
+save(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_CSV)
+write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_CORR_FACTORS_MILIEU_CSV)
 
 
 ### SUMMARY OF FINAL WEIGHTS
@@ -380,9 +662,40 @@ LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS <-
               by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA),
               FUN = summary )
 
+LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU <-
+  aggregate(  x = list( FINAL_WEIGHT = LFS_CALIBRATION_FINAL_WEIGHTS$FINAL_WEIGHT ) , 
+              by = list( STRATA = LFS_CALIBRATION_FINAL_WEIGHTS$STRATA, milieu= LFS_CALIBRATION_FINAL_WEIGHTS$milieu),
+              FUN = summary )
+
 View(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS)
 
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA)
+save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_RDATA)
+
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
+write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV)
+
+
+### Verify the differences greater than 100 at the national and regional levels
+
+tab_sample <- sample_data  %>%
+              tab_rows(mdset(X49 %to% get("last_X")), mdset(X1 %to% X48)) %>%
+              tab_cols(DOMAIN) %>%
+              tab_weight(FINAL_WEIGHT) %>%
+              tab_stat_sum %>%
+              tab_pivot() %>%
+              as.data.frame() %>%
+              rename(Somme_final_weight = names(.)[2]) %>%
+              select(Somme_final_weight)
+
+
+table_check <- cbind(POP_LFS_BY_REGION_SEX_3AGEGR, tab_sample) %>%
+               mutate(ecart = abs(Nombre - Somme_final_weight),
+                      checing = ifelse(ecart > 100, "> 100", "")
+                      )
+
+view(table_check)
+
+
 

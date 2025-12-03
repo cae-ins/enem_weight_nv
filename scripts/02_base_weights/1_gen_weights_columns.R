@@ -16,7 +16,7 @@ library(readxl)
 library(labelled)
 library(lubridate)
 library(stringr)
-library(rlang)  # for .datas
+library(rlang) # for .datas
 
 
 # ------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ library(rlang)  # for .datas
 # ------------------------------------------------------------------------------
 # Base directory for the project
 source("config/1_config.r")
-################################################################################################################### 
+###################################################################################################################
 # Chargement de script de correction si disponible
 appliquer_correction_trimestre <- function(df, trimestre, dossier_scripts = "scripts/07_correction_quarter") {
   nom_fichier <- file.path(dossier_scripts, paste0("correction_", trimestre, ".r"))
@@ -58,7 +58,7 @@ TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 
 NB_MEN_INDIV_FILE <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_indivs_ZD.dta")
 POIDS_REGIONAUX <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_reg_milieu.dta")
-QUARTERS_EXCEL <- file.path(DATA_DIR, "01_raw", "Organisation","quarter_resurvey.xlsx")
+QUARTERS_EXCEL <- file.path(DATA_DIR, "01_raw", "Organisation", "quarter_resurvey.xlsx")
 
 # ------------------------------------------------------------------------------
 # Load Main Dataset
@@ -85,7 +85,7 @@ menage_q <- read_dta(menage_file)
 individu_q <- read_dta(individu_file)
 
 # Helper function to rename columns if needed
-normalize_column_names  <- function(df) {
+normalize_column_names <- function(df) {
   names(df) <- names(df) %>%
     tolower() %>%
     gsub("__", "_", .)
@@ -99,19 +99,19 @@ individu_q <- normalize_column_names(individu_q)
 # Prepare Household-Level Counts (nb_mens_enq)
 # ------------------------------------------------------------------------------
 # Donne des noms uniques aux colonnes tout en conservant toutes les versions
-menage_q <- menage_q %>% 
+menage_q <- menage_q %>%
   dplyr::rename_with(make.unique, everything())
 
 # Vérifie que les colonnes sont uniques maintenant
 names(menage_q)
 
 # Ensuite ton calcul passe sans erreur
-mens_enq_counts <- menage_q %>% 
-  group_by(hh2, hh3, hh4, hh8) %>% 
-  summarise(nb_mens_enq = n(), .groups = "drop") %>% 
+mens_enq_counts <- menage_q %>%
+  group_by(hh2, hh3, hh4, hh8) %>%
+  summarise(nb_mens_enq = n(), .groups = "drop") %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8)
 
-print(mens_enq_counts,n=475)
+print(mens_enq_counts, n = nrow(mens_enq_counts))
 # ------------------------------------------------------------------------------
 # Prepare Individual-Level Counts
 # ------------------------------------------------------------------------------
@@ -135,14 +135,14 @@ indiv_enq_counts <- indiv_with_ids %>%
     .groups = "drop"
   ) %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
-print(indiv_enq_counts,n=475)
+print(indiv_enq_counts, n = 475)
 
 
 # ------------------------------------------------------------------------------
 # Load Cleaned Denombrement for Segment-Level Counts (Current + Resurveyed Quarters)
 # ------------------------------------------------------------------------------
 
-source(file.path(BASE_DIR,"scripts/02_base_weights/4_construct_denombrement.r"))
+source(file.path(BASE_DIR, "scripts/02_base_weights/4_construct_denombrement.r"))
 
 # ------------------------------------------------------------------------------
 # Merge with Region-Level Data
@@ -156,7 +156,7 @@ nb_men_indiv_ZD <- nb_men_indiv_ZD %>%
 
 final_data <- seg_survey %>%
   left_join(nb_men_indiv_ZD, by = c("region", "depart", "souspref", "ZD"))
-print(final_data,n=710)
+print(final_data, n = nrow(final_data))
 
 # ------------------------------------------------------------------------------
 # Functions and Add quarter phase
@@ -167,23 +167,23 @@ print(final_data,n=710)
 # ------------------------------------------------------------------------------
 get_quarter_phase <- function(date_ref) {
   date_ref <- as.Date(date_ref)
-  
+
   # Extract year and quarter
   year <- lubridate::year(date_ref)
   month <- lubridate::month(date_ref)
   quarter <- ceiling(month / 3)
-  
+
   # Apply the mapping rules
   phase <- case_when(
-    year == 2024 & quarter == 2                     ~ 1,
-    (year == 2024 & quarter == 3) |  (year == 2024 & quarter == 4) |
-      (year == 2025 & quarter == 1)                 ~ 2,
-    year == 2025 & quarter == 2                     ~ 3,
+    year == 2024 & quarter == 2 ~ 1,
+    (year == 2024 & quarter == 3) | (year == 2024 & quarter == 4) |
+      (year == 2025 & quarter == 1) ~ 2,
+    year == 2025 & quarter == 2 ~ 3,
     (year > 2025) |
-      (year == 2025 & quarter %in% c(3, 4))         ~ 4,
-    TRUE                                            ~ NA_integer_
+      (year == 2025 & quarter %in% c(3, 4)) ~ 4,
+    TRUE ~ NA_integer_
   )
-  
+
   return(phase)
 }
 
@@ -191,12 +191,12 @@ get_quarter_phase <- function(date_ref) {
 final_data <- final_data %>%
   mutate(quarter_phase = get_quarter_phase(date_ref))
 
-poids_regionaux <- read_dta(POIDS_REGIONAUX)%>%
+poids_regionaux <- read_dta(POIDS_REGIONAUX) %>%
   mutate(
     region = as.double(REGION)
   )
 final_data <- final_data %>%
-    left_join(poids_regionaux %>% select(region, milieu, nb_men_reg), by = c("region","milieu"), suffix = c("", "_from_reg"))
+  left_join(poids_regionaux %>% select(region, milieu, nb_men_reg), by = c("region", "milieu"), suffix = c("", "_from_reg"))
 
 
 # ------------------------------------------------------------------------------
@@ -220,8 +220,8 @@ final_data <- final_data %>%
 
 final_data <- final_data %>%
   select(
-    region, depart, souspref, ZD, segment, milieu,date_ref,
-    nb_indivs_enq, nb_indivs_enq_pot, nb_indivs_enq_elig, 
+    region, depart, souspref, ZD, segment, milieu, date_ref,
+    nb_indivs_enq, nb_indivs_enq_pot, nb_indivs_enq_elig,
     nb_mens_enq, nb_indivs_seg, nb_mens_seg,
     nb_indivs_zd, nb_mens_zd,
     nb_men_reg,
@@ -233,16 +233,16 @@ final_data <- final_data %>%
 # ------------------------------------------------------------------------------
 
 # Define path to Denombrement_update and get latest file
-denom_update_dir <- file.path(DATA_DIR,"02_Cleaned", "Denombrement_update")
+denom_update_dir <- file.path(DATA_DIR, "02_Cleaned", "Denombrement_update")
 update_files <- list.files(denom_update_dir, pattern = "\\.dta$", full.names = TRUE)
 
 if (length(update_files) > 0) {
   latest_file <- update_files[which.max(file.info(update_files)$mtime)]
-  
+
   # Load and normalize
   denom_update <- read_dta(latest_file)
   denom_update <- normalize_column_names(denom_update)
-  
+
   # Ensure ZD is character and join keys have correct types
   denom_update <- denom_update %>%
     mutate(
@@ -252,16 +252,19 @@ if (length(update_files) > 0) {
       segment  = as.double(segment),
       zd       = as.character(zd)
     ) %>%
-    select(region, depart, souspref, zd, segment,
-           nb_mens_seg, nb_mens_zd, nb_indivs_seg, nb_indivs_zd)
-  
+    select(
+      region, depart, souspref, zd, segment,
+      nb_mens_seg, nb_mens_zd, nb_indivs_seg, nb_indivs_zd
+    )
+
   # Prepare final_data ZD as character for join
   final_data <- final_data %>%
     mutate(ZD = as.character(ZD)) %>%
     left_join(denom_update,
-              by = c("region", "depart", "souspref", "ZD" = "zd", "segment"),
-              suffix = c("", "_upd"))
-  
+      by = c("region", "depart", "souspref", "ZD" = "zd", "segment"),
+      suffix = c("", "_upd")
+    )
+
   # Identify rows with any updated value
   updated_rows <- final_data %>%
     filter(
@@ -271,21 +274,21 @@ if (length(update_files) > 0) {
         !is.na(nb_indivs_zd_upd)
     ) %>%
     select(region, depart, souspref, ZD, segment)
-  
+
   # Print the updated combinations
   print("Updated rows:")
-  print(updated_rows, n=100)
-  
+  print(updated_rows, n = 100)
+
   # Replace values where update is available
   final_data <- final_data %>%
     mutate(
-      nb_mens_seg    = if_else(!is.na(nb_mens_seg_upd),    nb_mens_seg_upd,    nb_mens_seg),
-      nb_mens_zd     = if_else(!is.na(nb_mens_zd_upd),     nb_mens_zd_upd,     nb_mens_zd),
-      nb_indivs_seg  = if_else(!is.na(nb_indivs_seg_upd),  nb_indivs_seg_upd,  nb_indivs_seg),
-      #nb_indivs_zd   = if_else(!is.na(nb_indivs_zd_upd),   nb_indivs_zd_upd,   nb_indivs_zd)
+      nb_mens_seg    = if_else(!is.na(nb_mens_seg_upd), nb_mens_seg_upd, nb_mens_seg),
+      nb_mens_zd     = if_else(!is.na(nb_mens_zd_upd), nb_mens_zd_upd, nb_mens_zd),
+      nb_indivs_seg  = if_else(!is.na(nb_indivs_seg_upd), nb_indivs_seg_upd, nb_indivs_seg),
+      # nb_indivs_zd   = if_else(!is.na(nb_indivs_zd_upd),   nb_indivs_zd_upd,   nb_indivs_zd)
     ) %>%
     select(-nb_mens_seg_upd, -nb_mens_zd_upd, -nb_indivs_seg_upd, -nb_indivs_zd_upd)
-  
+
   # Drop duplicate rows
   final_data <- final_data %>%
     distinct()
@@ -293,22 +296,27 @@ if (length(update_files) > 0) {
 
 final_data <- final_data %>%
   group_by(region, milieu) %>%
-  mutate(nb_indivs_milieu = sum(nb_indivs_zd, na.rm = TRUE),
-         nb_mens_milieu = sum(nb_mens_zd, na.rm= TRUE)) %>%
+  mutate(
+    nb_indivs_milieu = sum(nb_indivs_zd, na.rm = TRUE),
+    nb_mens_milieu = sum(nb_mens_zd, na.rm = TRUE)
+  ) %>%
   ungroup()
 
 
 final_data <- final_data %>%
   mutate(
     year = ifelse(!is.na(.data$first_trim) & str_detect(.data$first_trim, "^T[1-4]_\\d{4}$"),
-                  as.integer(str_sub(.data$first_trim, 4, 7)),
-                  NA_integer_),
+      as.integer(str_sub(.data$first_trim, 4, 7)),
+      NA_integer_
+    ),
     trimester = ifelse(!is.na(.data$first_trim) & str_detect(.data$first_trim, "^T[1-4]_\\d{4}$"),
-                       as.integer(str_sub(.data$first_trim, 2, 2)),
-                       NA_integer_),
+      as.integer(str_sub(.data$first_trim, 2, 2)),
+      NA_integer_
+    ),
     quarter_rank = ifelse(!is.na(year) & !is.na(trimester),
-                          year * 10 + trimester,
-                          NA_integer_)
+      year * 10 + trimester,
+      NA_integer_
+    )
   ) %>%
   group_by(region, depart, souspref, ZD) %>%
   filter(quarter_rank == max(quarter_rank, na.rm = TRUE)) %>%
@@ -324,28 +332,28 @@ final_data <- final_data %>%
 # ------------------------------------------------------------------------------
 # Set Variable Labels
 # ------------------------------------------------------------------------------
-var_label(final_data$region)         <- "Région"
-var_label(final_data$depart)         <- "Département"
-var_label(final_data$souspref)       <- "Sous-préfecture"
-var_label(final_data$ZD)             <- "Zone de dénombremement"
-var_label(final_data$segment)        <- "Segment"
-var_label(final_data$milieu)         <- "Milieu de résidence"
-var_label(final_data$date_ref)       <- "Date de référence du début"
-var_label(final_data$nb_indivs_seg)  <- "Nombre d'individus du segment"
-var_label(final_data$nb_mens_seg)    <- "Nombre de ménages du segment"
-#var_label(final_data$nb_indivs_reg)  <- "Nombre d'individus de la région"
-var_label(final_data$nb_men_reg)    <- "Nombre de ménages de la région"
-var_label(final_data$nb_indivs_zd)   <- "Nombre d'individus de la ZD"
-var_label(final_data$nb_mens_zd)     <- "Nombre de ménages de la ZD"
-var_label(final_data$quarter_phase)  <- "Nombre de trimestres enquêtés"
-var_label(final_data$nb_mens_enq)    <- "Nombre de ménages effectivement enquêtés"
-var_label(final_data$nb_indivs_enq)  <- "Nombre d'individus effectivement enquêtés"
+var_label(final_data$region) <- "Région"
+var_label(final_data$depart) <- "Département"
+var_label(final_data$souspref) <- "Sous-préfecture"
+var_label(final_data$ZD) <- "Zone de dénombremement"
+var_label(final_data$segment) <- "Segment"
+var_label(final_data$milieu) <- "Milieu de résidence"
+var_label(final_data$date_ref) <- "Date de référence du début"
+var_label(final_data$nb_indivs_seg) <- "Nombre d'individus du segment"
+var_label(final_data$nb_mens_seg) <- "Nombre de ménages du segment"
+# var_label(final_data$nb_indivs_reg)  <- "Nombre d'individus de la région"
+var_label(final_data$nb_men_reg) <- "Nombre de ménages de la région"
+var_label(final_data$nb_indivs_zd) <- "Nombre d'individus de la ZD"
+var_label(final_data$nb_mens_zd) <- "Nombre de ménages de la ZD"
+var_label(final_data$quarter_phase) <- "Nombre de trimestres enquêtés"
+var_label(final_data$nb_mens_enq) <- "Nombre de ménages effectivement enquêtés"
+var_label(final_data$nb_indivs_enq) <- "Nombre d'individus effectivement enquêtés"
 var_label(final_data$nb_indivs_enq_pot) <- "Nombre de ménages enquêtés potentiellement éligibles"
 var_label(final_data$nb_indivs_enq_elig) <- "Nombre d'individus éligibles"
 var_label(final_data$nb_indivs_milieu) <- "Nombre d'individus par (region, milieu de résidence)"
 var_label(final_data$nb_mens_milieu) <- "Nombre de ménages par (region, milieu de résidence)"
-var_label(final_data$rgmen)          <- "Rang d'interrogation"
-var_label(final_data$first_trim)     <- "Premier trimestre d'interrogation"
+var_label(final_data$rgmen) <- "Rang d'interrogation"
+var_label(final_data$first_trim) <- "Premier trimestre d'interrogation"
 
 # ------------------------------------------------------------------------------
 # Define integer codes as values with labels as names (required by `labelled()`)
@@ -376,16 +384,16 @@ inconsistent_rows <- final_data %>%
   mutate(
     incoherence_code = case_when(
       is.na(nb_mens_enq) & is.na(nb_indivs_enq) ~ 10L,
-      is.na(nb_mens_seg)                        ~ 1L,
-      is.na(nb_mens_zd)                         ~ 2L,
-      is.na(nb_indivs_seg)                      ~ 3L,
-      is.na(nb_indivs_zd)                       ~ 4L,
-      is.na(nb_indivs_enq)                      ~ 5L,
-      is.na(nb_mens_enq)                        ~ 6L,
-      nb_mens_seg > nb_mens_zd                  ~ 7L,
-      nb_indivs_seg > nb_indivs_zd              ~ 8L,
-      nb_mens_seg > nb_indivs_seg               ~ 9L,
-      tmp_is_duplicate                          ~ 11L,
+      is.na(nb_mens_seg) ~ 1L,
+      is.na(nb_mens_zd) ~ 2L,
+      is.na(nb_indivs_seg) ~ 3L,
+      is.na(nb_indivs_zd) ~ 4L,
+      is.na(nb_indivs_enq) ~ 5L,
+      is.na(nb_mens_enq) ~ 6L,
+      nb_mens_seg > nb_mens_zd ~ 7L,
+      nb_indivs_seg > nb_indivs_zd ~ 8L,
+      nb_mens_seg > nb_indivs_seg ~ 9L,
+      tmp_is_duplicate ~ 11L,
       TRUE ~ NA_integer_
     ),
     incoherence_code = labelled(incoherence_code, labels = incoherence_labels)
@@ -398,7 +406,7 @@ glimpse(final_data)
 # ------------------------------------------------------------------------------
 # Save Final Dataset
 # ------------------------------------------------------------------------------
-output_file <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",paste0("base_weights_", TARGET_QUARTER, ".dta"))
+output_file <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights", paste0("base_weights_", TARGET_QUARTER, ".dta"))
 inconsistent_file <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights", paste0("inconsistent_rows_", TARGET_QUARTER, ".dta"))
 dir.create(dirname(output_file), showWarnings = FALSE, recursive = TRUE)
 write_dta(final_data, output_file)
@@ -407,4 +415,3 @@ write_dta(inconsistent_rows, inconsistent_file)
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_data)
-

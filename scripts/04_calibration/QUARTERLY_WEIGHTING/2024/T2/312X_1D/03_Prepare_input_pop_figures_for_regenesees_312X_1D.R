@@ -51,17 +51,16 @@ getwd()
 ######################################################################################################
 
 ### Load the R dataframe called "POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR" stored on disk in the RData file identified by the macro variable "FILE_POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR_RDATA"
-
-load(FILE_POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR_RDATA)
+load(FILE_POP_LFS_BY_REGION_SEX_2AGEGR_RDATA)
 
 
 ### Check that the dataframe "POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR" has been loaded
 
 
-str(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR)
+str(POP_LFS_BY_REGION_SEX_2AGEGR)
 
 
-View(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR)
+View(POP_LFS_BY_REGION_SEX_2AGEGR)
 
 
 
@@ -71,7 +70,7 @@ View(POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR)
 ### The shorter name will help when we have to write the code. The prefix tmp will help to recognize that is a temporary
 ### dataframe that does not need to be saved permanently on disk  
 
-tmpKT <- POP_LFS_BY_REGION_URBAIN_RURAL_SEX_2AGEGR
+tmpKT <- POP_LFS_BY_REGION_SEX_2AGEGR
 
 head(tmpKT )
 
@@ -935,7 +934,7 @@ sum(LFS_KNOWN_TOTALS[,seq(2,49)])
 
 ###   We can calculate the total population summing the X values of the second subset of X
 
-sum(LFS_KNOWN_TOTALS[,seq(50,61)]) # ABIDJAN
+sum(LFS_KNOWN_TOTALS[,seq(50,313)]) # ABIDJAN
 
 
 ###   We can calculate the total population summing the X values of the third subset of X
