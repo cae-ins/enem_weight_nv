@@ -59,7 +59,8 @@ get_seg_drop <- function(file_path, target_codes) {
   
   # Filter rows with specified codes
   filtered_data <- data %>%
-    filter(incoherence_code %in% target_codes)
+    filter(incoherence_code %in% target_codes) %>%
+    filter(!is.na(region))   # ⬅️ suppression des region NA
   
   # Extract distinct segment identifiers
   segment_info <- filtered_data %>%
@@ -68,6 +69,7 @@ get_seg_drop <- function(file_path, target_codes) {
   
   return(segment_info)
 }
+
 
 seg_drop = count_seg_drop(INCONSISTENT_PATH, TARGET_CODES)
 seg_drop_info = get_seg_drop(INCONSISTENT_PATH, TARGET_CODES)
@@ -173,6 +175,18 @@ append_base_weights <- function(data, resurvey = TRUE) {
 # ------------------------------------------------------------------------------
 weight_data <- read_dta(WEIGHTS_COLUMNS_PATH)
 ## Drop the inconsistent rows
+keys <- c("region", "depart", "souspref", "ZD", "segment")
+
+weight_data <- weight_data %>%
+  # 1. supprimer les lignes avec region manquante
+  filter(!is.na(region)) %>%
+  
+  # 2. supprimer les segments/ZD listés dans seg_drop_info
+  anti_join(
+    seg_drop_info %>% distinct(across(all_of(keys))),
+    by = keys
+  )
+
 weight_data <- weight_data %>%
   anti_join(seg_drop_info, by = c("region", "depart", "souspref", "ZD", "segment"))
 
@@ -203,6 +217,7 @@ weight_data <- append_base_weights(weight_data, resurvey = FALSE)
 # ------------------------------------------------------------------------------
 write_dta(weight_data, WEIGHTS_COLUMNS_PATH)
 cat("Base weights calculated and saved to:", WEIGHTS_COLUMNS_PATH, "\n")
+
 
 
 

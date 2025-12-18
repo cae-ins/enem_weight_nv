@@ -266,10 +266,10 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(-0.796, 3.771),
+                           bounds = c(0.001, 20),
                    aggregate.stage = NULL, 
-                             maxit = 100,
-                           epsilon = 1e-10, 
+                             maxit = 30,
+                           epsilon = 1e-4, 
                              force = TRUE)
 
 
@@ -386,5 +386,22 @@ View(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS)
 save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_RDATA)
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
+tab_sample <- sample_data  %>%
+              tab_rows(mdset(X49 %to% get("last_X")), mdset(X1 %to% X48)) %>%
+              tab_cols(DOMAIN) %>%
+              tab_weight(FINAL_WEIGHT) %>%
+              tab_stat_sum %>%
+              tab_pivot() %>%
+              as.data.frame() %>%
+              rename(Somme_final_weight = names(.)[2]) %>%
+              select(Somme_final_weight)
+
+
+table_check <- cbind(POP_LFS_BY_REGION_SEX_2AGEGR, tab_sample) %>%
+               mutate(ecart = abs(Nombre - Somme_final_weight),
+                      checking = ifelse(ecart > 100, "> 100", "")
+                      )
+
+table_check
 
 

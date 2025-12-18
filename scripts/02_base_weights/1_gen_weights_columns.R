@@ -45,16 +45,20 @@ appliquer_correction_trimestre <- function(df, trimestre, dossier_scripts = "scr
   } else {
     warning("La fonction correction_reaffectation_menage() n'est pas disponible même après chargement.")
     return(df)
-  }
+  }     
 }
+
 
 ###################################################################################################################
 
 DATA_DIR <- file.path(BASE_DIR, "data")
 CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
+
+
 PROCESSED_DIR <- file.path(DATA_DIR, "03_Processed")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
+
 
 NB_MEN_INDIV_FILE <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_indivs_ZD.dta")
 POIDS_REGIONAUX <- file.path(PROCESSED_DIR, "RP_2021", "nb_men_reg_milieu.dta")
@@ -64,6 +68,7 @@ QUARTERS_EXCEL <- file.path(DATA_DIR, "01_raw", "Organisation", "quarter_resurve
 # Load Main Dataset
 # ------------------------------------------------------------------------------
 nb_men_indiv_ZD <- read_dta(NB_MEN_INDIV_FILE)
+
 
 nb_men_indiv_ZD <- nb_men_indiv_ZD %>%
   mutate(
@@ -83,7 +88,8 @@ individu_file <- list.files(individu_path, pattern = "^individu.*\\.dta$", full.
 
 menage_q <- read_dta(menage_file)
 individu_q <- read_dta(individu_file)
-
+nrow(menage_q)
+nrow(individu_q)
 # Helper function to rename columns if needed
 normalize_column_names <- function(df) {
   names(df) <- names(df) %>%
@@ -94,17 +100,17 @@ normalize_column_names <- function(df) {
 
 menage_q <- normalize_column_names(menage_q)
 individu_q <- normalize_column_names(individu_q)
-
+nrow(menage_q)
+nrow(individu_q)
 # ------------------------------------------------------------------------------
 # Prepare Household-Level Counts (nb_mens_enq)
 # ------------------------------------------------------------------------------
 # Donne des noms uniques aux colonnes tout en conservant toutes les versions
 menage_q <- menage_q %>%
   dplyr::rename_with(make.unique, everything())
-
+nrow(menage_q)
 # Vérifie que les colonnes sont uniques maintenant
 names(menage_q)
-
 # Ensuite ton calcul passe sans erreur
 mens_enq_counts <- menage_q %>%
   group_by(hh2, hh3, hh4, hh8) %>%
@@ -112,13 +118,14 @@ mens_enq_counts <- menage_q %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8)
 
 print(mens_enq_counts, n = nrow(mens_enq_counts))
+sum(mens_enq_counts$nb_mens_enq) 
 # ------------------------------------------------------------------------------
 # Prepare Individual-Level Counts
 # ------------------------------------------------------------------------------
 menage_ids <- menage_q %>%
   select(interview_key, hh2, hh3, hh4, hh8, hh7, rgmen) %>%
   distinct()
-
+nrow(menage_ids)
 names(individu_q) <- make.names(names(individu_q), unique = TRUE)
 individu_q <- individu_q %>%
   select(-any_of(c("hh2", "hh3", "hh4", "hh8", "hh7", "rgmen")))
@@ -126,24 +133,28 @@ individu_q <- individu_q %>%
 indiv_with_ids <- individu_q %>%
   left_join(menage_ids, by = "interview_key")
 
+
+
 indiv_enq_counts <- indiv_with_ids %>%
   group_by(hh2, hh3, hh4, hh8, hh7) %>%
   summarise(
     nb_indivs_enq = n(),
-    nb_indivs_enq_pot = sum((!is.na(m4confirm) & m4confirm > 15) | (is.na(m4confirm) & ageannee > 15), na.rm = TRUE),
-    nb_indivs_enq_elig = sum(!is.na(m4confirm) & m4confirm > 15, na.rm = TRUE),
+    nb_indivs_enq_pot = sum((!is.na(m4confirm) & m4confirm >= 15) | (is.na(m4confirm) & ageannee >= 15), na.rm = TRUE),
+    nb_indivs_enq_elig = sum(!is.na(m4confirm) & m4confirm >= 15, na.rm = TRUE),
     .groups = "drop"
   ) %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
 print(indiv_enq_counts, n = 475)
+sum(indiv_enq_counts$nb_indivs_enq)
+sum(indiv_enq_counts$nb_indivs_enq_pot)
 
 
+sum(indiv_enq_counts$nb_indivs_enq_elig)
 # ------------------------------------------------------------------------------
-# Load Cleaned Denombrement for Segment-Level Counts (Current + Resurveyed Quarters)
+#Load Cleaned Denombrement for Segment-Level Counts (Current + Resurveyed Quarters)
 # ------------------------------------------------------------------------------
 
 source(file.path(BASE_DIR, "scripts/02_base_weights/4_construct_denombrement.r"))
-
 # ------------------------------------------------------------------------------
 # Merge with Region-Level Data
 # ------------------------------------------------------------------------------
@@ -329,6 +340,157 @@ final_data <- final_data %>%
   ) %>%
   ungroup()
 
+
+
+# 1. Vérifier les valeurs manquantes AVANT l'agrégation
+cat("Nombre de ménages avec clés manquantes:\n")
+menage_q %>%
+  summarise(
+    na_region = sum(is.na(hh2)),
+    na_depart = sum(is.na(hh3)),
+    na_souspref = sum(is.na(hh4)),
+    na_zd = sum(is.na(hh8))
+  ) %>%
+  print()
+
+# 2. Créer mens_enq_counts en conservant les NA explicitement
+mens_enq_counts <- menage_q %>%
+  group_by(hh2, hh3, hh4, hh8) %>%
+  summarise(nb_mens_enq = n(), .groups = "drop") %>%
+  rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8) %>%
+  # Filtrer les lignes avec des clés valides
+  filter(!is.na(region) & !is.na(depart) & !is.na(souspref) & !is.na(ZD))
+
+# 3. Vérifier quelles ZD sont perdues
+zd_menage <- menage_q %>%
+  filter(!is.na(hh2) & !is.na(hh3) & !is.na(hh4) & !is.na(hh8)) %>%
+  distinct(hh2, hh3, hh4, hh8) %>%
+  rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8)
+
+zd_final <- final_data %>%
+  distinct(region, depart, souspref, ZD)
+
+zd_perdues <- zd_menage %>%
+  anti_join(zd_final, by = c("region", "depart", "souspref", "ZD"))
+
+cat("\nNombre de ZD perdues:", nrow(zd_perdues), "\n")
+print(zd_perdues)
+
+# 4. Diagnostic complet
+cat("\n=== DIAGNOSTIC ===\n")
+cat("Ménages dans menage_q:", nrow(menage_q), "\n")
+cat("Ménages dans mens_enq_counts:", sum(mens_enq_counts$nb_mens_enq), "\n")
+cat("Ménages dans final_data:", sum(final_data$nb_mens_enq, na.rm = TRUE), "\n")
+cat("ZD uniques dans menage_q:", n_distinct(menage_q$hh2, menage_q$hh3, menage_q$hh4, menage_q$hh8, na.rm = TRUE), "\n")
+cat("ZD dans final_data:", nrow(final_data), "\n")
+
+# === DIAGNOSTIC PRÉCIS ===
+
+# 1. Identifier les 6 ménages perdus
+menages_avec_cles <- menage_q %>%
+  filter(!is.na(hh2), !is.na(hh3), !is.na(hh4), !is.na(hh8))
+
+cat("\n🔍 MÉNAGES PERDUS:\n")
+cat("Ménages avec clés valides:", nrow(menages_avec_cles), "\n")
+cat("Ménages perdus (clés NA):", nrow(menage_q) - nrow(menages_avec_cles), "\n")
+
+if (nrow(menage_q) > nrow(menages_avec_cles)) {
+  menages_perdus <- menage_q %>%
+    filter(is.na(hh2) | is.na(hh3) | is.na(hh4) | is.na(hh8)) %>%
+    select(interview_key, hh2, hh3, hh4, hh8)
+  
+  cat("\nDétail des ménages avec clés manquantes:\n")
+  print(menages_perdus)
+}
+
+# 2. Vérifier la correspondance exacte après jointure
+verif_join <- final_data %>%
+  group_by(region, depart, souspref, ZD) %>%
+  summarise(
+    nb_mens_final = sum(nb_mens_enq, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+diff_apres_join <- mens_enq_counts %>%
+  left_join(verif_join, by = c("region", "depart", "souspref", "ZD")) %>%
+  mutate(diff = nb_mens_enq - coalesce(nb_mens_final, 0L)) %>%
+  filter(diff != 0)
+
+if (nrow(diff_apres_join) > 0) {
+  cat("\n⚠️ ZD avec différence après jointure:\n")
+  print(diff_apres_join)
+}
+
+# 3. Identifier les 11 ZD en trop
+zd_enquetees <- mens_enq_counts %>%
+  distinct(region, depart, souspref, ZD) %>%
+  mutate(enquetee = TRUE)
+
+zd_final <- final_data %>%
+  distinct(region, depart, souspref, ZD) %>%
+  mutate(dans_final = TRUE)
+
+zd_comparison <- full_join(
+  zd_enquetees,
+  zd_final,
+  by = c("region", "depart", "souspref", "ZD")
+) %>%
+  mutate(
+    enquetee = replace_na(enquetee, FALSE),
+    dans_final = replace_na(dans_final, FALSE)
+  )
+
+zd_non_enquetees <- zd_comparison %>%
+  filter(!enquetee & dans_final)
+
+cat("\n📊 RÉSUMÉ ZD:\n")
+cat("ZD enquêtées:", sum(zd_comparison$enquetee), "\n")
+cat("ZD dans final_data:", sum(zd_comparison$dans_final), "\n")
+cat("ZD dans les deux:", sum(zd_comparison$enquetee & zd_comparison$dans_final), "\n")
+cat("ZD non enquêtées (dénombrement seul):", nrow(zd_non_enquetees), "\n")
+
+if (nrow(zd_non_enquetees) > 0) {
+  cat("\nZD dans final_data mais PAS enquêtées:\n")
+  zd_non_enquetees_detail <- final_data %>%
+    semi_join(zd_non_enquetees, by = c("region", "depart", "souspref", "ZD")) %>%
+    select(region, depart, souspref, ZD, nb_mens_seg, nb_mens_enq, first_trim)
+  
+  print(zd_non_enquetees_detail, n = 20)
+}
+
+# 4. Vérifier le filtrage par quarter_rank (lignes 298-307)
+cat("\n🔍 IMPACT DU FILTRAGE PAR quarter_rank:\n")
+avant_filtrage <- nrow(final_data)
+
+# Simuler ce qui se passe AVANT le filtrage
+final_data_avant <- final_data  # Sauvegarde
+
+# Le filtrage actuel
+final_data_apres <- final_data %>%
+  mutate(
+    year = ifelse(!is.na(first_trim) & str_detect(first_trim, "^T[1-4]_\\d{4}$"),
+      as.integer(str_sub(first_trim, 4, 7)),
+      NA_integer_
+    ),
+    trimester = ifelse(!is.na(first_trim) & str_detect(first_trim, "^T[1-4]_\\d{4}$"),
+      as.integer(str_sub(first_trim, 2, 2)),
+      NA_integer_
+    ),
+    quarter_rank = ifelse(!is.na(year) & !is.na(trimester),
+      year * 10 + trimester,
+      NA_integer_
+    )
+  ) %>%
+  group_by(region, depart, souspref, ZD) %>%
+  filter(quarter_rank == max(quarter_rank, na.rm = TRUE)) %>%
+  ungroup()
+
+apres_filtrage <- nrow(final_data_apres)
+
+cat("Lignes avant filtrage:", avant_filtrage, "\n")
+cat("Lignes après filtrage:", apres_filtrage, "\n")
+cat("Lignes supprimées:", avant_filtrage - apres_filtrage, "\n")
+
 # ------------------------------------------------------------------------------
 # Set Variable Labels
 # ------------------------------------------------------------------------------
@@ -415,3 +577,13 @@ write_dta(inconsistent_rows, inconsistent_file)
 # Done
 # ------------------------------------------------------------------------------
 glimpse(final_data)
+
+
+
+
+
+
+
+
+
+

@@ -94,28 +94,34 @@ ls()
 ######################################################################################################
 
 sample_data <-  	LFS_SAMPLE_DATA
-# sample_data$X88 <- 0
-# sample_data$X94 <- 0
-# sample_data$X400 <- 0
-# sample_data$X406 <- 0
-# sample_data$X328 <- 0
-# sample_data$X334 <- 0
+sample_data$X88 <- 0
+sample_data$X94 <- 0
+sample_data$X400 <- 0
+sample_data$X406 <- 0
+sample_data$X327 <- 0
+sample_data$X337 <- 0
+sample_data$X343 <- 0
+sample_data$X100 <- 0
+sample_data$X106 <- 0
 # 
-# pairs <- list(
-#   c(89, 90),
-#   c(401, 402),
-#   c(407, 408),
-#   c(329, 330),
-#   c(335, 336),
-#   c(95, 96)
-# )
+ pairs <- list(
+   c(89, 90),
+   c(95, 96),
+   c(101, 102),
+   c(107, 108),
+   c(328, 329),
+   c(338, 339),
+   c(344, 345),
+   c(401, 402),
+   c(407, 408)
+ )
 # 
-# for (p in pairs) {
-#   col_keep <- paste0("X", p[1])
-#   col_add  <- paste0("X", p[2])
-#   sample_data[[col_keep]] <- sample_data[[col_keep]] + sample_data[[col_add]]
-#   sample_data[[col_add]]  <- 0
-# }	
+for (p in pairs) {
+   col_keep <- paste0("X", p[1])
+   col_add  <- paste0("X", p[2])
+   sample_data[[col_keep]] <- sample_data[[col_keep]] + sample_data[[col_add]]
+   sample_data[[col_add]]  <- 0
+ }	
 
 
 ###   transform some variables as factor as required by the routines used later
@@ -148,30 +154,35 @@ sum(sample_data$d_weights)
 ######################################################################################################
 
 known_totals <-  	LFS_KNOWN_TOTALS
-# known_totals$X88 <- 0
-# known_totals$X94 <- 0
-# known_totals$X400 <- 0
-# known_totals$X406 <- 0
-# known_totals$X328 <- 0
-# known_totals$X334 <- 0
+known_totals$X88 <- 0
+known_totals$X94 <- 0
+known_totals$X400 <- 0
+known_totals$X406 <- 0
+known_totals$X327 <- 0
+known_totals$X337 <- 0
+known_totals$X343 <- 0
+known_totals$X100 <- 0
+known_totals$X106 <- 0
+# 
+ pairs <- list(
+   c(89, 90),
+   c(95, 96),
+   c(101, 102),
+   c(107, 108),
+   c(328, 329),
+   c(338, 339),
+   c(344, 345),
+   c(401, 402),
+   c(407, 408)
+ )
 # 
 # 
-# pairs <- list(
-#   c(89, 90),
-#   c(401, 402),
-#   c(407, 408),
-#   c(329, 330),
-#   c(335, 336),
-#   c(95, 96)
-# )
-# 
-# for (p in pairs) {
-#   col_keep <- paste0("X", p[1])
-#   col_add  <- paste0("X", p[2])
-#   known_totals[[col_keep]] <- known_totals[[col_keep]] + known_totals[[col_add]]
-#   known_totals[[col_add]]  <- 0
-# }	
-
+for (p in pairs) {
+   col_keep <- paste0("X", p[1])
+   col_add  <- paste0("X", p[2])
+   known_totals[[col_keep]] <- known_totals[[col_keep]] + known_totals[[col_add]]
+   known_totals[[col_add]]  <- 0
+ }	
 
 ###  transform some vairables as factor as required by the routines used later
 
@@ -389,10 +400,10 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.01, 38), # [0.646, 6.099]
+                           bounds = c(0.000000000001, 54), # [0.634, 6.439]
                    aggregate.stage = NULL, 
                              maxit = 30,
-                           epsilon = 1e-6, 
+                           epsilon = 1e-3, 
                              force = FALSE)
 
 
@@ -632,4 +643,4 @@ table_check <- cbind(POP_LFS_BY_REGION_SEX_3AGEGR, tab_sample) %>%
                       checing = ifelse(ecart > 100, "> 100", "")
                       )
 
-view(table_check)
+table_check
