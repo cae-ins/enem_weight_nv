@@ -122,13 +122,24 @@ traiter_denombr_quarter <- function(q) {
 seg_survey_all <- set_names(all_quarters) %>%
   map(traiter_denombr_quarter)
 
-#seg_survey_all$T2_2024
+seg_survey_all$T2_2024
 
-#seg_survey_all$T2_2024 %>%
-#  summarise(across(everything(), ~ mean(is.na(.))*100)) %>%
-#  pivot_longer(cols = everything(), names_to = "variable", values_to = "pct_NA")
+seg_survey_all$T2_2024 %>%
+  summarise(across(everything(), ~ mean(is.na(.))*100)) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "pct_NA")
 
 
 # Bind all quarters’ data
 seg_survey <- bind_rows(seg_survey_all)
 glimpse(seg_survey)
+
+library(dplyr)
+library(readr)
+
+seg_survey_export <- seg_survey |>
+  dplyr::select(where(~ !is.list(.x)))
+
+readr::write_csv(
+  seg_survey_export,
+  file = "data/seg_survey.csv"
+)

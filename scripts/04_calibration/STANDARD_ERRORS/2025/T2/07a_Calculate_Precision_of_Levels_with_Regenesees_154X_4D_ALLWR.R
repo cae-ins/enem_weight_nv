@@ -62,7 +62,7 @@
 ###
 ##############################################################################################################
 
-load(FILE_LFS_CALIBRATION_IMAGE_RDATA )
+load(FILE_LFS_CALIBRATION_IMAGE_RDATA)
 
 ### See all the R objects loaded from the image file
 ls()

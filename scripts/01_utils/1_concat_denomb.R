@@ -91,24 +91,5 @@ for (i in seq_len(nrow(dta_index))) {
   
   cat("Saved:", output_path, "\n\n")
 }
- 
-
 
 cat("Done. All files successfully processed.\n")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

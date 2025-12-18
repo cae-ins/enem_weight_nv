@@ -5,8 +5,8 @@
 
 * ===================       Age      =======================*
 cap drop age
-gen age = M4Confirm if AgeAnnee >= 13 
-	replace age = AgeAnnee if AgeAnnee < 13
+gen age = m4confirm if ageannee >= 13 & !missing(ageannee)
+	replace age = ageannee if ageannee < 13 & !missing(ageannee)
 		lab var age "Age de l'individu"
 ta age, mis
 

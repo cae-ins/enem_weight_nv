@@ -541,5 +541,25 @@ write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SU
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV)
 
 
+### Verify the differences greater than 100 at the national and regional levels
+
+tab_sample <- sample_data  %>%
+              tab_rows(mdset(X49 %to% get("last_X")), mdset(X1 %to% X48)) %>%
+              tab_cols(DOMAIN) %>%
+              tab_weight(FINAL_WEIGHT) %>%
+              tab_stat_sum %>%
+              tab_pivot() %>%
+              as.data.frame() %>%
+              rename(Somme_final_weight = names(.)[2]) %>%
+              select(Somme_final_weight)
+
+
+table_check <- cbind(POP_LFS_BY_REGION_SEX_2AGEGR, tab_sample) %>%
+               mutate(ecart = abs(Nombre - Somme_final_weight),
+                      checing = ifelse(ecart > 100, "> 100", "")
+                      )
+
+table_check
+
 
 
