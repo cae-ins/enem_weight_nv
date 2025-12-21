@@ -19,4 +19,7 @@
 *.zip
 
 **/*.docx
-**/*.doc
+**/*.docs
+"scripts/01_utils/temp_code.R"
+"scripts/04_calibration/QUARTERLY_WEIGHTING/2025/T3/180X_1D - Copie/"
+"scripts/check_calibration.r"

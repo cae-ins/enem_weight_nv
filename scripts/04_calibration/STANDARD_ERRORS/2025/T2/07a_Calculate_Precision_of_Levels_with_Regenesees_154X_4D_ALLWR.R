@@ -70,9 +70,17 @@ ls()
 ### See the variables with the dataset calib_lfs
 head(calib_lfs$variables)
 
-
-
-
+df_calib <- calib_lfs$variables
+LFS_ILO_DER
+df_merged <- merge(
+  df_calib,
+  LFS_ILO_DER,
+  by = "INDKEY",
+  all.x = TRUE
+)
+glimpse(df_merged)
+calib_lfs2 = calib_lfs
+calib_lfs2$variables <- df_merged
 #######   STEP 5   ###########################################################################################
 ###
 ###    ESTIMATE THE STANDARD ERRORS, CVs AND CONFIDENCE INTERVALS FOR LEVEL ESTIMATES
@@ -88,14 +96,14 @@ head(calib_lfs$variables)
 ### So the output is consistent with the output produced when we do use disaggregation (later we will see why this is important)
    
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ EMP_15plus ,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ PAT ,
                                 by = ~ ONES,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
                               deff = TRUE, 
-                             na.rm = FALSE)
+                             na.rm = TRUE)
 tmp_cvs_TOT
 
 ### if we want the precision of the total of the variable disaggregated by any variable we use the parameter "by"
@@ -103,9 +111,9 @@ tmp_cvs_TOT
 
 ### Precision of the total of the variable disaggregated by SEX
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ EMP_15plus ,
-                                by = ~ SEX,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ PAT ,
+                                by = ~ M5,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
@@ -116,9 +124,9 @@ tmp_cvs_TOT
 
 ### Precision of the total of the variable disaggregated by REGION 
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ EMP_15plus ,
-                                by = ~ REGION,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ PAT ,
+                                by = ~ region,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
@@ -128,9 +136,9 @@ tmp_cvs_TOT
 
 ### Precision of the total of the variable disaggregated by REGION and SEX 
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ EMP_15plus ,
-                                by = ~ REGION:SEX,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ PAT ,
+                                by = ~ region:M5,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
@@ -140,8 +148,8 @@ tmp_cvs_TOT
 
 ### Precision of the total of the variable disaggregated by REGION and DISTRICTS
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                            y = ~ EMP_15plus ,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                            y = ~ PAT ,
                             by = ~ REGION:DISTRICT,
                             vartype = c("se","cvpct"), 
                             conf.int = TRUE, 
@@ -161,9 +169,9 @@ tmp_cvs_TOT
 
 ### We can use the same function for Unemployment   
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ UNE_15plus ,
-                                by = ~ REGION:DISTRICT,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ pop_chomage ,
+                                by = ~ region:M5,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
@@ -174,9 +182,9 @@ tmp_cvs_TOT
 
 ### We can use the same function for Labour Force   
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ LF_15plus ,
-                                by = ~ REGION:SEX,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ pop_chomage_dich ,
+                                by = ~ ONES,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
@@ -187,9 +195,9 @@ tmp_cvs_TOT
 
 ### Notice the standard error of the Population Estimates at the regional level
 
-tmp_cvs_TOT <-   svystatTM( design = calib_lfs,
-                                 y = ~ POP_15plus ,
-                                by = ~ REGION,
+tmp_cvs_TOT <-   svystatTM( design = calib_lfs2,
+                                 y = ~ PAT ,
+                                by = ~ ONES,
                            vartype = c("se","cvpct"), 
                           conf.int = TRUE, 
                           conf.lev = 0.95, 
