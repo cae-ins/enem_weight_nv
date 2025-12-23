@@ -308,12 +308,12 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.5, 4),
+                           bounds = c(0.01, 6),
                    aggregate.stage = NULL, 
                              maxit = 30,
                            epsilon = 1e-6, 
                              force = FALSE)
-
+ 
 
 ###   Check convergence of calibration: all the "$return.codes" for all DOMAINS from "ecal.status" must always be zero 
 
@@ -532,6 +532,27 @@ save(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATIO
 
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS, file=FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_CSV)
 write.csv(LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU, file = FILE_LFS_CALIBRATION_SUMMARY_OF_FINAL_WEIGHTS_MILIEU_CSV)
+
+### Verify the differences greater than 100 at the national and regional levels
+
+tab_sample <- sample_data  %>%
+              tab_rows(mdset(X49 %to% get("last_X")), mdset(X1 %to% X48)) %>%
+              tab_cols(DOMAIN) %>%
+              tab_weight(FINAL_WEIGHT) %>%
+              tab_stat_sum %>%
+              tab_pivot() %>%
+              as.data.frame() %>%
+              rename(Somme_final_weight = names(.)[2]) %>%
+              select(Somme_final_weight)
+
+
+table_check <- cbind(POP_LFS_BY_REGION_SEX_2AGEGR, tab_sample) %>%
+               mutate(ecart = abs(Nombre - Somme_final_weight),
+                      checking = ifelse(ecart > 100, "> 100", "")
+                      )
+
+table_check
+
 
 
 

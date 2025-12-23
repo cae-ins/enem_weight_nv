@@ -1,6 +1,6 @@
 # ==============================================================================
 # Quarterly Survey Indicators – Mean, CI, CV, Quality Flags
-# Statistics Canada style – Dual Excel export + Forest plots
+# Statistics Canada style – Consolidated Excel table
 # ENHANCED VERSION with sample sizes, missing data tracking, and improved plots
 # ==============================================================================
 
@@ -13,6 +13,7 @@ library(openxlsx)
 library(ggplot2)
 library(scales)
 library(haven)
+library(tidyr)
 
 # ------------------------------------------------------------------------------
 # 1. Data validation and summary
@@ -107,7 +108,7 @@ quality_footnotes <- data.frame(
 )
 
 # ------------------------------------------------------------------------------
-# 6. Enhanced estimation function with sample sizes - CORRECTED
+# 6. Enhanced estimation function with sample sizes
 # ------------------------------------------------------------------------------
 estimate_by_quarter <- function(var, design, quarter_var = "trimestre") {
   
@@ -134,7 +135,7 @@ estimate_by_quarter <- function(var, design, quarter_var = "trimestre") {
     na.rm = TRUE
   )
   
-  # CORRECTION: Convert to data.frame and inspect column names
+  # Convert to data.frame and inspect column names
   res <- as.data.frame(res)
   
   # Dynamically find column names
@@ -178,7 +179,7 @@ estimate_by_quarter <- function(var, design, quarter_var = "trimestre") {
 }
 
 # ------------------------------------------------------------------------------
-# 7. Run estimation - CORRECTED
+# 7. Run estimation
 # ------------------------------------------------------------------------------
 cat("Running estimations...\n")
 
@@ -192,7 +193,7 @@ results_all <- bind_rows(
     ci_u     = round(ci_u, 4),
     cv       = round(cv, 4)
   ) %>%
-  arrange(indicator, .data$trimestre)  # CORRECTED: use .data$ pronoun
+  arrange(indicator, .data$trimestre)
 
 cat("Estimations complete.\n\n")
 
@@ -207,77 +208,181 @@ print(flag_summary)
 cat("\n")
 
 # ------------------------------------------------------------------------------
-# 8. EXCEL FILE 1 — One sheet per QUARTER - CORRECTED
+# 8. NOUVEAU TABLEAU EXCEL CONSOLIDÉ
 # ------------------------------------------------------------------------------
-cat("Creating Excel file 1 (by quarter)...\n")
+cat("Creating consolidated Excel table...\n")
 
 # Create output directory if it doesn't exist
 output_dir <- "data/08_STANDARD_ERRORS"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
+# Créer le tableau consolidé avec format spécial
+create_consolidated_table <- function(results_df) {
+  
+  # Pour chaque combinaison indicateur-trimestre, créer le texte formaté
+  formatted_data <- results_df %>%
+    mutate(
+      # Ligne 1: Estimation
+      line1 = sprintf("%.4f", estimate),
+      # Ligne 2: SE entre parenthèses
+      line2 = sprintf("(%.4f)", se),
+      # Ligne 3: IC entre crochets
+      line3 = sprintf("[%.4f, %.4f]", ci_l, ci_u),
+      # Combiner les trois lignes avec retour à la ligne
+      cell_value = paste(line1, line2, line3, sep = "\n"),
+      # Ajouter le flag de qualité
+      cell_value_with_flag = paste0(cell_value, " ", flag)
+    )
+  
+  # Créer le tableau large (indicateurs en lignes, trimestres en colonnes)
+  wide_table <- formatted_data %>%
+    select(indicator, trimestre, cell_value_with_flag) %>%
+    pivot_wider(
+      names_from = trimestre,
+      values_from = cell_value_with_flag,
+      names_prefix = "Q"
+    )
+  
+  return(wide_table)
+}
+
+# Créer le workbook
+wb_consolidated <- createWorkbook()
+addWorksheet(wb_consolidated, "Consolidated_Estimates")
+
+# Générer le tableau consolidé
+consolidated_table <- create_consolidated_table(results_all)
+
+# Écrire le tableau
+writeData(
+  wb_consolidated, 
+  "Consolidated_Estimates", 
+  consolidated_table,
+  startRow = 1,
+  startCol = 1
+)
+
+# Formater les en-têtes
+headerStyle <- createStyle(
+  fontSize = 12,
+  fontColour = "white",
+  fgFill = "#4F81BD",
+  halign = "center",
+  valign = "center",
+  textDecoration = "bold",
+  border = "TopBottomLeftRight"
+)
+
+addStyle(
+  wb_consolidated,
+  "Consolidated_Estimates",
+  headerStyle,
+  rows = 1,
+  cols = 1:ncol(consolidated_table),
+  gridExpand = TRUE
+)
+
+# Formater les cellules de données
+dataStyle <- createStyle(
+  halign = "center",
+  valign = "center",
+  border = "TopBottomLeftRight",
+  wrapText = TRUE
+)
+
+addStyle(
+  wb_consolidated,
+  "Consolidated_Estimates",
+  dataStyle,
+  rows = 2:(nrow(consolidated_table) + 1),
+  cols = 1:ncol(consolidated_table),
+  gridExpand = TRUE
+)
+
+# Ajuster la hauteur des lignes pour accommoder 3 lignes de texte
+setRowHeights(
+  wb_consolidated,
+  "Consolidated_Estimates",
+  rows = 2:(nrow(consolidated_table) + 1),
+  heights = 60
+)
+
+# Ajuster la largeur des colonnes
+setColWidths(
+  wb_consolidated,
+  "Consolidated_Estimates",
+  cols = 1:ncol(consolidated_table),
+  widths = c(15, rep(20, ncol(consolidated_table) - 1))
+)
+
+# Ajouter les notes de qualité
+start_row <- nrow(consolidated_table) + 4
+
+writeData(
+  wb_consolidated, 
+  "Consolidated_Estimates", 
+  "Quality flags:", 
+  startRow = start_row, 
+  startCol = 1
+)
+
+writeDataTable(
+  wb_consolidated, 
+  "Consolidated_Estimates", 
+  quality_footnotes,
+  startRow = start_row + 1, 
+  startCol = 1
+)
+
+# Sauvegarder le fichier
+saveWorkbook(
+  wb_consolidated,
+  file.path(output_dir, "survey_indicators_consolidated.xlsx"),
+  overwrite = TRUE
+)
+
+cat("✓ survey_indicators_consolidated.xlsx created\n")
+
+# ------------------------------------------------------------------------------
+# 9. GARDER AUSSI LES FICHIERS ORIGINAUX (optionnel)
+# ------------------------------------------------------------------------------
+cat("Creating original Excel files (by quarter and by indicator)...\n")
+
+# File 1: By Quarter
 wb_quarter <- createWorkbook()
 
-for (q in unique(results_all$trimestre)) {  # CORRECTED: use trimestre
-  
-  addWorksheet(wb_quarter, as.character(q))  # Convert to character for sheet name
-  
-  sheet_data <- results_all %>% filter(trimestre == q)  # CORRECTED
-  
+for (q in unique(results_all$trimestre)) {
+  addWorksheet(wb_quarter, as.character(q))
+  sheet_data <- results_all %>% filter(trimestre == q)
   writeDataTable(wb_quarter, as.character(q), sheet_data, withFilter = TRUE)
   
   start_row <- nrow(sheet_data) + 4
-  
   writeData(wb_quarter, as.character(q), "Quality flags:", startRow = start_row, startCol = 1)
-  
-  writeDataTable(
-    wb_quarter, as.character(q), quality_footnotes,
-    startRow = start_row + 1, startCol = 1
-  )
+  writeDataTable(wb_quarter, as.character(q), quality_footnotes, startRow = start_row + 1, startCol = 1)
 }
 
-saveWorkbook(
-  wb_quarter,
-  file.path(output_dir, "survey_indicators_by_quarter.xlsx"),
-  overwrite = TRUE
-)
+saveWorkbook(wb_quarter, file.path(output_dir, "survey_indicators_by_quarter.xlsx"), overwrite = TRUE)
 
-cat("✓ survey_indicators_by_quarter.xlsx created\n")
-
-# ------------------------------------------------------------------------------
-# 9. EXCEL FILE 2 — One sheet per INDICATOR
-# ------------------------------------------------------------------------------
-cat("Creating Excel file 2 (by indicator)...\n")
-
+# File 2: By Indicator
 wb_indicator <- createWorkbook()
 
 for (ind in indicators) {
-  
   addWorksheet(wb_indicator, ind)
-  
   sheet_data <- results_all %>% filter(indicator == ind)
-  
   writeDataTable(wb_indicator, ind, sheet_data, withFilter = TRUE)
   
   start_row <- nrow(sheet_data) + 4
-  
   writeData(wb_indicator, ind, "Quality flags:", startRow = start_row, startCol = 1)
-  
-  writeDataTable(
-    wb_indicator, ind, quality_footnotes,
-    startRow = start_row + 1, startCol = 1
-  )
+  writeDataTable(wb_indicator, ind, quality_footnotes, startRow = start_row + 1, startCol = 1)
 }
 
-saveWorkbook(
-  wb_indicator,
-  file.path(output_dir, "survey_indicators_by_indicator.xlsx"),
-  overwrite = TRUE
-)
+saveWorkbook(wb_indicator, file.path(output_dir, "survey_indicators_by_indicator.xlsx"), overwrite = TRUE)
 
+cat("✓ survey_indicators_by_quarter.xlsx created\n")
 cat("✓ survey_indicators_by_indicator.xlsx created\n")
 
 # ==============================================================================
-# SECTION 10 GRAPHIQUES POST-ESTIMATIONS
+# 10. GRAPHIQUES POST-ESTIMATIONS
 # ==============================================================================
 cat("Création des graphiques forestiers...\n")
 
@@ -288,7 +393,6 @@ quarters <- unique(results_all$trimestre)
 
 for (q in quarters) {
   
-  # Ordre fixe des indicateurs (du bas vers le haut dans le graphique)
   indicator_order <- c("SU4", "SU3", "SU2", "SU1")
   
   df_plot <- results_all %>%
@@ -309,105 +413,60 @@ for (q in quarters) {
     next
   }
   
-  # Calculer les limites pour l'échelle
-  x_min <- 0  # Commencer à 0 pour plus de clarté
+  x_min <- 0
   x_max <- max(df_plot$ci_u) * 1.1
   
-  # Positions pour les colonnes de texte
-  col1_x <- x_max * 1.15  # Estimation
-  col2_x <- x_max * 1.40  # IC 95%
-  col3_x <- x_max * 1.70  # CV
+  col1_x <- x_max * 1.15
+  col2_x <- x_max * 1.40
+  col3_x <- x_max * 1.70
   
-  # GRAPHIQUE FORESTIER HORIZONTAL AMÉLIORÉ
   p <- ggplot(df_plot, aes(x = estimate, y = indicator)) +
-    # Fond avec grille subtile
     theme_minimal(base_size = 13) +
-    # Ligne de référence verticale
     geom_vline(xintercept = 0, color = "gray40", linetype = "solid", linewidth = 0.4) +
-    # Intervalles de confiance avec épaisseur variable selon qualité
-    geom_errorbarh(
-      aes(xmin = ci_l, xmax = ci_u, color = flag, linewidth = flag),
-      height = 0.3
-    ) +
-    # Points des estimations (cercles)
+    geom_errorbarh(aes(xmin = ci_l, xmax = ci_u, color = flag, linewidth = flag), height = 0.3) +
     geom_point(aes(color = flag, size = flag), shape = 16) +
-    # Colonne 1 : Estimation
-    geom_text(
-      aes(x = col1_x, label = estimate_text),
-      hjust = 0.5,
-      size = 4,
-      fontface = "bold",
-      family = "sans"
-    ) +
-    # Colonne 2 : Intervalle de confiance
-    geom_text(
-      aes(x = col2_x, label = ci_text),
-      hjust = 0.5,
-      size = 3.8,
-      family = "sans"
-    ) +
-    # Colonne 3 : Coefficient de variation
-    geom_text(
-      aes(x = col3_x, label = cv_text),
-      hjust = 0.5,
-      size = 3.8,
-      family = "sans"
-    ) +
-    # Échelles de couleurs et tailles
+    geom_text(aes(x = col1_x, label = estimate_text), hjust = 0.5, size = 4, fontface = "bold", family = "sans") +
+    geom_text(aes(x = col2_x, label = ci_text), hjust = 0.5, size = 3.8, family = "sans") +
+    geom_text(aes(x = col3_x, label = cv_text), hjust = 0.5, size = 3.8, family = "sans") +
     scale_color_manual(
       values = c("A" = "#27AE60", "B" = "#E67E22"),
       labels = c("A" = "Fiable (CV < 15%)", "B" = "À utiliser avec prudence (15% ≤ CV < 30%)"),
       name = "Qualité"
     ) +
-    scale_linewidth_manual(
-      values = c("A" = 1.0, "B" = 0.8),
-      guide = "none"
-    ) +
-    scale_size_manual(
-      values = c("A" = 4, "B" = 3.5),
-      guide = "none"
-    ) +
-    # Échelle X optimisée
+    scale_linewidth_manual(values = c("A" = 1.0, "B" = 0.8), guide = "none") +
+    scale_size_manual(values = c("A" = 4, "B" = 3.5), guide = "none") +
     scale_x_continuous(
       limits = c(x_min, col3_x * 1.15),
       breaks = pretty(c(x_min, x_max), n = 6),
       labels = label_percent(accuracy = 0.1, scale = 100),
       expand = c(0, 0)
     ) +
-    # En-têtes et titres
     labs(
       x = "Estimation (intervalle de confiance à 95%)",
       y = NULL,
       title = paste("Estimations de l'enquête –", q),
       subtitle = "Cercles = estimation ponctuelle | Barres horizontales = intervalle de confiance à 95%"
     ) +
-    # Personnalisation du thème
     theme(
-      # Grille
       panel.grid.major.y = element_blank(),
       panel.grid.major.x = element_line(color = "gray90", linewidth = 0.3),
       panel.grid.minor = element_blank(),
       panel.background = element_rect(fill = "white", color = NA),
       plot.background = element_rect(fill = "white", color = NA),
-      # Axes
       axis.text.y = element_text(size = 12, face = "bold", hjust = 1, color = "gray20"),
       axis.text.x = element_text(size = 11, color = "gray30"),
       axis.title.x = element_text(size = 12, face = "bold", margin = margin(t = 10)),
       axis.line.x = element_line(color = "gray40", linewidth = 0.5),
-      # Titres
       plot.title = element_text(face = "bold", size = 16, hjust = 0, margin = margin(b = 5)),
       plot.subtitle = element_text(size = 11, color = "gray50", hjust = 0, margin = margin(b = 15)),
-      # Légende
       legend.position = "bottom",
       legend.title = element_text(face = "bold", size = 11),
       legend.text = element_text(size = 10),
       legend.background = element_rect(fill = "gray95", color = "gray70", linewidth = 0.3),
       legend.key = element_rect(fill = "gray95"),
       legend.margin = margin(5, 5, 5, 5),
-      # Marges
       plot.margin = margin(15, 150, 15, 15)
     ) +
-    # En-têtes de colonnes avec fond
     annotate(
       "rect",
       xmin = col1_x - (col2_x - col1_x) * 0.45,
@@ -417,32 +476,10 @@ for (q in quarters) {
       fill = "gray90",
       alpha = 0.5
     ) +
-    annotate(
-      "text",
-      x = col1_x,
-      y = nrow(df_plot) + 0.75,
-      label = "Estimation",
-      fontface = "bold",
-      size = 4.2
-    ) +
-    annotate(
-      "text",
-      x = col2_x,
-      y = nrow(df_plot) + 0.75,
-      label = "IC 95%",
-      fontface = "bold",
-      size = 4.2
-    ) +
-    annotate(
-      "text",
-      x = col3_x,
-      y = nrow(df_plot) + 0.75,
-      label = "CV",
-      fontface = "bold",
-      size = 4.2
-    )
+    annotate("text", x = col1_x, y = nrow(df_plot) + 0.75, label = "Estimation", fontface = "bold", size = 4.2) +
+    annotate("text", x = col2_x, y = nrow(df_plot) + 0.75, label = "IC 95%", fontface = "bold", size = 4.2) +
+    annotate("text", x = col3_x, y = nrow(df_plot) + 0.75, label = "CV", fontface = "bold", size = 4.2)
   
-  # Sauvegarder le graphique avec haute résolution
   ggsave(
     filename = file.path(plot_dir, paste0("forest_", q, ".png")),
     plot = p,
@@ -457,6 +494,7 @@ for (q in quarters) {
 
 cat("\n=== ANALYSE TERMINÉE ===\n")
 cat("Fichiers créés :\n")
+cat("  • ", file.path(output_dir, "survey_indicators_consolidated.xlsx"), " (NOUVEAU)\n")
 cat("  • ", file.path(output_dir, "survey_indicators_by_quarter.xlsx"), "\n")
 cat("  • ", file.path(output_dir, "survey_indicators_by_indicator.xlsx"), "\n")
 cat("  • ", plot_dir, "/ répertoire avec fichiers PNG\n\n")

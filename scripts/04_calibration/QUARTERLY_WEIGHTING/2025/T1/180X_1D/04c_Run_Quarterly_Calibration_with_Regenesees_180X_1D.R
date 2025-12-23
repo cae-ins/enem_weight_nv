@@ -336,10 +336,10 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.3, 4.5),
+                           bounds = c(0.0001, 28),
                    aggregate.stage = NULL, 
-                             maxit = 100,
-                           epsilon = 1e-10, 
+                             maxit = 30,
+                           epsilon = 1e-4, 
                              force = FALSE)
 
 
