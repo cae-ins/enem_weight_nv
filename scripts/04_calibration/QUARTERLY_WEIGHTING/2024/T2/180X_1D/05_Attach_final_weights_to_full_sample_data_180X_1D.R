@@ -45,7 +45,7 @@
 
 ### Load the full sample dataframe "DER"
 
-load( FILE_LFS_ILO_DER_RDATA )
+load( FILE_LFS_ILO_DER_RDATA ) 
 
 head(LFS_ILO_DER)
 
@@ -197,6 +197,7 @@ LFS_ILO_CAL %>%
 #   tab_weight(FINAL_MONTHLY_WEIGHT) %>%
 #   tab_stat_sum %>%
 #   tab_pivot()
+
 
 
 

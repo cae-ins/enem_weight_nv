@@ -1,10 +1,10 @@
 # Project root (use `here::here()` if working in RStudio)
 BASE_DIR <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"
 setwd(BASE_DIR)
-TARGET_QUARTER <- "T4_2024"
+TARGET_QUARTER <- "T1_2025"
 
 # Install required packages if not already installed
-required_packages <- c("dplyr", "haven", "labelled", "readxl", "stringr", "purrr", "paws", "aws.signature", "jsonlite")
+required_packages <- c("survey","dplyr", "haven", "labelled", "readxl", "stringr", "purrr", "paws", "aws.signature", "jsonlite")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
 if (length(new_packages)) {
   install.packages(new_packages)

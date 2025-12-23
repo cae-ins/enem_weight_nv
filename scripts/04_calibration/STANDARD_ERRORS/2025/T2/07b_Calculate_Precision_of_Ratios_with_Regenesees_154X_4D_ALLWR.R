@@ -261,22 +261,22 @@ tmp_cvs_RAT
 ################## As before we use the trick. We create a new varible that is 100 (i.e 1 * 100) for the unemployed and zero otherwise 
 ################## We continue to work on the temporaray copy of the calibrated objects to avoid to damage it 
 
-# tmp_calib_lfs <- des.addvars( tmp_calib_lfs, UNE_15plus_100 = UNE_15plus * 100 )
+tmp_calib_lfs <- des.addvars( calib_lfs2, pop_chomage_dich_100 = pop_chomage_dich * 100 )
 
 
 
 ################################## For the COUNTRY TOTAL
 
-tmp_cvs_RAT               <-  svystatR( design = calib_lfs,
-                                           num = ~ UNE_15plus_100,
-                                           den = ~ LF_15plus,
-                                            by = ~ YEAR,
+tmp_cvs_RAT               <-  svystatR( design = tmp_calib_lfs,
+                                           num = ~ pop_chomage_dich_100,
+                                           den = ~ MO,
+                                            by = ~ ONES,
                                          cross = TRUE,
                                        vartype = c("cvpct"), 
                                       conf.int = FALSE, 
                                       conf.lev = 0.95, 
                                           deff = FALSE, 
-                                        na.rm = FALSE)
+                                        na.rm = TRUE)
 tmp_cvs_RAT 
 
 ################################## Is the same as above

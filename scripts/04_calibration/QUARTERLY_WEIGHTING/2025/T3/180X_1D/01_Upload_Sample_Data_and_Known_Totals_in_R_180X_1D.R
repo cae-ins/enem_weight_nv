@@ -360,7 +360,7 @@ save(POP_LFS_BY_REGION_SEX_2AGEGR,file = FILE_POP_LFS_BY_REGION_SEX_2AGEGR_RDATA
 ### from the first population dataframe
 tmp_sum_pop_fig1 <-
   sum(POP_LFS_BY_REGION_SEX_2AGEGR$Nombre)
-tmp_sum_pop_fig1
+tmp_sum_pop_fig1/2
 
 ### from the second population dataframe
 # tmp_sum_pop_fig2 <- 
@@ -384,6 +384,7 @@ tmp_sum_pop_fig1 / tmp_sum_est_pop_dw
 View(POP_LFS_BY_REGION_SEX_2AGEGR) 
 
 # View(POP_LFS_BY_DISTRICT_URRU_SEX_7AGEGRvert)
+
 
 
 
