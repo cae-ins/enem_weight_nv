@@ -265,3 +265,5 @@ message("   │   └── menage_*.dta")
 message("   └── YYYY/                   ← Fichiers calibrés agrégés")
 message("       ├── individu_calibrated_YYYY.dta  (+ poids_annuel_YYYY)")
 message("       └── SR_individu_calibrated_YYYY.dta  (+ poids_annuel_YYYY)")
+
+
