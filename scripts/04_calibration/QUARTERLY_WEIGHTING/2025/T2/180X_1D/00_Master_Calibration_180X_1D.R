@@ -148,7 +148,7 @@ parse_target_quarter <- function(target_quarter) {
   return(result)
 }
 source("config/1_config.r")
-source("scripts/02_base_weights/3_indivs_weights.R")
+#source("scripts/02_base_weights/3_indivs_weights.R")
 # Parse the target quarter
 parsed <- parse_target_quarter(TARGET_QUARTER)
 

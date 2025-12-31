@@ -45,7 +45,7 @@
 
 ### Load the full sample dataframe "DER"
 
-load( FILE_LFS_ILO_DER_RDATA )
+load( FILE_LFS_ILO_DER_RDATA ) 
 
 head(LFS_ILO_DER)
 
@@ -125,7 +125,7 @@ write_dta(LFS_ILO_CAL, path = FILE_LFS_ILO_CAL_DTA_EXPORT)
 
 save.image( FILE_LFS_CALIBRATION_IMAGE_RDATA )
 
-# load(FILE_LFS_CALIBRATION_IMAGE_RDATA)
+load(FILE_LFS_CALIBRATION_IMAGE_RDATA)
 
 
 ######################################################################################################
@@ -197,6 +197,7 @@ LFS_ILO_CAL %>%
 #   tab_weight(FINAL_MONTHLY_WEIGHT) %>%
 #   tab_stat_sum %>%
 #   tab_pivot()
+
 
 
 
