@@ -266,7 +266,7 @@ calib_lfs   <-  e.calibrate(design = design_lfs,
                          partition = ~ DOMAIN , 
                             calfun = "logit", 
                            #bounds = bounds.h , # La borne suggerée est négative
-                           bounds = c(0.001, 6),
+                           bounds = c(0.01, 6),
                    aggregate.stage = NULL, 
                              maxit = 100,
                            epsilon = 1e-10, 
@@ -400,7 +400,7 @@ tab_sample <- sample_data  %>%
 
 table_check <- cbind(POP_LFS_BY_REGION_SEX_2AGEGR, tab_sample) %>%
                mutate(ecart = abs(Nombre - Somme_final_weight),
-                      checing = ifelse(ecart > 100, "> 100", "")
+                      checking = ifelse(ecart > 100, "> 100", "")
                       )
 
 table_check

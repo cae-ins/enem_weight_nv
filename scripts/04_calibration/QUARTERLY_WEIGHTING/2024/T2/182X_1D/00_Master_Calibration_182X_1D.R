@@ -123,16 +123,16 @@ year <- parsed$year
 
 ###   For regenesees: number of constraints X used in the calibration with Regenesees
 
-xnum <- 184
+xnum <- 182
 xnum
 
 ###   For regenesees: suffix for filenames referring to the set of parameters X and the number of domains of estimation D
 
-setx <- '184X_1D'
+setx <- '182X_1D'
 setx
 
 ###   For regenesees: suffix for filenames referring to the set of parameters X and the number of domains of estimation D
-pathx <- '184X_1D'
+pathx <- '182X_1D'
 pathx 
 
 #######   STEP 2   ###########################################################################################
@@ -426,7 +426,7 @@ LFS_TABLE_CVS_EMP_LEVEL_TEMPLATE3_XLSX
  
 ###  Let's parameterize the name and path of the script file containing the formats of the X
  
-R_SCRIPT_X_FORMATS <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/scripts/04_calibration/QUARTERLY_WEIGHTING/2024/T2/184X_1D/04f_XFormats_184X_1D.R"
+R_SCRIPT_X_FORMATS <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/scripts/04_calibration/QUARTERLY_WEIGHTING/2024/T2/184X_1D/04f_XFormats_182X_1D.R"
 R_SCRIPT_X_FORMATS
 
  

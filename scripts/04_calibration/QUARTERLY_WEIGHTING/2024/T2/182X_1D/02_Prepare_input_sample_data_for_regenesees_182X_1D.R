@@ -109,7 +109,9 @@ tmpSD$X11[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==1 & tmpSD$m5
 tmpSD$X12[tmpSD$ageannee>= 65                  & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
 #tmpSD$X181[tmpSD$ageannee>= 0 & tmpSD$ageannee <=14 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
 #tmpSD$X182[tmpSD$ageannee>= 15                 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
-tmpSD$X181[tmpSD$ageannee>= 15                 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+#tmpSD$X181[tmpSD$ageannee>= 15                 & tmpSD$milieu==1 & tmpSD$m5==1]<- 1
+tmpSD$X181[ tmpSD$ageannee>=  0 & tmpSD$ageannee <=14] <- 1
+tmpSD$X182[ tmpSD$ageannee== 15 ] <- 1
 
 # NATIONAL LEVEL - MALE BY RURAL LOCATION AND 12 AGE GROUP
 
@@ -127,7 +129,7 @@ tmpSD$X23[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==2 & tmpSD$m5
 tmpSD$X24[tmpSD$ageannee>= 65                  & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
 #tmpSD$X183[tmpSD$ageannee>= 0 & tmpSD$ageannee <=14 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
 #tmpSD$X184[tmpSD$ageannee>= 15                 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
-tmpSD$X182[tmpSD$ageannee>= 15                 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
+#tmpSD$X182[tmpSD$ageannee>= 15                 & tmpSD$milieu==2 & tmpSD$m5==1]<- 1
 
 
 
@@ -147,7 +149,7 @@ tmpSD$X35[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==1 & tmpSD$m5
 tmpSD$X36[tmpSD$ageannee>= 65                  & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
 #tmpSD$X185[tmpSD$ageannee>= 0 & tmpSD$ageannee <=14 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
 #tmpSD$X186[tmpSD$ageannee>= 15                 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
-tmpSD$X183[tmpSD$ageannee>= 15                 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
+#tmpSD$X183[tmpSD$ageannee>= 15                 & tmpSD$milieu==1 & tmpSD$m5==2]<- 1
 
 
 # NATIONAL LEVEL - FEMALE BY RURAL LOCATION AND 12 AGE GROUP
@@ -167,7 +169,7 @@ tmpSD$X47[tmpSD$ageannee>= 60 & tmpSD$ageannee <=64 & tmpSD$milieu==2 & tmpSD$m5
 tmpSD$X48[tmpSD$ageannee>= 65                  & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
 #tmpSD$X187[tmpSD$ageannee>= 0 & tmpSD$ageannee <=14 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
 #tmpSD$X188[tmpSD$ageannee>= 15                 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
-tmpSD$X184[tmpSD$ageannee>= 15                 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
+#tmpSD$X184[tmpSD$ageannee>= 15                 & tmpSD$milieu==2 & tmpSD$m5==2]<- 1
 
 
 # REGION BY SEX BY URBAN_RURAL LOCATION AND 2 AGE GROUP
@@ -304,6 +306,7 @@ tmpSD$X177[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 15 & tmpSD$m5== 1 & tmpSD$hh2
 tmpSD$X178[ tmpSD$ageannee>= 16 & tmpSD$m5== 1 & tmpSD$hh2==10833] <- 1
 tmpSD$X179[ tmpSD$ageannee>= 0 & tmpSD$ageannee <= 15 & tmpSD$m5== 2 & tmpSD$hh2==10833] <- 1
 tmpSD$X180[ tmpSD$ageannee>= 16 & tmpSD$m5== 2 & tmpSD$hh2==10833] <- 1
+
 
 tmpSD$DOMAIN <- as.character(1)
 

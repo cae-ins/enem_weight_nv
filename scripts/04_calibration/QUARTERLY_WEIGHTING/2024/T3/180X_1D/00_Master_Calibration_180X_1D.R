@@ -426,7 +426,7 @@ LFS_TABLE_CVS_EMP_LEVEL_TEMPLATE3_XLSX
  
 ###  Let's parameterize the name and path of the script file containing the formats of the X
  
-R_SCRIPT_X_FORMATS <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/scripts/04_calibration/QUARTERLY_WEIGHTING/2024/T2/180X_1D/04f_XFormats_180X_1D.R"
+R_SCRIPT_X_FORMATS <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/scripts/04_calibration/QUARTERLY_WEIGHTING/2024/T3/180X_1D/04f_XFormats_180X_1D.R"
 R_SCRIPT_X_FORMATS
 
  

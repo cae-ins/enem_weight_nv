@@ -1,0 +1,30 @@
+* =========================
+* Suppressions – T2 2024
+* Variable : interview__key
+* =========================
+
+drop if interview__key == "22-01-05-49"
+drop if interview__key == "35-53-67-01"
+drop if interview__key == "68-67-94-64"
+drop if interview__key == "72-37-40-16"
+drop if interview__key == "77-98-79-25"
+drop if interview__key == "04-99-87-31"
+drop if interview__key == "22-77-86-77"
+drop if interview__key == "06-22-03-87"
+drop if interview__key == "90-18-87-78"
+drop if interview__key == "93-27-08-63"
+drop if interview__key == "64-26-43-89"
+drop if interview__key == "83-97-01-40"
+drop if interview__key == "34-00-83-22"
+drop if interview__key == "07-68-43-81"
+drop if interview__key == "13-47-97-94"
+drop if interview__key == "21-40-72-82"
+drop if interview__key == "31-15-47-16"
+drop if interview__key == "87-43-35-93"
+drop if interview__key == "31-35-48-19"
+drop if interview__key == "49-09-93-51"
+drop if interview__key == "89-89-22-16"
+drop if interview__key == "86-33-67-81"
+drop if interview__key == "56-61-52-99"
+drop if interview__key == "79-93-49-22"
+drop if interview__key == "05-51-15-90"
