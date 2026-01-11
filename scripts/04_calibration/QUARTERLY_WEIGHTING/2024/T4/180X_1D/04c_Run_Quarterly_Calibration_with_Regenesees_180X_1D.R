@@ -555,7 +555,7 @@ tab_sample <- sample_data  %>%
 
 table_check <- cbind(POP_LFS_BY_REGION_SEX_2AGEGR, tab_sample) %>%
                mutate(ecart = abs(Nombre - Somme_final_weight),
-                      checing = ifelse(ecart > 100, "> 100", "")
+                      checking = ifelse(ecart > 100, "> 100", "")
                       )
 
 table_check
