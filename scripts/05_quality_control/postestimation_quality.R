@@ -19,7 +19,7 @@ library(tidyr)
 # 1. Data validation and summary
 # ------------------------------------------------------------------------------
 # Check for required variables
-df = read_dta("data/Base_Travail_BT.dta")  
+df = read_dta("data/04_weights/Base_Travail_BT_vf.dta")  
 required_vars <- c("pmencor_ind", "trimestre", "pop_emp_dich", "SU1","SU2","SU3","SU4")
 missing_vars <- setdiff(required_vars, names(df))
 
