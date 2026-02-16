@@ -15,9 +15,12 @@ options(cli.config = NULL)
 source("config/1_config.r")
 
 # Définir le chemin d'accès
+INPUT_ROOT <- file.path(BASE_DIR, "data", "02_Cleaned")
+individu_path <- file.path(INPUT_ROOT, "Individu", TARGET_QUARTER)
+
 INPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed")
 menage_path <- file.path(INPUT_ROOT, "Menage", TARGET_QUARTER)
-individu_path <- file.path(INPUT_ROOT, "Individu", TARGET_QUARTER)
+
 
 menage_file <- list.files(menage_path, pattern = "^menage.*\\.dta$", full.names = TRUE)[1]
 individu_file <- list.files(individu_path, pattern = "^individu.*\\.dta$", full.names = TRUE)[1]
@@ -121,6 +124,12 @@ cat(glue("\n=== SAUVEGARDE ===\n"))
 names(menage_avec_individus) <- gsub("[^A-Za-z0-9_]", "_", names(menage_avec_individus))
 names(individu_avec_menage) <- gsub("[^A-Za-z0-9_]", "_", names(individu_avec_menage))
 
+
+INPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed")
+menage_path <- file.path(INPUT_ROOT, "Menage", TARGET_QUARTER)
+individu_path <- file.path(INPUT_ROOT, "Individu", TARGET_QUARTER)
+individu_file <- file.path(individu_path, sprintf("individu_%s.dta", TARGET_QUARTER))
+menage_file <- file.path(menage_path, sprintf("menage_%s.dta", TARGET_QUARTER))
 write_dta(menage_avec_individus, menage_file)
 write_dta(individu_avec_menage, individu_file)
 
@@ -128,4 +137,5 @@ cat(glue("Fichiers sauvegardés:\n"))
 cat(glue("  - {menage_file}\n"))
 cat(glue("  - {individu_file}\n"))
 cat(glue("\n✓ Nettoyage terminé avec succès!\n"))
+
 

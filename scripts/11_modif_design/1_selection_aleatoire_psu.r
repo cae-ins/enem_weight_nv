@@ -37,7 +37,7 @@ sample_data <- read_dta(FILE_LFS_ILO_CAL_DTA_EXPORT)
 # PARAMÈTRES
 # ----------------------------------------------------------------------
 
-RATIO_REDUCTION <- 0.75
+RATIO_REDUCTION <- 0.5  # garder 50% des ménages
 N_ITER <- 30
 set.seed(123)
 
@@ -411,4 +411,4 @@ ggplot(resume_iterations, aes(x = age_moyen)) +
   theme_minimal()
 
 # Tableau complet
-print(resume_iterations)
+print(resume_iterations,n=30)
