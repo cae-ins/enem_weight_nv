@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>architecture_ene_pipeline</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/popper.min.js"></script>
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ARCHITECTURE_ENE_PIPELINE_files/libs/quarto-html/quarto-syntax-highlighting-985aa47af68dae11cd4d235c71fb941e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ARCHITECTURE_ENE_PIPELINE_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ARCHITECTURE_ENE_PIPELINE_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ARCHITECTURE_ENE_PIPELINE_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="architecture-du-pipeline-ene-m-données-pondérations-indicateurs" class="level1">
+<h1>Architecture du Pipeline ENE-M — Données, Pondérations, Indicateurs</h1>
+<p><strong>Version :</strong> 1.0 <strong>Date :</strong> 2026-03-16 <strong>Périmètre :</strong> Trimestre T4 2025 — extensible à tous les trimestres</p>
+<hr>
+<section id="vue-densemble" class="level2">
+<h2 class="anchored" data-anchor-id="vue-densemble">1. Vue d’ensemble</h2>
+<p>Le dispositif ENE-M (Enquête Nationale sur l’Emploi — Volet Ménage) produit chaque trimestre des <strong>indicateurs officiels du marché du travail</strong> pour la Côte d’Ivoire. La production repose sur <strong>trois projets distincts</strong> qui forment une <strong>chaîne séquentielle</strong> : chaque projet consomme les outputs du précédent.</p>
+<pre><code>┌─────────────────────┐     ┌────────────────────────┐     ┌───────────────────────────┐
+│  PROJET 1           │     │  PROJET 2              │     │  PROJET 3                 │
+│  Apurement          │────▶│  Pondération           │────▶│  Tabulations / Bulletin   │
+│  (Stata)            │     │  (R + Stata)           │     │  (R + Stata)              │
+│                     │     │                        │     │                           │
+│  données propres    │     │  données représent.    │     │  indicateurs officiels    │
+└─────────────────────┘     └────────────────────────┘     └───────────────────────────┘</code></pre>
+<p><strong>Le fil conducteur</strong> est <code>membres.dta</code> — la base individus qui traverse les trois projets en s’enrichissant à chaque étape :</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Étape</th>
+<th>Ce que contient <code>membres.dta</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Après Projet 1</td>
+<td>Variables collectées, nettoyées, codifiées (CIAP, CITP, branches)</td>
+</tr>
+<tr class="even">
+<td>Après Projet 2</td>
+<td>+ variable de pondération <code>pmencor_ind</code> (poids individuel calibré)</td>
+</tr>
+<tr class="odd">
+<td>Dans Projet 3</td>
+<td>Utilisée telle quelle pour calculer effectifs et taux pondérés</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="rôle-détaillé-de-chaque-projet" class="level2">
+<h2 class="anchored" data-anchor-id="rôle-détaillé-de-chaque-projet">2. Rôle détaillé de chaque projet</h2>
+<section id="projet-1-apurement" class="level3">
+<h3 class="anchored" data-anchor-id="projet-1-apurement">2.1 Projet 1 — Apurement</h3>
+<p><strong>Localisation :</strong> <code>ENE-M-T4_2025/apurement/</code> <strong>Outil principal :</strong> Stata <strong>Inputs :</strong> exports <code>.dta</code> bruts de Survey Solutions (CAPI terrain) <strong>Outputs :</strong> bases <code>.dta</code> apurées par section + bases fusionnées codifiées</p>
+<p><strong>Ce que fait ce projet :</strong></p>
+<p>Survey Solutions exporte une base par module de questionnaire. Le projet découpe d’abord les bases brutes en sections thématiques (S0 à S15), puis apure chaque section indépendamment (contrôles de cohérence, corrections, gestion des valeurs manquantes), fusionne toutes les sections en une base ménage et une base individus, et enfin applique la codification métier : codes CIAP (activités), CITP (professions), branches d’activité (primaire / secondaire / tertiaire).</p>
+<p><strong>Pipeline interne (Stata) :</strong></p>
+<pre><code>datain/brute/          (Survey Solutions exports)
+     │
+     ▼ standard_db.do
+datain/standard/       (sections pré-découpées, 1 fichier par section)
+     │
+     ▼ apurement.do    (01-QM_S1 à 01-QM_S7, 01-INDIV_S1 à 01-INDIV_S15)
+dataout/standard/
+  ├── menage/          (QM_S0 à QM_S7 apurés)
+  └── individu/        (INDIV_S1 à INDIV_S15 apurés)
+     │
+     ▼ Fusion.do
+dataout/
+  ├── menage/qx_eec_vf.dta        (base ménage finale)
+  └── individu/membres.dta        (base individus fusionnée)
+     │
+     ▼ Codification_T4_2025.do
+dataout/individu/membres.dta      (enrichi : CIAP + branches + CITP)</code></pre>
+<p><strong>Fichiers de sortie utilisés en aval :</strong> - <code>membres.dta</code> → Projet 2 (base individus pour le calage) - <code>qx_eec_vf.dta</code> → Projet 3 (variables ménage pour les indicateurs)</p>
+<hr>
+</section>
+<section id="projet-2-pondération" class="level3">
+<h3 class="anchored" data-anchor-id="projet-2-pondération">2.2 Projet 2 — Pondération</h3>
+<p><strong>Localisation :</strong> <code>ENE_SURVEY_WEIGHTS/</code> <strong>Outil principal :</strong> R (package ReGenesees) <strong>Inputs :</strong> <code>membres.dta</code> (Projet 1) + données de dénombrement terrain (.xlsx) + RP 2021 <strong>Outputs :</strong> <code>membres_menages_finale_T4.dta</code> (membres.dta + <code>pmencor_ind</code>)</p>
+<p><strong>Ce que fait ce projet :</strong></p>
+<p>L’enquête ENE-M utilise un plan de sondage stratifié à deux degrés (ZD → ménage). Pour que les estimations soient représentatives de la population ivoirienne, chaque individu enquêté doit se voir attribuer un poids qui indique combien de personnes il représente dans la population réelle.</p>
+<p>Ce projet calcule ces poids en trois étapes :</p>
+<ol type="1">
+<li><p><strong>Poids de base</strong> — inverse de la probabilité d’inclusion calculée à partir des données de dénombrement (comptage des ménages par ZD) et du plan de sondage (104 ZD pour Abidjan, 56 pour les autres régions).</p></li>
+<li><p><strong>Correction pour la non-réponse</strong> — ajuste les poids pour compenser les ménages qui n’ont pas pu être interrogés.</p></li>
+<li><p><strong>Calage (ReGenesees)</strong> — cale les poids finaux sur des totaux de population connus (RP 2021 projeté, par région × sexe × tranche d’âge) afin de garantir la cohérence avec les projections démographiques officielles. Plusieurs spécifications de calage sont testées (ex : 156X_1D, 312X_1D, 444X_1D) avec différentes combinaisons de contraintes.</p></li>
+</ol>
+<p><strong>Pipeline interne (R + Stata) :</strong></p>
+<pre><code>data/01_raw/
+  ├── Denombrement_update/{trimestre}/   (Excel dénombrements)
+  └── RP_2021/                           (données recensement)
+     │
+     ▼ calc_base_weights_2.R
+data/04_weights/                         (poids de base)
+     │
+     ▼ comp_followup_matrix.R            (correction non-réponse)
+     │
+     ▼ 01_Upload → 02_Prepare → 03_Pop → 04c_Calibration → 05_Attach
+data/07_QUARTERLY_WEIGHTING/{annee}/{trimestre}/
+  └── membres_menages_finale.dta         (base avec poids calibrés)
+     │
+     ▼ scripts/05_quality_control/       (Stata : contrôles qualité)
+data/05_DERIVED_VARIABLES/{annee}/{trimestre}/
+  └── membres_menages_finale_{trim}.dta  (version finale validée)</code></pre>
+<p><strong>Variable clé produite :</strong> <code>pmencor_ind</code> (poids individuel corrigé et calé)</p>
+<hr>
+</section>
+<section id="projet-3-tabulations-bulletin" class="level3">
+<h3 class="anchored" data-anchor-id="projet-3-tabulations-bulletin">2.3 Projet 3 — Tabulations / Bulletin</h3>
+<p><strong>Localisation :</strong> <code>ENE_INDICATORS_TABULATIONS/</code> <strong>Outils :</strong> Stata (indicateurs + tableaux) + R (génération du bulletin Word/PDF) <strong>Inputs :</strong> <code>membres_menages_finale_T4.dta</code> (Projet 2) + <code>qx_eec_vf.dta</code> (Projet 1) <strong>Outputs :</strong> tableaux Excel d’indicateurs + bulletin trimestriel (Word/PDF)</p>
+<p><strong>Ce que fait ce projet :</strong></p>
+<p>À partir de la base pondérée, il calcule les indicateurs officiels du marché du travail selon les normes BIT/OIT : - Population en âge de travailler, taux d’activité - Emploi (ensemble, formel/informel, statut, branche, CITP) - Chômage (taux BIT) - Sous-utilisation de la main-d’œuvre (SU1, SU2, SU3) - Emploi inadéquat, temps partiel subi</p>
+<p>Les calculs sont des <strong>sommes pondérées</strong> : - Effectif estimé = <code>sum(pmencor_ind)</code> sur la sous-population cible - Taux = <code>sum(pmencor_ind | cible)</code> / <code>sum(pmencor_ind | référence)</code> × 100</p>
+<p>La base utilisée est <strong>multi-trimestrielle</strong> : les trimestres T2 2024 à T3 2025 sont empilés dans une seule base avec une variable <code>trimestre</code>, ce qui permet de produire des séries temporelles dans le bulletin.</p>
+<p><strong>Pipeline interne (Stata + R) :</strong></p>
+<pre><code>Base/Base_brute/
+  ├── membres.dta          (individus pondérés, depuis Projet 2)
+  ├── poids.dta            (pondérations)
+  └── qx_eec_vf.dta        (ménages, depuis Projet 1)
+     │
+     ▼ 1_1_Var_objectives_to_run.do   (création des variables analytiques)
+     ▼ 1_2_Indicateur_Bulletin.do     (calcul des indicateurs pondérés)
+     ▼ Tabulation_Bulletin_automatise.do  (export vers Excel par putexcel)
+     │
+Resultats_Tab/
+  └── Tableaux_Indicateurs_ENEM.xlsx
+     │
+     ▼ workflow_complet.R → generer_bulletin.R
+Publications/
+  └── Bulletin_emploi_T4_2025.docx / .pdf</code></pre>
+<hr>
+</section>
+</section>
+<section id="architecture-minio-lac-de-données-partagé" class="level2">
+<h2 class="anchored" data-anchor-id="architecture-minio-lac-de-données-partagé">3. Architecture MinIO — Lac de données partagé</h2>
+<p>MinIO est le <strong>système de fichiers centralisé</strong> qui remplace les échanges manuels entre projets. Il joue le rôle de data lake avec une <strong>architecture médaillon</strong> à 4 couches.</p>
+<section id="principe-général" class="level3">
+<h3 class="anchored" data-anchor-id="principe-général">3.1 Principe général</h3>
+<pre><code>                  ┌──────────────────────────────────────────────────┐
+                  │                   MinIO                          │
+                  │                                                  │
+   ┌──────────┐   │  ┌─────────┐  ┌─────────┐  ┌────────┐  ┌──────┐│
+   │  Local   │◀──┼──│ staging │  │ bronze  │  │ silver │  │ gold ││
+   │  (Stata) │──▶│  │         │  │         │  │        │  │      ││
+   └──────────┘   │  └─────────┘  └─────────┘  └────────┘  └──────┘│
+                  │                                                  │
+   ┌──────────┐   │                                                  │
+   │  Local   │◀──┼──────────────────────────────────────────────────┤
+   │  (R)     │──▶│                                                  │
+   └──────────┘   └──────────────────────────────────────────────────┘</code></pre>
+<p>Python (boto3) est l’<strong>unique interface</strong> avec MinIO — Stata et R ne communiquent jamais directement avec le stockage. Python télécharge les inputs avant chaque traitement et uploade les outputs après.</p>
+</section>
+<section id="définition-des-4-couches" class="level3">
+<h3 class="anchored" data-anchor-id="définition-des-4-couches">3.2 Définition des 4 couches</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Couche</th>
+<th>Signification dans ce pipeline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>staging</strong></td>
+<td>Données brutes, immuables, déposées une seule fois. Inputs de chaque projet avant tout traitement.</td>
+</tr>
+<tr class="even">
+<td><strong>bronze</strong></td>
+<td>Données intermédiaires peu transformées. Utilisé ici pour les poids de base avant calage (ReGenesees).</td>
+</tr>
+<tr class="odd">
+<td><strong>silver</strong></td>
+<td>Données traitées mais partielles. Bases apurées section par section, poids calibrés avant validation finale.</td>
+</tr>
+<tr class="even">
+<td><strong>gold</strong></td>
+<td>Outputs finaux validés, consommables directement par le projet suivant.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="structure-complète-des-objets" class="level3">
+<h3 class="anchored" data-anchor-id="structure-complète-des-objets">3.3 Structure complète des objets</h3>
+<pre><code>bucket: staging
+├── enem/
+│   └── {trimestre}/
+│       ├── brutes/
+│       │   ├── membres.dta
+│       │   ├── QX_EEC_VF.dta
+│       │   ├── disponibilite.dta
+│       │   ├── emigration.dta
+│       │   ├── Revenu.dta
+│       │   ├── Revenu_es.dta
+│       │   ├── r_activite_s.dta
+│       │   ├── r_competence_quali.dta
+│       │   └── r_revenu_h_emp.dta
+│       └── codif/
+│           ├── dta/
+│           │   ├── codif_emploi_principal.dta
+│           │   ├── codif_emploi_second.dta
+│           │   ├── codif_pluriactivite.dta
+│           │   └── codif_activite_produits_principal.dta
+│           └── excel/
+│               └── activites_principales_{trimestre}.xlsx
+└── survey_weights/
+    └── {trimestre}/
+        ├── denombrement/
+        │   └── SEG_Base{trimestre}_menage_*.xlsx   (un par ZD)
+        └── references/
+            ├── Bases_Menage_RGPH2021.dta
+            └── POP_LFS_BY_REGION_SEX_*.xlsx
+
+bucket: bronze
+└── survey_weights/
+    └── {trimestre}/
+        └── base_weights/
+            └── base_weights_{trimestre}.dta   (poids avant calage + correction NR)
+
+bucket: silver
+├── enem/
+│   └── {trimestre}/
+│       ├── menage/
+│       │   ├── QM_S0_identification.dta
+│       │   ├── QM_S1_composition_menage.dta
+│       │   ├── QM_S2_education_formation.dta
+│       │   ├── QM_S3_formation_professionnelle.dta
+│       │   ├── QM_S4_immigration.dta
+│       │   ├── QM_S5_emmigration.dta
+│       │   ├── QM_S6_difficultes_fonctionnelles.dta
+│       │   └── QM_S7_logement.dta
+│       └── individu/
+│           ├── INDIV_S1_autres_formes_travail.dta
+│           ├── INDIV_S2_situation_emploi.dta
+│           ├── ...
+│           └── INDIV_S15_disponibilite.dta
+└── survey_weights/
+    └── {trimestre}/
+        └── calibrated/
+            └── membres_calibrated_{spec}_{trimestre}.dta
+                (une version par spécification de calage : 156X, 312X, 444X…)
+
+bucket: gold
+├── enem/
+│   └── {trimestre}/
+│       ├── menage/
+│       │   └── qx_eec_vf.dta
+│       └── individu/
+│           └── membres.dta             ← output Projet 1, input Projet 2
+├── survey_weights/
+│   └── {trimestre}/
+│       └── membres_menages_finale_{trimestre}.dta  ← output Projet 2, input Projet 3
+└── indicators/
+    └── {trimestre}/
+        ├── Tableaux_Indicateurs_ENEM_{trimestre}.xlsx
+        └── Bulletin_emploi_{trimestre}.docx</code></pre>
+</section>
+<section id="convention-de-nommage" class="level3">
+<h3 class="anchored" data-anchor-id="convention-de-nommage">3.4 Convention de nommage</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Élément</th>
+<th>Format</th>
+<th>Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Trimestre</td>
+<td><code>T{n}_{aaaa}</code></td>
+<td><code>T4_2025</code></td>
+</tr>
+<tr class="even">
+<td>Fichier individus apuré</td>
+<td><code>membres.dta</code></td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>Fichier ménage final</td>
+<td><code>qx_eec_vf.dta</code></td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>Fichier individus pondéré</td>
+<td><code>membres_menages_finale_{trim}.dta</code></td>
+<td><code>membres_menages_finale_T4_2025.dta</code></td>
+</tr>
+<tr class="odd">
+<td>Tableaux indicateurs</td>
+<td><code>Tableaux_Indicateurs_ENEM_{trim}.xlsx</code></td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>Bulletin</td>
+<td><code>Bulletin_emploi_{trim}.docx</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="pipelines-détaillés-avec-minio" class="level2">
+<h2 class="anchored" data-anchor-id="pipelines-détaillés-avec-minio">4. Pipelines détaillés avec MinIO</h2>
+<section id="pipeline-projet-1-apurement" class="level3">
+<h3 class="anchored" data-anchor-id="pipeline-projet-1-apurement">4.1 Pipeline Projet 1 — Apurement</h3>
+<pre><code>┌──────────────────────────────────────────────────────────────────┐
+│  ORCHESTRATEUR PYTHON  (apurement/python/orchestrateur.py)       │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  [01] DOWNLOAD STAGING                                           │
+│       staging/enem/{trim}/brutes/     → local datain/brute/      │
+│       staging/enem/{trim}/codif/dta/  → local datatemp/          │
+│       staging/enem/{trim}/codif/excel/→ local document/          │
+│                                                                  │
+│  [02] STATA — pipeline_master.do                                 │
+│       standard_db.do    (découpe brutes → sections standard)     │
+│       apurement.do      (apure S1→S15 ménage + individu)         │
+│       Fusion.do         (fusionne → membres.dta + qx_eec_vf.dta) │
+│       Codification.do   (CIAP + CITP + branches d'activité)      │
+│                                                                  │
+│  [03] UPLOAD SILVER                                              │
+│       local dataout/standard/menage/   → silver/enem/{trim}/menage/  │
+│       local dataout/standard/individu/ → silver/enem/{trim}/individu/│
+│                                                                  │
+│  [04] UPLOAD GOLD                                                │
+│       local dataout/menage/qx_eec_vf.dta → gold/enem/{trim}/menage/  │
+│       local dataout/individu/membres.dta → gold/enem/{trim}/individu/│
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Déclencheur :</strong> réception d’une nouvelle livraison Survey Solutions. <strong>Durée estimée :</strong> 30–90 min selon taille de l’échantillon. <strong>Condition de succès :</strong> <code>gold/enem/{trim}/individu/membres.dta</code> présent et non vide.</p>
+<hr>
+</section>
+<section id="pipeline-projet-2-pondération" class="level3">
+<h3 class="anchored" data-anchor-id="pipeline-projet-2-pondération">4.2 Pipeline Projet 2 — Pondération</h3>
+<pre><code>┌──────────────────────────────────────────────────────────────────┐
+│  ORCHESTRATEUR PYTHON  (ENE_SURVEY_WEIGHTS/python/orchestrateur.py)│
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  [01] DOWNLOAD INPUTS                                            │
+│       gold/enem/{trim}/individu/membres.dta → local data/05_DER/ │
+│       staging/survey_weights/{trim}/denombrement/ → local data/01_raw/│
+│       staging/survey_weights/{trim}/references/  → local data/02_cleaned/│
+│                                                                  │
+│  [02] R — calc_base_weights_2.R                                  │
+│       Calcul des probabilités d'inclusion (π_ZD, π_ménage)       │
+│       Calcul des poids de base (1/π_inclusion)                   │
+│                                                                  │
+│  [03] UPLOAD BRONZE                                              │
+│       local data/04_weights/ → bronze/survey_weights/{trim}/base_weights/│
+│                                                                  │
+│  [04] R — comp_followup_matrix.R                                 │
+│       Correction pour la non-réponse                             │
+│                                                                  │
+│  [05] R — 01→02→03→04c→05  (Calibration ReGenesees)             │
+│       Préparation données échantillon                            │
+│       Préparation totaux population                              │
+│       Calage avec ReGenesees (contraintes région × sexe × âge)  │
+│       Attachement des poids finaux → membres_menages_finale.dta  │
+│                                                                  │
+│  [06] UPLOAD SILVER                                              │
+│       local calibrated/*.dta → silver/survey_weights/{trim}/calibrated/│
+│                                                                  │
+│  [07] STATA — scripts/05_quality_control/                        │
+│       Contrôles qualité, suppressions, vérification poids        │
+│                                                                  │
+│  [08] UPLOAD GOLD                                                │
+│       local membres_menages_finale.dta → gold/survey_weights/{trim}/│
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Déclencheur :</strong> présence confirmée de <code>gold/enem/{trim}/individu/membres.dta</code>. <strong>Durée estimée :</strong> 1–3h selon nombre de spécifications de calage testées. <strong>Condition de succès :</strong> <code>gold/survey_weights/{trim}/membres_menages_finale_{trim}.dta</code> présent.</p>
+<hr>
+</section>
+<section id="pipeline-projet-3-tabulations" class="level3">
+<h3 class="anchored" data-anchor-id="pipeline-projet-3-tabulations">4.3 Pipeline Projet 3 — Tabulations</h3>
+<pre><code>┌──────────────────────────────────────────────────────────────────┐
+│  ORCHESTRATEUR PYTHON  (ENE_INDICATORS_TABULATIONS/python/orchestrateur.py)│
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  [01] DOWNLOAD INPUTS                                            │
+│       gold/survey_weights/{trim}/membres_menages_finale_{trim}.dta│
+│                           → local Base/Base_brute/membres.dta    │
+│       gold/enem/{trim}/menage/qx_eec_vf.dta                      │
+│                           → local Base/Base_brute/qx_eec_vf.dta  │
+│       gold/indicators/{trim_precedents}/  (trimestres antérieurs │
+│                           pour la série temporelle)              │
+│                                                                  │
+│  [02] STATA — pipeline_tabulations.do                            │
+│       1_1_Var_objectives_to_run.do   (variables analytiques)     │
+│       1_2_Indicateur_Bulletin.do     (indicateurs pondérés)      │
+│       Tabulation_Bulletin_automatise.do (export Excel putexcel)  │
+│                                                                  │
+│  [03] R — workflow_complet.R                                     │
+│       tests_validation.R   (7 tests de cohérence des indicateurs)│
+│       generer_bulletin.R   (rendu Rmarkdown → Word / PDF)        │
+│                                                                  │
+│  [04] UPLOAD GOLD                                                │
+│       Tableaux_Indicateurs_ENEM_{trim}.xlsx → gold/indicators/{trim}/│
+│       Bulletin_emploi_{trim}.docx          → gold/indicators/{trim}/│
+│       Base_finale.dta                      → gold/indicators/{trim}/│
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Déclencheur :</strong> présence confirmée de <code>gold/survey_weights/{trim}/membres_menages_finale_{trim}.dta</code>. <strong>Durée estimée :</strong> 30–60 min. <strong>Condition de succès :</strong> <code>gold/indicators/{trim}/Bulletin_emploi_{trim}.docx</code> présent.</p>
+<hr>
+</section>
+</section>
+<section id="infrastructure-partagée" class="level2">
+<h2 class="anchored" data-anchor-id="infrastructure-partagée">5. Infrastructure partagée</h2>
+<section id="module-python-commun" class="level3">
+<h3 class="anchored" data-anchor-id="module-python-commun">5.1 Module Python commun</h3>
+<p>Un seul module <code>minio_client.py</code> est partagé entre les 3 projets. Il centralise la configuration boto3, les fonctions upload/download, et les conventions de nommage des préfixes.</p>
+<pre><code>shared/
+└── minio_client.py        ← importé par les 3 orchestrateurs</code></pre>
+<p>Chaque projet a son propre <code>.env</code> mais avec le même format :</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode ini code-with-copy"><code class="sourceCode ini"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connexion MinIO</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">MINIO_ENDPOINT</span><span class="ot">=</span><span class="st">http://192.168.1.230:30137</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">MINIO_ACCESS_KEY</span><span class="ot">=</span><span class="st">datalab-team</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="dt">MINIO_SECRET_KEY</span><span class="ot">=</span><span class="st">minio-datalabteam123</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Buckets (communs aux 3 projets)</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="dt">BUCKET_STAGING</span><span class="ot">=</span><span class="st">staging</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="dt">BUCKET_BRONZE</span><span class="ot">=</span><span class="st">bronze</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="dt">BUCKET_SILVER</span><span class="ot">=</span><span class="st">silver</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="dt">BUCKET_GOLD</span><span class="ot">=</span><span class="st">gold</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Paramètre trimestre (seul élément qui change d'un projet à l'autre)</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="dt">TRIMESTRE</span><span class="ot">=</span><span class="st">T4_2025</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Exécutables locaux</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="dt">STATA_EXE</span><span class="ot">=</span><span class="st">C:\Users\f.migone\OneDrive - GOUVCI\Stata17\Stata17\StataMP-64.exe</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="dt">RSCRIPT_EXE</span><span class="ot">=</span><span class="st">C:\Program Files\R\R-4.4.0\bin\Rscript.exe</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="dépendances-python" class="level3">
+<h3 class="anchored" data-anchor-id="dépendances-python">5.2 Dépendances Python</h3>
+<pre><code>boto3           # client S3/MinIO
+python-dotenv   # lecture .env</code></pre>
+<p>R utilise le package <code>aws.s3</code> ou continue avec <code>upload_to_minio.R</code> (via <code>aws-cli</code> ou <code>mc</code>). À terme, aligner sur boto3 via <code>reticulate</code> ou remplacer <code>minio_manager.py</code> par un client boto3.</p>
+</section>
+<section id="arborescence-des-orchestrateurs" class="level3">
+<h3 class="anchored" data-anchor-id="arborescence-des-orchestrateurs">5.3 Arborescence des orchestrateurs</h3>
+<pre><code>ENE-M-T4_2025/apurement/python/
+├── .env
+├── minio_client.py         ← module partagé (copie ou lien)
+├── 00_upload_staging.py    ← upload initial des brutes
+└── orchestrateur.py        ← pipeline apurement
+
+ENE_SURVEY_WEIGHTS/python/
+├── .env
+├── minio_client.py
+├── 00_upload_staging.py    ← upload dénombrements + RP2021
+└── orchestrateur.py        ← pipeline pondération
+
+ENE_INDICATORS_TABULATIONS/python/
+├── .env
+├── minio_client.py
+├── 00_upload_staging.py    ← (si données supplémentaires à uploader)
+└── orchestrateur.py        ← pipeline tabulations</code></pre>
+<hr>
+</section>
+</section>
+<section id="interactions-cross-projets-via-gold" class="level2">
+<h2 class="anchored" data-anchor-id="interactions-cross-projets-via-gold">6. Interactions cross-projets via Gold</h2>
+<p>Le Gold est la <strong>zone de passage</strong> entre projets. Voici les deux transferts critiques :</p>
+<section id="transfert-1-apurement-pondération" class="level3">
+<h3 class="anchored" data-anchor-id="transfert-1-apurement-pondération">Transfert 1 — Apurement → Pondération</h3>
+<pre><code>Projet 1 écrit :   gold/enem/T4_2025/individu/membres.dta
+                   gold/enem/T4_2025/menage/qx_eec_vf.dta
+
+Projet 2 lit   :   gold/enem/T4_2025/individu/membres.dta
+                   → téléchargé vers data/05_DERIVED_VARIABLES/2025/T4/</code></pre>
+<p>Ce transfert est <strong>critique</strong> : si <code>membres.dta</code> n’est pas dans Gold, le Projet 2 ne peut pas démarrer. L’orchestrateur du Projet 2 doit vérifier la présence du fichier avant de lancer R.</p>
+</section>
+<section id="transfert-2-pondération-tabulations" class="level3">
+<h3 class="anchored" data-anchor-id="transfert-2-pondération-tabulations">Transfert 2 — Pondération → Tabulations</h3>
+<pre><code>Projet 2 écrit :   gold/survey_weights/T4_2025/membres_menages_finale_T4_2025.dta
+
+Projet 3 lit   :   gold/survey_weights/T4_2025/membres_menages_finale_T4_2025.dta
+                   → téléchargé vers Bulletin_Trimestriel/Base/Base_brute/membres.dta
+                   gold/enem/T4_2025/menage/qx_eec_vf.dta
+                   → téléchargé vers Bulletin_Trimestriel/Base/Base_brute/qx_eec_vf.dta</code></pre>
+<hr>
+</section>
+</section>
+<section id="orchestration-globale-optionnelle" class="level2">
+<h2 class="anchored" data-anchor-id="orchestration-globale-optionnelle">7. Orchestration globale (optionnelle)</h2>
+<p>Un orchestrateur global peut enchaîner les 3 projets en séquence avec vérification de chaque condition de succès :</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># orchestrateur_global.py</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Lance les 3 pipelines en séquence avec contrôle de dépendance</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>Étape <span class="dv">1</span> : Apurement     → vérifie gold<span class="op">/</span>enem<span class="op">/</span>{trim}<span class="op">/</span>individu<span class="op">/</span>membres.dta</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>Étape <span class="dv">2</span> : Pondération   → vérifie gold<span class="op">/</span>survey_weights<span class="op">/</span>{trim}<span class="op">/</span>membres_menages_finale.dta</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>Étape <span class="dv">3</span> : Tabulations   → vérifie gold<span class="op">/</span>indicators<span class="op">/</span>{trim}<span class="op">/</span>Bulletin_emploi.docx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Mode reprises possibles :</strong></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> orchestrateur_global.py                  <span class="co"># pipeline complet</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> orchestrateur_global.py <span class="at">--depuis</span> 02      <span class="co"># reprend à la pondération</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> orchestrateur_global.py <span class="at">--depuis</span> 03      <span class="co"># reprend aux tabulations</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> orchestrateur_global.py <span class="at">--dry-run</span>        <span class="co"># affiche le plan</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="résumé-visuel-du-flux-de-données" class="level2">
+<h2 class="anchored" data-anchor-id="résumé-visuel-du-flux-de-données">8. Résumé visuel du flux de données</h2>
+<pre><code>Survey Solutions
+      │
+      │ .dta bruts
+      ▼
+┌─────────────────────────────────────────────┐
+│  staging/enem/T4_2025/brutes/               │
+└─────────────────────┬───────────────────────┘
+                      │ [Projet 1 — Stata]
+                      ▼
+┌─────────────────────────────────────────────┐
+│  silver/enem/T4_2025/menage/ + individu/    │  ← sections apurées
+└─────────────────────┬───────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────┐
+│  gold/enem/T4_2025/individu/membres.dta     │  ← apuré + codifié
+│  gold/enem/T4_2025/menage/qx_eec_vf.dta    │
+└──────────────┬──────────────────────────────┘
+               │
+               │ + staging/survey_weights/T4_2025/denombrement/
+               │   (données terrain : comptage ménages par ZD)
+               │
+               │ [Projet 2 — R/ReGenesees]
+               ▼
+┌─────────────────────────────────────────────┐
+│  bronze/survey_weights/T4_2025/             │  ← poids de base
+│  silver/survey_weights/T4_2025/calibrated/  │  ← poids calibrés
+└─────────────────────┬───────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────┐
+│  gold/survey_weights/T4_2025/               │  ← membres.dta + pmencor_ind
+│  membres_menages_finale_T4_2025.dta         │
+└──────────────┬──────────────────────────────┘
+               │
+               │ + gold/enem/T4_2025/menage/qx_eec_vf.dta
+               │
+               │ [Projet 3 — Stata + R]
+               ▼
+┌─────────────────────────────────────────────┐
+│  gold/indicators/T4_2025/                   │  ← tableaux + bulletin
+│  ├── Tableaux_Indicateurs_ENEM_T4_2025.xlsx │
+│  └── Bulletin_emploi_T4_2025.docx           │
+└─────────────────────────────────────────────┘</code></pre>
+<hr>
+</section>
+<section id="points-dattention-et-risques" class="level2">
+<h2 class="anchored" data-anchor-id="points-dattention-et-risques">9. Points d’attention et risques</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risque</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>membres.dta</code> mal apuré passe en Gold</td>
+<td>Indicateurs erronés</td>
+<td>Contrôles de qualité Stata avant upload Gold</td>
+</tr>
+<tr class="even">
+<td>Mauvaise spécification de calage en Gold</td>
+<td>Indicateurs biaisés</td>
+<td>Validation ReGenesees avant upload, upload conditionnel au succès du QC</td>
+</tr>
+<tr class="odd">
+<td>Trimestre mal paramétré dans <code>.env</code></td>
+<td>Écrasement d’un trimestre précédent</td>
+<td>Vérification existence objet Gold avant upload (mode <code>--no-overwrite</code>)</td>
+</tr>
+<tr class="even">
+<td>Port MinIO change (K8s redémarrage)</td>
+<td>Connexion impossible</td>
+<td>Centraliser le port dans <code>.env</code>, documenter la procédure de mise à jour</td>
+</tr>
+<tr class="odd">
+<td>R et Stata tournent en local</td>
+<td>Pipeline non reproductible sur un autre poste</td>
+<td>Documenter les versions (Stata 17 MP, R 4.4, ReGenesees) + renv pour R</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><em>Document de travail — ANStat / CAE — GOUVCI</em></p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
