@@ -401,6 +401,22 @@ FILE_LFS_ILO_CAL_DTA_EXPORT <- get_export_path(TARGET_QUARTER, quarter, year, us
 FILE_LFS_ILO_CAL_DTA_EXPORT
 ###  Let's parameterize the name and path of the EXCEL file containing the empty template for table 1 already formatted 
 
+R_SCRIPT_X_FORMATS <- paste0(BASE_DIR,"/scripts/04_calibration/QUARTERLY_WEIGHTING/2025/T4/180X_1D/04f_XFormats_180X_1D.R")
+#R_SCRIPT_X_FORMATS  = paste0(dir_prog_QW,year,"_T",quarter, xnum, "/", "04f_XFormats_",pathx,".R")
+
+ 
+###  Let's parameterize the name and path of the XLSX file with the summary statistics on the Xs
+ 
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_XLSX  <-paste(dir_data_QW,"LFS_CALIBRATION_",year,"_Q",quarter,"_", pathx ,"_SUMMARY_OF_Xs_STATS.xlsx",sep='')
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_XLSX  
+ 
+ 
+###  Let's parameterize the name and path of the RDATA file with the summary statistics on the Xs
+ 
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_RDATA  <-paste(dir_data_QW,"LFS_CALIBRATION_",year,"_Q",quarter,"_", pathx ,"_SUMMARY_OF_Xs_STATS.RData",sep='')
+FILE_LFS_CALIBRATION_SUMMARY_OF_Xs_STATS_RDATA  
+ 
+
 FILE_TEMPLATE_TABLE_1_XLSX <- paste0(dir_prog_QW,"Template_table_1.xlsx")
 FILE_TEMPLATE_TABLE_1_XLSX
 

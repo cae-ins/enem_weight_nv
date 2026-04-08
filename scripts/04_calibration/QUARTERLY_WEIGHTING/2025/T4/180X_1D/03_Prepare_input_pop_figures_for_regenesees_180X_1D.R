@@ -803,7 +803,7 @@ sum(LFS_KNOWN_TOTALS[,seq(2,49)])
 
 ###   We can calculate the total population summing the X values of the second subset of X
 
-sum(LFS_KNOWN_TOTALS[,seq(50,61)]) # ABIDJAN
+sum(LFS_KNOWN_TOTALS[,seq(50,61)]) 
 
 
 ###   We can calculate the total population summing the X values of the third subset of X

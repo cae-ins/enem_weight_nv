@@ -144,7 +144,7 @@ indiv_enq_counts <- indiv_with_ids %>%
     .groups = "drop"
   ) %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
-print(indiv_enq_counts, n = 475)
+print(indiv_enq_counts, n = 950)
 sum(indiv_enq_counts$nb_indivs_enq)
 sum(indiv_enq_counts$nb_indivs_enq_pot)
 
