@@ -1,0 +1,270 @@
+digraph ENE_WEIGHT_FLOW_MINIO {
+  graph [
+    rankdir=TB,
+    compound=true,
+    bgcolor="#FFFFFF",
+    pad="0.35",
+    nodesep="0.45",
+    ranksep="0.55",
+    splines=ortho,
+    fontname="Arial",
+    labelloc="t",
+    label=<
+      <B>Flux de ponderation ENE-M</B><BR/>
+      <FONT POINT-SIZE="18">des donnees apurees a la publication MinIO Silver / Gold</FONT>
+    >,
+    fontsize=26
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Arial",
+    fontsize=15,
+    color="#425466",
+    penwidth=1.5,
+    margin="0.14,0.10"
+  ];
+
+  edge [
+    fontname="Arial",
+    fontsize=11,
+    color="#596579",
+    arrowsize=0.8,
+    penwidth=1.25
+  ];
+
+  subgraph cluster_input {
+    label="1. Entree : bases apurees disponibles sur MinIO";
+    fontname="Arial";
+    fontsize=17;
+    color="#A7C7E7";
+    penwidth=1.8;
+    style="rounded";
+
+    minio_inputs [
+      fillcolor="#EAF4FF",
+      label=<
+        <B>Silver - apurement</B><BR ALIGN="LEFT"/>
+        s3://silver/enem/&lt;TRIMESTRE&gt;/menage/menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        s3://silver/enem/&lt;TRIMESTRE&gt;/individu/individu_&lt;TRIMESTRE&gt;.dta
+      >
+    ];
+
+    download_inputs [
+      fillcolor="#F3F8FF",
+      label=<
+        <B>Synchronisation locale</B><BR ALIGN="LEFT"/>
+        scripts/medallion/03_download_weights_inputs.ps1<BR ALIGN="LEFT"/>
+        -Quarter &lt;TRIMESTRE&gt; -Overwrite
+      >
+    ];
+
+    local_clean [
+      fillcolor="#F7FBFF",
+      label=<
+        <B>Entrees locales ponderation</B><BR ALIGN="LEFT"/>
+        data/02_cleaned/Menage/&lt;TRIMESTRE&gt;/menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        data/02_cleaned/Individu/&lt;TRIMESTRE&gt;/individu_&lt;TRIMESTRE&gt;.dta
+      >
+    ];
+  }
+
+  subgraph cluster_local {
+    label="2. Traitements locaux de ponderation";
+    fontname="Arial";
+    fontsize=17;
+    color="#BFD6C6";
+    penwidth=1.8;
+    style="rounded";
+
+    config [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Parametrage du trimestre</B><BR ALIGN="LEFT"/>
+        config/1_config.r<BR ALIGN="LEFT"/>
+        TARGET_QUARTER = "&lt;TRIMESTRE&gt;"
+      >
+    ];
+
+    input_qc [
+      shape=diamond,
+      width=2.0,
+      height=1.2,
+      fixedsize=false,
+      fillcolor="#FFF7D6",
+      label=<
+        <B>QC inputs</B><BR/>
+        cles, doublons,<BR/>variables attendues
+      >
+    ];
+
+    frame [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Construction de la base de travail</B><BR ALIGN="LEFT"/>
+        denombrement, appariement panel,<BR ALIGN="LEFT"/>
+        variables de plan et de controle
+      >
+    ];
+
+    base_weights [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Poids de base menages</B><BR ALIGN="LEFT"/>
+        probabilites d'inclusion, segments,<BR ALIGN="LEFT"/>
+        base_weights_&lt;TRIMESTRE&gt;.dta
+      >
+    ];
+
+    nonresponse [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Ajustement non-reponse</B><BR ALIGN="LEFT"/>
+        facteurs par region x milieu<BR ALIGN="LEFT"/>
+        option : segment si retenu
+      >
+    ];
+
+    indiv_weights [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Poids individus et fichiers SR</B><BR ALIGN="LEFT"/>
+        individu_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        SR_individu_&lt;TRIMESTRE&gt;.dta
+      >
+    ];
+
+    known_totals [
+      fillcolor="#F2F0FF",
+      color="#7466B2",
+      label=<
+        <B>Totaux externes</B><BR ALIGN="LEFT"/>
+        RP2021 / projections / contraintes<BR ALIGN="LEFT"/>
+        age, sexe, region, milieu
+      >
+    ];
+
+    calibration [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Calibration ReGenesees</B><BR ALIGN="LEFT"/>
+        preparation echantillon + totaux,<BR ALIGN="LEFT"/>
+        resolution, facteurs g, poids finaux
+      >
+    ];
+
+    calib_qc [
+      shape=diamond,
+      width=2.0,
+      height=1.2,
+      fixedsize=false,
+      fillcolor="#FFF7D6",
+      label=<
+        <B>QC calibration</B><BR/>
+        convergence,<BR/>bornes, totaux,<BR/>diagnostics
+      >
+    ];
+
+    attach_final [
+      fillcolor="#EFF8F0",
+      label=<
+        <B>Attachement des poids finaux</B><BR ALIGN="LEFT"/>
+        calibrated_weights/individu_&lt;TRIMESTRE&gt;_CAL.dta<BR ALIGN="LEFT"/>
+        base_weights/menage_&lt;TRIMESTRE&gt;.dta
+      >
+    ];
+  }
+
+  subgraph cluster_outputs {
+    label="3. Sorties locales versionnees avant depot";
+    fontname="Arial";
+    fontsize=17;
+    color="#F0C987";
+    penwidth=1.8;
+    style="rounded";
+
+    local_outputs [
+      fillcolor="#FFF8EA",
+      label=<
+        <B>data/04_weights/&lt;TRIMESTRE&gt;/</B><BR ALIGN="LEFT"/>
+        base_weights/base_weights_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        base_weights/inconsistent_rows_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        base_weights/individu_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        base_weights/SR_individu_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        base_weights/menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        calibrated_weights/individu_&lt;TRIMESTRE&gt;_CAL.dta
+      >
+    ];
+
+    upload_check [
+      shape=diamond,
+      width=2.0,
+      height=1.2,
+      fixedsize=false,
+      fillcolor="#FFF7D6",
+      label=<
+        <B>Dry-run</B><BR/>
+        liste des objets<BR/>et destinations
+      >
+    ];
+  }
+
+  subgraph cluster_minio_out {
+    label="4. Depot final MinIO";
+    fontname="Arial";
+    fontsize=17;
+    color="#D8B4E2";
+    penwidth=1.8;
+    style="rounded";
+
+    upload_script [
+      fillcolor="#F9F0FF",
+      label=<
+        <B>Publication</B><BR ALIGN="LEFT"/>
+        scripts/medallion/04_upload_weights_outputs.ps1<BR ALIGN="LEFT"/>
+        -Quarter &lt;TRIMESTRE&gt; -Year &lt;ANNEE&gt; -Overwrite
+      >
+    ];
+
+    silver_outputs [
+      fillcolor="#F7F0FF",
+      label=<
+        <B>Silver - audit et tracabilite</B><BR ALIGN="LEFT"/>
+        s3://silver/enem/&lt;TRIMESTRE&gt;/poids/<BR ALIGN="LEFT"/>
+        base_weights/*<BR ALIGN="LEFT"/>
+        calibrated_weights/*<BR ALIGN="LEFT"/>
+        _manifests/upload_&lt;timestamp&gt;.json
+      >
+    ];
+
+    gold_outputs [
+      fillcolor="#FFF0FA",
+      color="#9A4D8F",
+      label=<
+        <B>Gold - base indicateurs</B><BR ALIGN="LEFT"/>
+        s3://gold/enem/&lt;TRIMESTRE&gt;/base_indicateurs/<BR ALIGN="LEFT"/>
+        individu_&lt;TRIMESTRE&gt;_CAL.dta<BR ALIGN="LEFT"/>
+        menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
+        _manifests/upload_&lt;timestamp&gt;.json
+      >
+    ];
+  }
+
+  minio_inputs -> download_inputs -> local_clean;
+  local_clean -> config;
+  config -> input_qc;
+  input_qc -> frame;
+  frame -> base_weights;
+  base_weights -> nonresponse;
+  nonresponse -> indiv_weights;
+  indiv_weights -> calibration;
+  known_totals -> calibration;
+  calibration -> calib_qc;
+  calib_qc -> attach_final;
+  attach_final -> local_outputs;
+  local_outputs -> upload_check;
+  upload_check -> upload_script;
+  upload_script -> silver_outputs;
+  upload_script -> gold_outputs;
+}

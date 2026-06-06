@@ -28,25 +28,136 @@ ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indiv
 # 3. Identify All Excel Files and Associated Quarters
 # ------------------------------------------------------------------------------
 update_files <- list.files(RAW_UPDATE_DIR, recursive = TRUE, pattern = "\\.xlsx$", full.names = TRUE)
+update_files <- update_files[!grepl("^(~\\$|\\.~)", basename(update_files))]
 
 extract_quarter <- function(path) {
-  folder <- str_match(path, "Denombrement_update/(T\\d_\\d{4})")[,2]
+  normalized_path <- normalizePath(path, winslash = "/", mustWork = FALSE)
+  folder <- str_match(normalized_path, "Denombrement_update/(T\\d_\\d{4})")[,2]
   return(folder)
 }
+
+normalize_column_key <- function(x) {
+  str_to_lower(str_replace_all(x, "[^[:alnum:]]", ""))
+}
+
+IDSEG_ALIASES <- c(
+  "IDSeg",
+  "ID Segment",
+  "ID_Segment",
+  "ID-Segment",
+  "IdSegment",
+  "Identifiant Segment"
+)
+
+IDSEG_MISSING_EXCEPTIONS <- data.frame(
+  quarter = "T1_2025",
+  file_name = "SEG_BaseT12025_menage_Touba_6014_.xlsx",
+  reason = "Corrige localement dans scripts/07_correction_quarter/denombrement/correction_T1_2025.r",
+  stringsAsFactors = FALSE
+)
+
+get_idseg_missing_exception_reason <- function(file_path, quarter) {
+  matched <- IDSEG_MISSING_EXCEPTIONS %>%
+    filter(
+      .data$quarter == quarter,
+      .data$file_name == basename(file_path)
+    )
+
+  if (nrow(matched) == 0) return(NA_character_)
+  matched$reason[1]
+}
+
+is_idseg_missing_exception <- function(file_path, quarter) {
+  !is.na(get_idseg_missing_exception_reason(file_path, quarter))
+}
+
+find_column_index <- function(columns, aliases) {
+  normalized_columns <- normalize_column_key(columns)
+  normalized_aliases <- normalize_column_key(aliases)
+  matches <- which(normalized_columns %in% normalized_aliases)
+  if (length(matches) == 0) return(NA_integer_)
+  matches[1]
+}
+
+standardize_idseg_column <- function(df, file_path) {
+  idseg_index <- find_column_index(names(df), IDSEG_ALIASES)
+  if (is.na(idseg_index)) {
+    stop("Missing required segment id column compatible with `IDSeg` in: ", file_path, call. = FALSE)
+  }
+  names(df)[idseg_index] <- "IDSeg"
+  df
+}
+
+validate_update_files <- function(files) {
+  if (length(files) == 0) {
+    stop("No Excel files found under: ", RAW_UPDATE_DIR, call. = FALSE)
+  }
+
+  invalid_files <- map(files, function(file_path) {
+    quarter <- extract_quarter(file_path)
+    exception_reason <- get_idseg_missing_exception_reason(file_path, quarter)
+    if (!is.na(exception_reason)) {
+      message(
+        "Exception IDSeg ignoree: ", file_path,
+        " | raison: ", exception_reason
+      )
+      return(NULL)
+    }
+
+    columns <- names(read_excel(file_path, n_max = 0, .name_repair = "minimal"))
+    if (!is.na(find_column_index(columns, IDSEG_ALIASES))) return(NULL)
+
+    segment_like_columns <- grep("seg|idseg|segment", columns, ignore.case = TRUE, value = TRUE)
+    list(
+      file = normalizePath(file_path, winslash = "/", mustWork = FALSE),
+      quarter = quarter,
+      segment_like_columns = if (length(segment_like_columns) == 0) {
+        "<aucune>"
+      } else {
+        paste(segment_like_columns, collapse = ", ")
+      },
+      columns = paste(columns, collapse = ", ")
+    )
+  }) %>% compact()
+
+  if (length(invalid_files) > 0) {
+    details <- map_chr(invalid_files, function(item) {
+      paste0(
+        "- ", item$file, "\n",
+        "  quarter: ", item$quarter, "\n",
+        "  colonnes proches: ", item$segment_like_columns, "\n",
+        "  colonnes disponibles: ", item$columns
+      )
+    })
+
+    stop(
+      paste(
+        "Blocage: certains fichiers Denombrement_update ne contiennent pas de colonne compatible avec `IDSeg`.",
+        "Le script s'arrete pour eviter une mise a jour incomplete.",
+        "Corriger les fichiers ci-dessous ou harmoniser leur nom de colonne avant de relancer:",
+        paste(details, collapse = "\n"),
+        sep = "\n"
+      ),
+      call. = FALSE
+    )
+  }
+}
+
+validate_update_files(update_files)
 
 # ------------------------------------------------------------------------------
 # 4. Read and Combine Excel Files
 # ------------------------------------------------------------------------------
-skipped_files <- c()
-
 read_and_tag_file <- function(file_path) {
   quarter <- extract_quarter(file_path)
-  df <- read_excel(file_path)
-  
-  if (!"IDSeg" %in% names(df)) {
-    skipped_files <<- c(skipped_files, file_path)
+
+  if (is_idseg_missing_exception(file_path, quarter)) {
+    message("Fichier ignore car corrige localement: ", file_path)
     return(NULL)
   }
+
+  df <- read_excel(file_path) %>%
+    standardize_idseg_column(file_path)
   
   df <- df %>%
     mutate(
@@ -221,6 +332,6 @@ glimpse(final_dataset)
 glimpse(subset_dataset)
 
 message("Final dataset created with ", nrow(final_dataset), " records.")
-write_dta(final_dataset, output_path)
 message("Dataset segment 1 created with ", nrow(subset_dataset), " records.")
 write_dta(subset_dataset, output_path)
+message("Segment 1 dataset written to: ", output_path)

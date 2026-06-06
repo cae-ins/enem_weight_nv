@@ -29,6 +29,9 @@ WEIGHTS_COLUMNS_PATH <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
 
 INCONSISTENT_PATH = file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights", 
                               paste0("inconsistent_rows_", TARGET_QUARTER, ".dta"))
+
+PROBABILITY_GT1_PATH <- file.path(WEIGHTS_DIR, TARGET_QUARTER, "base_weights",
+                                  paste0("probabilities_gt1_", TARGET_QUARTER, ".dta"))
 # ------------------------------------------------------------------------------
 # Constants
 # ------------------------------------------------------------------------------
@@ -171,6 +174,59 @@ append_base_weights <- function(data, resurvey = TRUE) {
 }
 
 # ------------------------------------------------------------------------------
+# Check Inclusion Probability Bounds
+# ------------------------------------------------------------------------------
+check_probability_bounds <- function(data, output_path = NULL, tolerance = 1e-12) {
+  probability_cols <- c("pi_zd", "pi_zd_wr", "pi_hh", "pi_HH", "pi_HH_wr")
+  available_cols <- intersect(probability_cols, names(data))
+
+  if (length(available_cols) == 0) {
+    warning("No probability columns found for probability bounds check.")
+    return(data)
+  }
+
+  row_keys <- c(
+    "region", "depart", "souspref", "ZD", "segment", "milieu", "date_ref",
+    "nb_mens_seg", "nb_men_reg", "nb_zd_strat", "nb_zd_strat_wr",
+    "pi_zd", "pi_zd_wr", "pi_hh", "pi_HH", "pi_HH_wr",
+    "base_weight_HH", "base_weight_HH_WR"
+  )
+
+  rows_with_id <- data %>%
+    mutate(row_id = dplyr::row_number())
+
+  probability_issues <- dplyr::bind_rows(lapply(available_cols, function(col) {
+    rows_with_id %>%
+      filter(!is.na(.data[[col]]) & .data[[col]] > 1 + tolerance) %>%
+      mutate(
+        probability_var = col,
+        probability_value = .data[[col]]
+      ) %>%
+      select(row_id, probability_var, probability_value, any_of(row_keys))
+  }))
+
+  if (nrow(probability_issues) == 0) {
+    cat("Probability bounds check PASSED - no inclusion probability greater than 1\n")
+    return(data)
+  }
+
+  if (!is.null(output_path)) {
+    dir.create(dirname(output_path), showWarnings = FALSE, recursive = TRUE)
+    write_dta(probability_issues, output_path)
+  }
+
+  cat("\nProbability bounds check FAILED - inclusion probabilities greater than 1:\n")
+  print(probability_issues, n = min(50, nrow(probability_issues)))
+
+  stop(
+    "Blocage: ", nrow(probability_issues),
+    " probabilite(s) d'inclusion depassent 1. ",
+    "Verifier le fichier de controle: ", output_path,
+    call. = FALSE
+  )
+}
+
+# ------------------------------------------------------------------------------
 # Calculate the base weights 
 # ------------------------------------------------------------------------------
 weight_data <- read_dta(WEIGHTS_COLUMNS_PATH)
@@ -212,6 +268,9 @@ weight_data <- compute_nb_zd_strat(weight_data)
 
 # Compute weights with or without resurvey logic
 weight_data <- append_base_weights(weight_data, resurvey = FALSE)
+
+weight_data <- check_probability_bounds(weight_data, output_path = PROBABILITY_GT1_PATH)
+
 # ------------------------------------------------------------------------------
 # Save Final Dataset
 # ------------------------------------------------------------------------------

@@ -82,7 +82,9 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 
 ## 🔄 Schéma du flux de traitement
 
-![Flux de pondération](enem_weight_flow.png)
+![Flux de pondération ENE-M vers MinIO](reports/enem_weight_flow_minio.png)
+
+Source modifiable : `reports/enem_weight_flow_minio.dot`.
 
 
 ## 🛠 Technologies
@@ -97,3 +99,103 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - Fichiers de poids **par trimestre** (ménages & individus).
 - Diagnostics reproductibles dans `/dashboard` et `/logs`.
 - Poids finaux utilisables directement pour l’analyse (emploi, chômage, sous-emploi, etc.).
+
+## Publication MinIO des sorties de pondération
+
+Après validation de la calibration et des poids ménages finaux, les sorties de la
+composante pondération sont publiées dans les buckets medallion MinIO (`silver` et
+`gold`) avec le script d'orchestration intégré au dépôt.
+
+### Commande standard
+
+Depuis la racine du dépôt `ENE_SURVEY_WEIGHTS` :
+
+```powershell
+.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -Year 2026 -DryRun
+.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -Year 2026 -Overwrite
+```
+
+Utiliser toujours `-DryRun` avant l'upload réel pour vérifier la liste exacte des
+fichiers et des destinations. Utiliser `-Overwrite` uniquement quand les objets du
+serveur doivent être remplacés par la version locale finalisée.
+
+### Exécution via le serveur VPN de la direction
+
+Si le poste est connecté au MinIO de la direction par VPN, forcer l'endpoint S3 du
+serveur et neutraliser le proxy local pour cette session PowerShell :
+
+```powershell
+$env:MINIO_ENDPOINT = 'http://192.168.1.230:30137'
+$env:NO_PROXY = 'localhost,127.0.0.1,::1,192.168.1.230'
+$env:HTTP_PROXY = ''
+$env:HTTPS_PROXY = ''
+$env:ALL_PROXY = ''
+
+python C:\Users\f.migone\Desktop\ENE_MEDALLION_ORCHESTRATION\ene_medallion_io\04_upload_weights_outputs.py `
+  --quarter T1_2026 `
+  --year 2026 `
+  --base-dir C:\Users\f.migone\Desktop\ENE_SURVEY_WEIGHTS `
+  --credentials-file C:\Users\f.migone\Desktop\ENE_SECRETS\ENE_SURVEY_WEIGHTS_credentials.json `
+  --dry-run
+
+python C:\Users\f.migone\Desktop\ENE_MEDALLION_ORCHESTRATION\ene_medallion_io\04_upload_weights_outputs.py `
+  --quarter T1_2026 `
+  --year 2026 `
+  --base-dir C:\Users\f.migone\Desktop\ENE_SURVEY_WEIGHTS `
+  --credentials-file C:\Users\f.migone\Desktop\ENE_SECRETS\ENE_SURVEY_WEIGHTS_credentials.json `
+  --overwrite
+```
+
+Le fichier d'identifiants doit rester hors du dépôt. Ne jamais copier les clés
+MinIO dans le README ou dans un script versionné.
+
+### Structure locale attendue
+
+Pour un trimestre `<TRIMESTRE>` tel que `T1_2026`, le script publie les fichiers
+situés sous :
+
+```text
+data/04_weights/<TRIMESTRE>/
+  base_weights/
+    base_weights_<TRIMESTRE>.dta
+    inconsistent_rows_<TRIMESTRE>.dta
+    individu_<TRIMESTRE>.dta
+    SR_individu_<TRIMESTRE>.dta
+    menage_<TRIMESTRE>.dta
+  calibrated_weights/
+    individu_<TRIMESTRE>_CAL.dta
+```
+
+### Structure publiée sur MinIO
+
+Le dossier complet `data/04_weights/<TRIMESTRE>` est publié dans `silver` :
+
+```text
+s3://silver/enem/<TRIMESTRE>/poids/base_weights/base_weights_<TRIMESTRE>.dta
+s3://silver/enem/<TRIMESTRE>/poids/base_weights/inconsistent_rows_<TRIMESTRE>.dta
+s3://silver/enem/<TRIMESTRE>/poids/base_weights/individu_<TRIMESTRE>.dta
+s3://silver/enem/<TRIMESTRE>/poids/base_weights/SR_individu_<TRIMESTRE>.dta
+s3://silver/enem/<TRIMESTRE>/poids/base_weights/menage_<TRIMESTRE>.dta
+s3://silver/enem/<TRIMESTRE>/poids/calibrated_weights/individu_<TRIMESTRE>_CAL.dta
+s3://silver/enem/<TRIMESTRE>/poids/_manifests/upload_<timestamp>.json
+```
+
+Les fichiers directement consommables par la composante indicateurs sont publiés
+dans `gold` :
+
+```text
+s3://gold/enem/<TRIMESTRE>/base_indicateurs/individu_<TRIMESTRE>_CAL.dta
+s3://gold/enem/<TRIMESTRE>/base_indicateurs/menage_<TRIMESTRE>.dta
+s3://gold/enem/<TRIMESTRE>/base_indicateurs/_manifests/upload_<timestamp>.json
+```
+
+### Trace de publication T1_2026
+
+Lors de la publication du `2026-06-06`, la version ménage envoyée était :
+
+```text
+Fichier : data/04_weights/T1_2026/base_weights/menage_T1_2026.dta
+Taille  : 51,500,006 bytes
+Date    : 2026-06-04 18:49:34 heure locale
+SHA256  : 7A0896ECB12ABF18F9194D13FD806929F93DF08CA1D3B393A2C258434D73D999
+```
