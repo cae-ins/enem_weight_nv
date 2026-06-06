@@ -21,7 +21,7 @@ library(tidyr)
 # Step 1: Locate latest subfolder in Tracking_ID
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
-tracking_id_dir <- file.path(BASE_DIR, "data", "03_Processed", "Tracking_ID")
+tracking_id_dir <- file.path(BASE_DIR, "data", "03_processed", "Tracking_ID")
 
 latest_subdir <- dir_ls(tracking_id_dir, type = "directory") %>%
   file_info() %>%

@@ -43,7 +43,7 @@ source("config/1_config.r")
 cat("   ✅ Configuration chargée depuis config/1_config.r\n\n")
 
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
-CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
+CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
 
 cat("📂 Chemins configurés:\n")
@@ -356,7 +356,7 @@ cat("═════════════════════════
 
 timestamp <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
 output_filename <- paste0("denombrement_update_", timestamp, ".dta")
-output_path <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", output_filename)
+output_path <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement_update", output_filename)
 
 cat("📊 STATISTIQUES DU DATASET FINAL:\n")
 cat("   - Nombre total d'enregistrements:", nrow(final_dataset), "\n")
@@ -387,11 +387,11 @@ glimpse(subset_dataset)
 cat("\n")
 
 # Chemin pour le dataset complet
-output_path_full <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", 
+output_path_full <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement_update", 
                               paste0("denombrement_update_full_", timestamp, ".dta"))
 
 # Chemin pour le dataset segment 1 (nom original conservé)
-output_path <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", output_filename)
+output_path <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement_update", output_filename)
 
 cat("💾 Écriture du dataset complet...\n")
 cat("   Chemin:", output_path_full, "\n")

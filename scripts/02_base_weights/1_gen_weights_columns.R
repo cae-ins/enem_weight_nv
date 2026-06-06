@@ -52,10 +52,10 @@ appliquer_correction_trimestre <- function(df, trimestre, dossier_scripts = "scr
 ###################################################################################################################
 
 DATA_DIR <- file.path(BASE_DIR, "data")
-CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
+CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_cleaned", "Denombrement", TARGET_QUARTER)
 
 
-PROCESSED_DIR <- file.path(DATA_DIR, "03_Processed")
+PROCESSED_DIR <- file.path(DATA_DIR, "03_processed")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 
@@ -144,7 +144,7 @@ indiv_enq_counts <- indiv_with_ids %>%
     .groups = "drop"
   ) %>%
   rename(region = hh2, depart = hh3, souspref = hh4, ZD = hh8, segment = hh7)
-print(indiv_enq_counts, n = 475)
+print(indiv_enq_counts, n = 950)
 sum(indiv_enq_counts$nb_indivs_enq)
 sum(indiv_enq_counts$nb_indivs_enq_pot)
 
@@ -244,7 +244,7 @@ final_data <- final_data %>%
 # ------------------------------------------------------------------------------
 
 # Define path to Denombrement_update and get latest file
-denom_update_dir <- file.path(DATA_DIR, "02_Cleaned", "Denombrement_update")
+denom_update_dir <- file.path(DATA_DIR, "02_cleaned", "Denombrement_update")
 update_files <- list.files(denom_update_dir, pattern = "\\.dta$", full.names = TRUE)
 
 if (length(update_files) > 0) {

@@ -75,14 +75,16 @@ La probabilité qu'un ménage soit sélectionné dans un segment donné.
 **Formule :**
 
 $$
-\pi_{Ménage|ZD} = \frac{N_{enq\_ti}}{N_{total\_segment}} \times \frac{1}{6}
+\pi_{Ménage|ZD} = \frac{n_{cible}}{N_{denomb\_segment}} \times \frac{1}{6}
 $$
 
 **Variables :**
 
-- $N_{enq\_ti}$ (`nb_enq_ti`) : Nombre de ménages enquêtés dans le segment au trimestre $T_i$.
-- $N_{total\_segment}$ (`nb_total_segment`) : Nombre total de ménages dans le segment (issu du dénombrement).
-- $1/6$ : Probabilité de sélection du segment (correspondant au tirage d'un segment parmi 6).
+- $n_{cible}$ (`NB_MENS_ENQ = 12`) : Nombre de ménages **cible** à enquêter par segment — constante de design, indépendante des réalisations effectives.
+- $N_{denomb\_segment}$ (`nb_mens_seg`) : Nombre total de ménages dénombrés dans le segment.
+- $1/6$ : Probabilité de sélection du segment parmi les 6 segments de la ZD.
+
+> **Note** : La probabilité d'inclusion utilise le nombre de ménages prévu par le plan de sondage (12), et non le nombre réellement enquêté. L'écart entre les deux est traité par l'ajustement pour non-réponse (`03_nonresponse`).
 
 #### C. Poids de Base Ménage ($w_{base}$)
 
@@ -122,16 +124,73 @@ $$
 
 ### 3.3. Calibration (Calage)
 
-Le calage assure que la somme des poids finaux correspond aux totaux de population connus (par exemple, total population par Région, Sexe, Tranche d'âge).
-
-Le projet utilise la méthode **Logit** via le package R `ReGenesees`.
+Le calage assure que les estimations pondérées sont cohérentes avec des totaux de population connus issus des projections du RGPH 2021. La méthode retenue est l'estimateur par régression généralisée (**GREG**), implémenté via le package R `ReGenesees` (Zardetto, 2015), avec une fonction de distance **logit** contraignant les facteurs de correction dans des bornes prédéfinies.
 
 **Principe :**
-Trouver de nouveaux poids $w_{final}$ proches des poids initiaux $w_{ajusté}$ tels que :
-$$ \sum*{i \in \text{Echantillon}} w*{final, i} \times X*{i} = \text{Total}*{Population}(X) $$
-où $X$ est un vecteur de variables auxiliaires (Sexe, Age, Région, Milieu).
 
-Les contraintes (bornes) sont appliquées pour éviter des poids extrêmes (ex: bornes `[0.3, 4.5]`).
+Trouver de nouveaux poids $w_{final}$ proches des poids initiaux $w^{(1)}$ tels que :
+
+$$\sum_{i \in \mathcal{S}} w_{final,i} \cdot \mathbf{x}_i = \mathbf{T}_X$$
+
+où $\mathbf{x}_i$ est le vecteur des variables auxiliaires de l'individu $i$ et $\mathbf{T}_X$ le vecteur des totaux de population correspondants. Le poids final est :
+
+$$w_{final,i} = g_i \times w^{(1)}_i$$
+
+où $g_i$ (`FINAL_CORR_FACTOR`) est le facteur de correction logit, contraint dans un intervalle $[l, u]$.
+
+**Schéma de référence — 180X_1D (180 contraintes, 1 domaine) :**
+
+- **Niveau national ($X_1$–$X_{48}$)** : 48 contraintes = sexe (2) × milieu (2) × 12 groupes d'âge quinquennaux.
+- **Niveau régional ($X_{49}$–$X_{180}$)** : 132 contraintes = 33 régions × 4 (sexe × 2 groupes d'âge : 0–14 ans / 15 ans et plus).
+
+**Plan de sondage déclaré dans ReGenesees :**
+
+- `ids = ~ PSUKEY + HHKEY` (deux degrés : ZD puis ménage)
+- `strata = ~ STRATAKEY`
+- `weights = ~ d_weights`
+
+**Workflow en 7 étapes :**
+
+1. Chargement des données d'enquête et des totaux de population ;
+2. Construction des variables indicatrices $X_1$–$X_{180}$ dans l'échantillon ;
+3. Construction des totaux de population correspondants ;
+4. Création de l'objet de plan de sondage ReGenesees ;
+5. Exécution du calage logit avec bornes sur $g_i$ ;
+6. Attachement de `FINAL_WEIGHT` au fichier individuel complet (export `.dta`) ;
+7. Calcul des indicateurs de précision post-calage (CV par domaine).
+
+### 3.4. Pondération Annuelle
+
+Le poids annuel est obtenu par **l'approche directe** : les fichiers trimestriels calibrés sont empilés (*bind_rows*) et chaque poids est divisé par $K$, le nombre de trimestres disponibles pour l'année.
+
+**Formule :**
+
+$$
+w_{annuel,i} = \frac{w_{final,i}}{K}
+$$
+
+**Variables :**
+
+- $w_{final,i}$ (`FINAL_WEIGHT`) : poids calibré de l'individu $i$ au trimestre $t$.
+- $K$ : nombre de trimestres disponibles pour l'année ($1 \leq K \leq 4$, détecté automatiquement).
+
+Cette approche correspond à $\alpha_t = 1/K$ dans la formule générale de combinaison des estimateurs trimestriels. L'estimateur annuel d'un indicateur $\theta$ est alors :
+
+$$
+\hat{\theta}^{annuel} = \frac{1}{K} \sum_{t=1}^{K} \hat{\theta}_t
+$$
+
+Le fichier de sortie (`LFS_WEIGHTS_{annee}.dta`) est produit par `scripts/08_yearly_weights/ponderation_annuelle.r`.
+
+### 3.5. Pondération Longitudinale
+
+La pondération longitudinale est utilisée pour l'estimation d'indicateurs de transition (changement de statut dans l'emploi entre deux trimestres). Elle est construite à partir des **poids calibrés transversaux** $w_{final}$, corrigés de l'attrition par un facteur estimé via un modèle logistique :
+
+$$
+w_{long,i} = w_{final,i} \times \frac{1}{\hat{p}_{attrition,i}}
+$$
+
+où $\hat{p}_{attrition,i}$ est la probabilité estimée qu'un individu soit présent à la ré-interrogation, modélisée par régression logistique sur des variables observables (caractéristiques sociodémographiques au trimestre de première interrogation). Cette construction garantit que le poids longitudinal hérite de la cohérence démographique assurée par la calibration transversale.
 
 ---
 
@@ -145,11 +204,11 @@ Voici les fonctions clés définies dans les scripts, principalement dans `scrip
 - **But** : Calcule $\pi_{ZD}$.
 - **Logique** : Applique la formule conditionnelle selon si la région est "ABIDJAN" ou non. Utilise le nombre de ménages estimé de la ZD ($N_{ménages\_segment} \times 6$) et le nombre total de ménages de la strate.
 
-### `calc_proba_inclusion_menage(nb_enq_ti, nb_total_segment)`
+### `compute_pi_hh(nb_mens_seg)`
 
-- **Fichier** : `inc_probs_functions.R`
+- **Fichier** : `scripts/02_base_weights/2_calc_base_weights.R`
 - **But** : Calcule $\pi_{Ménage|ZD}$.
-- **Logique** : Ratio entre ménages enquêtés et total ménages du segment, multiplié par $1/6$.
+- **Logique** : `(NB_MENS_ENQ / nb_mens_seg) * (1/6)` — utilise la **constante de design 12** (`NB_MENS_ENQ`) au numérateur, pas le nombre de ménages réellement enquêtés. L'écart entre 12 et le réel est traité par l'ajustement non-réponse.
 
 ### `quarters_since_q2_2024(reference_date)`
 
@@ -181,4 +240,5 @@ Voici les fonctions clés définies dans les scripts, principalement dans `scrip
 | `02_base_weights` | `1_gen_weights_columns.R`         | Prépare les variables (effectifs) pour le calcul des poids. |
 | `02_base_weights` | `2_calc_base_weights.R`           | Applique les formules de probabilité d'inclusion.           |
 | `03_nonresponse`  | `1_adjust_weights_non_response.R` | Calcule et applique l'ajustement NR.                        |
-| `04_calibration`  | `00_Master_Calibration_*.R`       | Orchestre le calage avec ReGenesees (par trimestre/design). |
+| `04_calibration`  | `run_calibration.R`               | Orchestre le calage avec ReGenesees (14 schémas, paramétrable via `SCHEMA_ID`). |
+| `08_yearly_weights` | `ponderation_annuelle.r`        | Empile les fichiers trimestriels calibrés et divise les poids par $K$ (nombre de trimestres disponibles). |

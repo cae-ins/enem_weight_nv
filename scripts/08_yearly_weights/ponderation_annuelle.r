@@ -1,8 +1,9 @@
 library(haven)
 library(dplyr)
+library(labelled)
 
 # Définir l'année
-annee <- 2024
+annee <- 2025
 
 # Définir le chemin de base
 base_path <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/04_weights"
@@ -45,7 +46,9 @@ for (trimestre in trimestres_disponibles) {
                       "calibrated_weights", 
                       paste0("individu_", trimestre, "_", annee, "_CAL.dta"))
   
-  liste_df[[trimestre]] <- read_dta(chemin)
+  tmp <- read_dta(chemin)
+  tmp <- tmp %>% mutate(across(c(INDKEY, HHKEY, PSUKEY), zap_labels))
+  liste_df[[trimestre]] <- tmp
   cat("Chargement :", trimestre, "_", annee, "(", nrow(liste_df[[trimestre]]), "observations)\n")
 }
 
@@ -81,3 +84,6 @@ write_dta(df, chemin_sortie)
 cat("\n✓ Fichier sauvegardé :", chemin_sortie, "\n")
 cat("  Nombre d'observations :", nrow(df), "\n")
 cat("  Nombre de variables :", ncol(df), "\n")
+
+
+

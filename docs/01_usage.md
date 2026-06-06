@@ -2,17 +2,38 @@
 
 Avant d'exécuter le code, suivez ces deux préparations initiales :
 
+0. Preparer l'environnement R si necessaire
+   Depuis la racine du projet, executez :
+   `Rscript.exe scripts/00_setup/install_required_packages.R`
+
 1. Ajouter les données brutes du trimestre concerné  
    Placez les fichiers de données pour le trimestre concerné dans le dossier correspondant sous `data/01_raw/`. Par exemple, pour le trimestre T1 2025, mettez les fichiers dans `data/01_raw/T1_2025/` (ou respectez la convention de dossier utilisée dans votre dépôt).
 
 2. Mettre à jour la variable de configuration `TARGET_QUARTER`  
    Ouvrez le fichier `config/1_config.r` et modifiez la variable `TARGET_QUARTER` pour indiquer le trimestre à traiter (ex. `"T1_2025"` ou la valeur attendue par votre configuration). Sauvegardez le fichier avant de lancer les scripts.
 
+Les scripts doivent etre lances depuis la racine du projet `ENE_SURVEY_WEIGHTS`.
+
 ---
 
 ## Flux de travail (ordre des scripts à exécuter)
 
 Les scripts sont organisés par étape. Exécutez-les dans l'ordre indiqué ci-dessous.
+
+### (0) Synchronisation MinIO des inputs apurement
+
+Pour un trimestre donne, la ponderation attend uniquement deux bases apurees :
+
+- `data/02_cleaned/Menage/<TRIMESTRE>/menage_<TRIMESTRE>.dta`
+- `data/02_cleaned/Individu/<TRIMESTRE>/individu_<TRIMESTRE>.dta`
+
+Les rosters individuels ne sont pas requis pour les ponderations. Ils ne doivent pas etre telecharges dans ce depot pour ce flux.
+
+Exemple :
+
+```powershell
+.\scripts\medallion\03_download_weights_inputs.ps1 -Quarter T1_2026 -Overwrite
+```
 
 ### (i) Préparation des données (scripts utilitaires)
 Dans `scripts/01_utils/` exécuter, dans l'ordre, les scripts utilitaires principaux :
@@ -50,6 +71,9 @@ De retour dans `scripts/02_base_weights/` :
 But : dérive les poids individuels à partir des poids ménages ajustés.
 
 ### (v) Calibration (pondération trimestrielle)
+
+Architecture active : anciens codes de calibration par trimestre et schema. L'experimentation `run_calibration.R` est mise de cote pour l'instant.
+
 Dans `scripts/04_calibration/QUARTERLY_WEIGHTING/`, ouvrez le dossier correspondant à l'année et trimestre configurés (par ex. `2025/T1/`) et choisissez le dossier du design (ex. `180X_1D`, `312X_1D`, `444X_1D`, ...).
 
 1. Localisez et exécutez le script maître : `00_Master_Calibration_<DESIGN>.R` (ex. `00_Master_Calibration_180X_1D.R`). Exécutez ce script attentivement jusqu'à la fin de l'étape 3 (les commentaires indiquent les points de contrôle). Les étapes 1→3 préparent les inputs et exécutent la calibration principale.

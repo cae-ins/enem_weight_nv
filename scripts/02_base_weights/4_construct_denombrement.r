@@ -1,6 +1,6 @@
 DATA_DIR <- file.path(BASE_DIR, "data")
-CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
-PROCESSED_DIR <- file.path(DATA_DIR, "03_Processed")
+CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_cleaned", "Denombrement", TARGET_QUARTER)
+PROCESSED_DIR <- file.path(DATA_DIR, "03_processed")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 
@@ -60,7 +60,7 @@ library(haven)  # pour read_dta
 traiter_denombr_quarter <- function(q) {
   env <- charger_corrections(q, domaine = "denombrement")
 
-  q_dir <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", q)
+  q_dir <- file.path(DATA_DIR, "02_cleaned", "Denombrement", q)
   menage_file <- list.files(q_dir, pattern = "^menage.*\\.dta$", full.names = TRUE)
   enem_file <- list.files(q_dir, pattern = "^ENEM.*\\.dta$", full.names = TRUE)
   if (length(menage_file) == 0 || length(enem_file) == 0) return(NULL)
@@ -122,11 +122,11 @@ traiter_denombr_quarter <- function(q) {
 seg_survey_all <- set_names(all_quarters) %>%
   map(traiter_denombr_quarter)
 
-seg_survey_all$T2_2024
+#seg_survey_all$T2_2024
 
-seg_survey_all$T2_2024 %>%
-  summarise(across(everything(), ~ mean(is.na(.))*100)) %>%
-  pivot_longer(cols = everything(), names_to = "variable", values_to = "pct_NA")
+#seg_survey_all$T2_2024 %>%
+#  summarise(across(everything(), ~ mean(is.na(.))*100)) %>%
+#  pivot_longer(cols = everything(), names_to = "variable", values_to = "pct_NA")
 
 
 # Bind all quarters’ data

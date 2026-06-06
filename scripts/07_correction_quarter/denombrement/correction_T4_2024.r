@@ -1,4 +1,4 @@
-correction_reaffectation_denombrement <- function(df, chemin_zd_correct = "data/02_Cleaned/Menage/T4_2024/zd_correct.dta") {
+correction_reaffectation_denombrement <- function(df, chemin_zd_correct = "data/02_cleaned/Menage/T4_2024/zd_correct.dta") {
   # Étape 0 : Initialisation de la colonne ZD depuis hh8 (si non déjà présente)
   df <- df %>%
     dplyr::mutate(ZD = stringr::str_pad(as.character(hh8), width = 4, side = "left", pad = "0"))

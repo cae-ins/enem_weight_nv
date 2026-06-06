@@ -11,7 +11,7 @@ library(labelled)
 source("config/1_config.r")
 
 DATA_DIR <- file.path(BASE_DIR, "data")
-PROCESSED_DIR <- file.path(DATA_DIR, "03_Processed")
+PROCESSED_DIR <- file.path(DATA_DIR, "03_processed")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 
 # File Paths
@@ -116,7 +116,7 @@ individu_q_SR$d_weights <- individu_q_SR$corrected_weight_HH_WR
 # ==============================================================================
 # Save Updated Datasets
 # ==============================================================================
-write_dta(adjusted_data, WEIGHTS_COLUMNS_PATH)
+write_dta(weights_data, WEIGHTS_COLUMNS_PATH)
 write_dta(menage_q, MENAGE_COLUMNS_PATH)
 write_dta(individu_q, INDIVIDU_COLUMN_PATH)
 write_dta(individu_q_SR, INDIVIDU_COLUMN_PATH_SR)

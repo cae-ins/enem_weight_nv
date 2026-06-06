@@ -14,7 +14,7 @@ library(readxl)
 
 source("config/1_config.r")
 DATA_DIR     <- file.path(BASE_DIR, "data")
-PROCESSED_DIR <- file.path(DATA_DIR, "03_Processed")
+PROCESSED_DIR <- file.path(DATA_DIR, "03_processed")
 WEIGHTS_DIR   <- file.path(DATA_DIR, "04_weights")
 
 WEIGHTS_COLUMNS_PATH <- file.path(
