@@ -21,8 +21,8 @@ library(readr)
 # Define base directory and output path
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
-input_dir <- file.path(BASE_DIR, "data" ,"02_Cleaned", "Menage")
-OUTPUT_MAPPING_FILE <- file.path(BASE_DIR, "data" ,"03_Processed", "Tracking_ID","interview_key_mapping.dta")
+input_dir <- file.path(BASE_DIR, "data" ,"02_cleaned", "Menage")
+OUTPUT_MAPPING_FILE <- file.path(BASE_DIR, "data" ,"03_processed", "Tracking_ID","interview_key_mapping.dta")
 
 # ------------------------------------------------------------------------------
 # Step 1: Order folders by quarter (e.g., T2_2024 < T1_2025)

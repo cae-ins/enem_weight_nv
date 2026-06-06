@@ -23,8 +23,8 @@ BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
 TARGET_QUARTER <- "T3_2024"  # Change to target quarter
 
 DATA_DIR <- file.path(BASE_DIR, "data")
-CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_Cleaned", "Denombrement", TARGET_QUARTER)
-PROCESSED_DIR <- file.path(DATA_DIR, "03_Processed")
+CLEANED_DENOMBREMENT_DIR <- file.path(DATA_DIR, "02_cleaned", "Denombrement", TARGET_QUARTER)
+PROCESSED_DIR <- file.path(DATA_DIR, "03_processed")
 WEIGHTS_DIR <- file.path(DATA_DIR, "04_weights")
 TRACKING_DIR <- file.path(PROCESSED_DIR, "Tracking_ID")
 

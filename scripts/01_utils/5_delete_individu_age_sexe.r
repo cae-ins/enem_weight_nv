@@ -15,10 +15,10 @@ options(cli.config = NULL)
 source("config/1_config.r")
 
 # Définir le chemin d'accès
-INPUT_ROOT <- file.path(BASE_DIR, "data", "02_Cleaned")
+INPUT_ROOT <- file.path(BASE_DIR, "data", "02_cleaned")
 individu_path <- file.path(INPUT_ROOT, "Individu", TARGET_QUARTER)
 
-INPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed")
+INPUT_ROOT <- file.path(BASE_DIR, "data", "03_processed")
 menage_path <- file.path(INPUT_ROOT, "Menage", TARGET_QUARTER)
 
 
@@ -125,7 +125,7 @@ names(menage_avec_individus) <- gsub("[^A-Za-z0-9_]", "_", names(menage_avec_ind
 names(individu_avec_menage) <- gsub("[^A-Za-z0-9_]", "_", names(individu_avec_menage))
 
 
-INPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed")
+INPUT_ROOT <- file.path(BASE_DIR, "data", "03_processed")
 menage_path <- file.path(INPUT_ROOT, "Menage", TARGET_QUARTER)
 individu_path <- file.path(INPUT_ROOT, "Individu", TARGET_QUARTER)
 individu_file <- file.path(individu_path, sprintf("individu_%s.dta", TARGET_QUARTER))

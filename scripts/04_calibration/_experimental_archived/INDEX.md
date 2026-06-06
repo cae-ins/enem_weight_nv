@@ -1,3 +1,9 @@
+# Calibration
+
+Statut actuel : l'architecture active reste celle des anciens codes par trimestre et schema dans `QUARTERLY_WEIGHTING/<annee>/<trimestre>/<schema>/`.
+
+L'experimentation `run_calibration.R` est mise de cote pour l'instant. Elle est conservee pour reprise ulterieure, mais ne doit pas etre consideree comme le point d'entree de production.
+
 # 📚 Index de la Nouvelle Architecture de Calibration
 
 **Date de mise en place :** Janvier 2026

@@ -19,10 +19,10 @@ library(lubridate)
 # Define base paths
 # ------------------------------------------------------------------------------
 source("config/1_config.r")
-INPUT_ROOT <- file.path(BASE_DIR, "data", "02_Cleaned", "Menage")
+INPUT_ROOT <- file.path(BASE_DIR, "data", "02_cleaned", "Menage")
 
-OUTPUT_ROOT <- file.path(BASE_DIR, "data", "03_Processed", "Menage")
-TRACKING_DIR <- file.path(BASE_DIR, "data", "03_Processed", "Tracking_ID")
+OUTPUT_ROOT <- file.path(BASE_DIR, "data", "03_processed", "Menage")
+TRACKING_DIR <- file.path(BASE_DIR, "data", "03_processed", "Tracking_ID")
 
 # ------------------------------------------------------------------------------
 # Load latest interview_key_mapping file

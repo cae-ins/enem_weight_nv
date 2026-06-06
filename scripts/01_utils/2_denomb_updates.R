@@ -21,7 +21,7 @@ library(haven)
 source("config/1_config.r")
 
 RAW_UPDATE_DIR <- file.path(BASE_DIR, "data", "01_raw", "Denombrement_update")
-CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement")
+CLEANED_BASE_DIR <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement")
 ref_path <- file.path(BASE_DIR, "data", "03_processed", "RP_2021", "nb_men_indivs_ZD.dta")
 
 # ------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ final_dataset <- zd_info_final %>%
 # ------------------------------------------------------------------------------
 timestamp <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
 output_filename <- paste0("denombrement_update_", timestamp, ".dta")
-output_path <- file.path(BASE_DIR, "data", "02_Cleaned", "Denombrement_update", output_filename)
+output_path <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement_update", output_filename)
 
 subset_dataset <- final_dataset %>%
   filter(segment == 1)
