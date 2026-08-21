@@ -1,3 +1,6 @@
+# Secrets / configuration locale MinIO (ne jamais committer)
+.env
+
 # Ignorer tous les fichiers .dta partout dans le projet
 **/*.dta
 
