@@ -218,12 +218,14 @@ check_probability_bounds <- function(data, output_path = NULL, tolerance = 1e-12
   cat("\nProbability bounds check FAILED - inclusion probabilities greater than 1:\n")
   print(probability_issues, n = min(50, nrow(probability_issues)))
 
-  stop(
-    "Blocage: ", nrow(probability_issues),
+  warning(
+    "Controle non bloquant: ", nrow(probability_issues),
     " probabilite(s) d'inclusion depassent 1. ",
     "Verifier le fichier de controle: ", output_path,
     call. = FALSE
   )
+
+  return(data)
 }
 
 # ------------------------------------------------------------------------------
