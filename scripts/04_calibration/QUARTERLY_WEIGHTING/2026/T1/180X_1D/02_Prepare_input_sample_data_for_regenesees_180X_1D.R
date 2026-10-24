@@ -347,7 +347,8 @@ tmpSD$DOMAIN <- as.character(1)
 ### keeping only the variables needed for weighting and to calculate Precision
 
 LFS_SAMPLE_DATA <- tmpSD[,c("hh2", "milieu", "DOMAIN", "STRATAKEY", "PSUKEY", "HHKEY", "INDKEY", 
-                            "m5", list_of_X, "d_weights")]
+                            "m5", list_of_X, "d_weights",
+                            intersect("d_weights_cellules", names(tmpSD)))]
 
 head( LFS_SAMPLE_DATA)
 
