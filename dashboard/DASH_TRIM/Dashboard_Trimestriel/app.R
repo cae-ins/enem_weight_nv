@@ -218,9 +218,9 @@ tabServer <- function(id, fichier, with_plots = TRUE) {
 }
 
 # === DONNÉES ===
-fichier_T1 <- read_dta("C:/Users/User/Documents/Travaux de stage/data/04_weights/Menage/T1_2025/weights_columns_T1_2025.dta")
-fichier_T4 <- read_dta("C:/Users/User/Documents/Travaux de stage/data/04_weights/Menage/T4_2024/weights_columns_T4_2024.dta")
-fichier_T3 <- read_dta("C:/Users/User/Documents/Travaux de stage/data/04_weights/Menage/T3_2024/weights_columns_T3_2024.dta")
+fichier_T1 <- read_dta("data/04_weights/Menage/T1_2025/weights_columns_T1_2025.dta")
+fichier_T4 <- read_dta("data/04_weights/Menage/T4_2024/weights_columns_T4_2024.dta")
+fichier_T3 <- read_dta("data/04_weights/Menage/T3_2024/weights_columns_T3_2024.dta")
 
 # === UI GLOBAL ===
 ui <- fluidPage(

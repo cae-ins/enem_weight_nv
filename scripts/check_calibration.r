@@ -5,7 +5,7 @@ library(openxlsx)
 # ------------------------------------------------------------------
 # 1. Lecture du fichier Stata
 # ------------------------------------------------------------------
-df <- read_dta("C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/01_raw/test_brute_T4_2024.dta")
+df <- read_dta("data/01_raw/test_brute_T4_2024.dta")
 
 # ------------------------------------------------------------------
 # 2. Groupes d'âge
@@ -67,5 +67,5 @@ table_effectifs <- table_effectifs %>%
 # ------------------------------------------------------------------
 write.xlsx(
   table_effectifs,
-  file = "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/01_raw/effectifs_codes_et_libelles.xlsx"
+  file = "data/01_raw/effectifs_codes_et_libelles.xlsx"
 )

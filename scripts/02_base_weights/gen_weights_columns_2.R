@@ -19,7 +19,7 @@ library(lubridate)
 # ------------------------------------------------------------------------------
 # Set Base Paths and Parameters
 # ------------------------------------------------------------------------------
-BASE_DIR <- "C:/Users/e_koffie/Documents/Ponderations_ENE/ENE_SURVEY_WEIGHTS"
+BASE_DIR <- getwd()   # legacy script: run from the repository root
 TARGET_QUARTER <- "T3_2024"  # Change to target quarter
 
 DATA_DIR <- file.path(BASE_DIR, "data")

@@ -34,7 +34,8 @@ library(readr)  # for efficient write_csv()
 # Base directory for the project
 source("config/1_config.r")
 # Define input path (SPSS .sav file)
-sav_path <- "D:/RP_2021/Bases_Menage_RGPH2024_EMPLOI.sav"
+# Raw RGPH 2021 file (not versioned): ENE_RGPH_SAV, or the default location under data/.
+sav_path <- Sys.getenv("ENE_RGPH_SAV", unset = "data/01_raw/RP_2021/Bases_Menage_RGPH2024_EMPLOI.sav")
 
 # Define output files paths
 output_dir <- file.path(BASE_DIR, "data", "02_cleaned", "RP_2021")

@@ -8,8 +8,8 @@ library(writexl)
 ############### Importation des tables ###############
 
 
-root <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/01_raw/RpProj/"
-dir_table_RP_Proj <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/01_raw/RpProj/ANStat_Trimestre.xlsx"
+root <- "data/01_raw/RpProj/"   # relative to the repository root
+dir_table_RP_Proj <- file.path(root, "ANStat_Trimestre.xlsx")
 
 dir_table_RP_Proj
 

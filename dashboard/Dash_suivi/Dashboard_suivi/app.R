@@ -30,7 +30,7 @@ fichier_suivi <- read_dta(last_file) %>%
 cat("✅ Fichier chargé :", last_file, "\n")
 
 
-fichier_followup <- read_dta("C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS/data/03_processed/Tracking_ID/2025-06-11/followup_matrix_2025-06-13_01-25-21.dta") %>%
+fichier_followup <- read_dta("data/03_processed/Tracking_ID/2025-06-11/followup_matrix_2025-06-13_01-25-21.dta") %>%
   mutate(
     region = as_factor(region),
     depart = as_factor(depart),

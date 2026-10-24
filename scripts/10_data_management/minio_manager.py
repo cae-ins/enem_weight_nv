@@ -58,7 +58,7 @@ class DataManager:
                 print(f"    Error details: {e}")
                 print("\n    Troubleshooting:")
                 print("    1. Is the MinIO server running?")
-                print("    2. Is the IP and Port correct in .env? (e.g. 192.168.1.230:32639)")
+                print("    2. Is the IP and Port correct in .env? (see .env.example)")
                 print("    3. Has the port changed? (Dynamic ports in Docker/K8s change on restart)")
                 print("    4. Are you on the correct network (VPN/Wifi)?")
                 print("    5. Is a firewall blocking the connection?")
