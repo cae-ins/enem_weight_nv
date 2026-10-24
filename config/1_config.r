@@ -1,7 +1,7 @@
 # Project root: ENE_BASE_DIR if set, otherwise the working directory, which must
 # be the repository root (every script sources "config/1_config.r" relatively).
 # No path of a given computer is written in the code: the data are downloaded
-# from MinIO into <root>/data (scripts/medallion/03_download_weights_inputs.ps1).
+# from MinIO into <root>/data (python scripts/medallion/medallion.py download).
 BASE_DIR <- normalizePath(Sys.getenv("ENE_BASE_DIR", unset = getwd()), winslash = "/", mustWork = TRUE)
 if (!file.exists(file.path(BASE_DIR, "config", "1_config.r"))) {
   stop("BASE_DIR n'est pas la racine du dépôt ENE_SURVEY_WEIGHTS : ", BASE_DIR,

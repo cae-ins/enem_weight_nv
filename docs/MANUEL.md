@@ -143,7 +143,7 @@ Aucun orchestrateur n'enchaîne les étapes de préparation et de poids de base 
 
 | # | Script | Rôle | Écrit |
 |---|---|---|---|
-| 0 | `scripts/medallion/03_download_weights_inputs.ps1` | Télécharge les entrées depuis MinIO | `data/02_cleaned/`, `data/01_raw/denombrement/`, `data/00_reference/`, `data/03_processed/base_indicateurs/` |
+| 0 | `python scripts/medallion/medallion.py download` | Télécharge les entrées depuis MinIO (§11.3) | `data/` (références, dénombrements, fichiers apurés, entrées des cohortes) |
 | 1 | `01_utils/1_concat_denomb.R` | Empile le dénombrement du trimestre | `data/02_cleaned/Denombrement/<T>/` |
 | 2 | `01_utils/2_denomb_updates.R` | Intègre les dénombrements mis à jour (Excel, IDSeg) | `data/02_cleaned/Denombrement_update/denombrement_update_<ts>.dta` |
 | 3 | `01_utils/update_interviewkey_map.R` | Table de correspondance des `interview_key` | `data/03_processed/Tracking_ID/<date>/` |
@@ -158,7 +158,7 @@ Aucun orchestrateur n'enchaîne les étapes de préparation et de poids de base 
 | 12 | `04_calibration/QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/00_Master_Calibration_180X_1D.R` | Calage | `data/07_QUARTERLY_WEIGHTING/...`, `calibrated_weights/individu_<T>_CAL.dta` |
 | 13 | `03_nonresponse/3_compare_nonresponse_methods.R` | Compare les deux méthodes | `nr_comparaison_*.csv` |
 | 14 | `04_calibration/household_weights.r` | Poids ménages | `household_weights/` |
-| 15 | `scripts/medallion/04_upload_weights_outputs.ps1` | Publie sur MinIO | — |
+| 15 | `python scripts/medallion/medallion.py upload-outputs` | Publie sur MinIO | — |
 | — | `08_yearly_weights/ponderation_annuelle.r` (une fois l'année close) | Poids annuels | `data/04_weights/<année>/LFS_WEIGHTS_<année>.*` |
 
 Les étapes 1 à 6 traitent aussi les trimestres antérieurs dont les cohortes sont réinterrogées.
@@ -667,7 +667,7 @@ La note méthodologique donne pour SU3 un intervalle de confiance à 95 % de ±1
 
 ### 11.1 Principe
 
-R et Stata n'accèdent jamais directement au stockage. Les scripts Python de `ENE_MEDALLION_ORCHESTRATION/ene_medallion_io/` (client `boto3`) font les entrées-sorties ; ce dépôt les appelle par deux wrappers PowerShell dans `scripts/medallion/`. Chaque dépôt a ses préfixes : la pondération écrit `base_ponderee` et `poids`, la tabulation `base_indicateurs` et `indicateurs`, la précision `precision`.
+R et Stata n'accèdent jamais directement au stockage. Les scripts Python de `ENE_MEDALLION_ORCHESTRATION/ene_medallion_io/` (client `boto3`) font les entrées-sorties ; ce dépôt les appelle par un lanceur Python, `scripts/medallion/medallion.py` (sous-commandes `download`, `upload-inputs`, `upload-outputs`), qui fonctionne sous Windows comme sous Linux. Les anciens wrappers PowerShell ont été retirés le 24 octobre 2026. Chaque dépôt a ses préfixes : la pondération écrit `base_ponderee` et `poids`, la tabulation `base_indicateurs` et `indicateurs`, la précision `precision`.
 
 ### 11.2 Buckets et préfixes
 
@@ -701,13 +701,13 @@ Le téléchargement d'un trimestre prend les références, puis les fichiers apu
 
 ### 11.4 Ce qui est publié
 
-- **Entrées** (`10_upload_weights_inputs`) : dénombrement, mises à jour, totaux de calage du trimestre ; `-References` pour les références ; `-AllQuarters` pour tout l'historique. L'option `-WithCleanedSurveys` sert seulement à la migration des anciens trimestres (fichiers apurés, jamais remplacés).
-- **Poids trimestriels** (`04_upload_weights_outputs`) : vers `silver/enem/<T>/poids/`, **uniquement les produits de la liste** `QUARTERLY_WEIGHT_PRODUCTS` (fichiers `base_weights_`, `inconsistent_rows_`, `individu_`, `SR_individu_`, `menage_`, `probabilities_gt1_`, diagnostics `nr_modele_*` et `nr_comparaison_*`, `calibrated_weights/individu_<T>_CAL.dta`, poids ménages). Les fichiers d'essai laissés dans le dossier local ne partent jamais. Plus l'image de calage vers `silver/.../poids/calibration_design/180X_1D/`, et `individu_<T>_CAL.dta` et `menage_<T>.dta` vers `gold/enem/<T>/base_ponderee/`.
-- **Poids annuels** (`-Period annual -Year <a>`) : `LFS_WEIGHTS_<a>.parquet` puis `.dta` vers `silver/enem/annual/<a>/poids/` et `gold/enem/annual/<a>/base_ponderee/` ; le rapport qualité et le manifeste vers `silver`.
+- **Entrées** (`medallion.py upload-inputs`) : dénombrement, mises à jour, totaux de calage du trimestre ; `--references` pour les références ; `--all-quarters` pour tout l'historique. L'option `--with-cleaned-surveys` sert seulement à la migration des anciens trimestres (fichiers apurés, jamais remplacés).
+- **Poids trimestriels** (`medallion.py upload-outputs`) : vers `silver/enem/<T>/poids/`, **uniquement les produits de la liste** `QUARTERLY_WEIGHT_PRODUCTS` (fichiers `base_weights_`, `inconsistent_rows_`, `individu_`, `SR_individu_`, `menage_`, `probabilities_gt1_`, diagnostics `nr_modele_*` et `nr_comparaison_*`, `calibrated_weights/individu_<T>_CAL.dta`, poids ménages). Les fichiers d'essai laissés dans le dossier local ne partent jamais. Plus l'image de calage vers `silver/.../poids/calibration_design/180X_1D/`, et `individu_<T>_CAL.dta` et `menage_<T>.dta` vers `gold/enem/<T>/base_ponderee/`.
+- **Poids annuels** (`upload-outputs --period annual --year <a>`) : `LFS_WEIGHTS_<a>.parquet` puis `.dta` vers `silver/enem/annual/<a>/poids/` et `gold/enem/annual/<a>/base_ponderee/` ; le rapport qualité et le manifeste vers `silver`.
 
 ### 11.5 Configuration
 
-Variables lues dans `.env` (racine du dépôt ou de l'orchestration) : `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `ENE_QUARTER`, `ENE_PERIOD`, `ENE_YEAR`, `ENE_CALIBRATION_STRATEGY`. Modèle sans valeurs réelles : `.env.example`. Les wrappers (`scripts/medallion/*.ps1`, bloc commun `_minio_env.ps1`) chargent `.env`, ajoutent l'hôte MinIO à `NO_PROXY` et cherchent le dépôt d'orchestration à côté de celui-ci, ou dans `ENE_ORCHESTRATION_ROOT`. Côté R, `ENE_BASE_DIR` et `ENE_QUARTER` remplacent les valeurs de `config/1_config.r`.
+Variables lues dans `.env` (racine du dépôt ou de l'orchestration) : `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `ENE_QUARTER`, `ENE_PERIOD`, `ENE_YEAR`, `ENE_CALIBRATION_STRATEGY`. Modèle sans valeurs réelles : `.env.example`. Le lanceur `scripts/medallion/medallion.py` charge `.env`, ajoutent l'hôte MinIO à `NO_PROXY` et cherchent le dépôt d'orchestration à côté de celui-ci, ou dans `ENE_ORCHESTRATION_ROOT`. Côté R, `ENE_BASE_DIR` et `ENE_QUARTER` remplacent les valeurs de `config/1_config.r`.
 
 **Sans accès au serveur**, les publications attendent ; le circuit ne change pas. Pour tester une étape qui a besoin d'un fichier normalement téléchargé, on place une copie à l'emplacement cible du téléchargement, jamais un chemin vers l'autre dépôt.
 
@@ -774,7 +774,7 @@ winsorisé au 99e centile par fenêtre. Le recalage 180X sur les marges de la va
 ### 13.2 Pas à pas (trimestre T à partir de T1 2026)
 
 1. Fixer le trimestre : variable d'environnement `ENE_QUARTER=T<q>_<a>`, ou `TARGET_QUARTER` dans `config/1_config.r`.
-2. Télécharger les entrées : `.\scripts\medallion\03_download_weights_inputs.ps1 -Quarter T<q>_<a>`. La fin du journal liste les objets absents ; il ne doit rester que des absences attendues (par exemple les bases `Traite_` d'un trimestre que la tabulation n'a pas encore publié). Les nouvelles entrées du trimestre (dénombrement, mises à jour, totaux) se publient avec `.\scripts\medallion\10_upload_weights_inputs.ps1 -Quarter T<q>_<a>`.
+2. Télécharger les entrées : `python scripts/medallion/medallion.py download --quarter T<q>_<a>`. La fin du journal liste les objets absents ; il ne doit rester que des absences attendues (par exemple les bases `Traite_` d'un trimestre que la tabulation n'a pas encore publié). Les nouvelles entrées du trimestre (dénombrement, mises à jour, totaux) se publient avec `python scripts/medallion/medallion.py upload-inputs --quarter T<q>_<a>`.
 3. Lancer, dans l'ordre du §3.1, les étapes 1 à 10. Après `3_assign_firstTrim_interview.R`, relancer les suppressions `.do` et `5_delete_individu_age_sexe.r`.
 4. Ajouter dans `07_correction_quarter/` les corrections propres au trimestre si le dénombrement en demande.
 5. Lancer `Rscript scripts/03_nonresponse/2_attrition_propensity.R`. Lire `nr_modele_diagnostics_<T>.csv` (AUC, tests) et `nr_modele_classes_<T>.csv` (taux de réponse par classe).
@@ -783,8 +783,8 @@ winsorisé au 99e centile par fenêtre. Le recalage 180X sur les marges de la va
 8. Lancer le master, dans RStudio ou avec `Rscript scripts/04_calibration/QUARTERLY_WEIGHTING/<a>/T<q>/180X_1D/00_Master_Calibration_180X_1D.R`. Vérifier : `ecal.status.production` (codes de retour nuls ; un avertissement est émis sinon), `X_Summary_Table` (pas d'« Error », `Diff_Known_Tot_Final_Est` nul), `table_check` (aucun écart > 100), le calage `_cellules` (il s'arrête en cas de non-convergence). Les étapes 06 et 07f, absentes du dossier, sont signalées et ignorées.
 9. Lancer `Rscript scripts/03_nonresponse/3_compare_nonresponse_methods.R` et lire la répartition des poids par rang.
 10. Lancer `scripts/04_calibration/household_weights.r`.
-11. Publier : `.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T<q>_<a>` (seuls les produits de la liste partent ; `-Overwrite` uniquement pour une republication voulue).
-12. Une fois l'année complète : `Rscript scripts/08_yearly_weights/ponderation_annuelle.r --year=<a>`, puis `04_upload_weights_outputs.ps1 -Period annual -Year <a>`.
+11. Publier : `python scripts/medallion/medallion.py upload-outputs --quarter T<q>_<a>` (seuls les produits de la liste partent ; `--overwrite` uniquement pour une republication voulue).
+12. Une fois l'année complète : `Rscript scripts/08_yearly_weights/ponderation_annuelle.r --year=<a>`, puis `python scripts/medallion/medallion.py upload-outputs --period annual --year <a>`.
 
 Pour un trimestre antérieur à T1 2026 : sauter l'étape 5 ; le master de ces trimestres n'a ni garde ni calage de référence.
 
@@ -862,7 +862,7 @@ Classés du plus urgent au moins urgent.
 15. Les schémas 180X et 444X écrivent le même fichier d'export : le dernier lancé écrase la production.
 16. `correction_T4_2024.r` (réaffectation) est sans effet ; `update_interviewkey_map.R` perd `v1interviewkey` ; `3_assign_firstTrim_interview.R` réécrit tous les trimestres.
 17. Choix de fichiers « le plus récent par date de modification » (dénombrements mis à jour, correspondances) : fragile.
-18. Chemins absolus : retirés du code actif le 24 octobre 2026 (`BASE_DIR` détecté, wrappers relatifs, fichiers `.do` en chemins relatifs, fichier RGPH brut via `ENE_RGPH_SAV`). Il en reste dans le code figé des trimestres publiés et dans `reports/Echantillonnage_ENEE_Saturation_Interieur.ipynb` (travail d'échantillonnage d'une autre équipe, sur des fichiers externes).
+18. Chemins absolus : retirés du code actif le 24 octobre 2026 (`BASE_DIR` détecté, lanceur MinIO en Python, fichiers `.do` en chemins relatifs, fichier RGPH brut via `ENE_RGPH_SAV`). Il en reste dans le code figé des trimestres publiés et dans `reports/Echantillonnage_ENEE_Saturation_Interieur.ipynb` (travail d'échantillonnage d'une autre équipe, sur des fichiers externes).
 19. `export_weights_to_indicators.R` cherche des colonnes de poids qui n'existent pas dans le fichier calé.
 20. Doublons de scripts et code mort : `concat_denomb.R`, `denomb_update_log.r`, `2_0_denomb_special_updates.r`, `0_fonctions_utiles`, `gen_weights_columns_2.R`, `calc_base_weights_2.R`, `inc_probs_functions.R`, `4_gen_interviewkey_map.R`, `calc_nb_men_indiv_ZD.R`, `comp_followup_matrix.R`, `household_calibration.R`, `07_correction_quarter/menage/`, dossiers « - Copie », `scripts/06_monitoring/` vide.
 
@@ -930,7 +930,7 @@ scripts/10_data_management/          export, revenus, ancien outil MinIO
 scripts/11_modif_design/             simulation de réduction d'échantillon
 scripts/12_longitudinal_weights/     poids longitudinaux (en cours)
 scripts/99_ccm/                      graphiques
-scripts/medallion/                   wrappers MinIO
+scripts/medallion/                   lanceur MinIO (medallion.py)
 data/                                données (non versionnées)
 ```
 

@@ -58,7 +58,7 @@ La synchronisation est deleguee aux scripts PowerShell du dossier `scripts/medal
 ### Telechargement des inputs
 
 ```powershell
-.\scripts\medallion\03_download_weights_inputs.ps1 -Quarter T1_2026 -Overwrite
+python scripts/medallion/medallion.py download --quarter T1_2026 --overwrite
 ```
 
 Cette etape recupere les bases necessaires a la ponderation et les place dans l'arborescence locale `data/`.
@@ -66,7 +66,7 @@ Cette etape recupere les bases necessaires a la ponderation et les place dans l'
 ### Upload des sorties
 
 ```powershell
-.\scripts\medallion\04_upload_weights_outputs.ps1 -Period quarterly -Quarter T1_2026 -Year 2026 -Overwrite
+python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --overwrite
 ```
 
 Cette etape publie les resultats valides :

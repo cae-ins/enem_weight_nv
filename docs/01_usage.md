@@ -32,7 +32,7 @@ Les rosters individuels ne sont pas requis pour les ponderations. Ils ne doivent
 Exemple :
 
 ```powershell
-.\scripts\medallion\03_download_weights_inputs.ps1 -Quarter T1_2026 -Overwrite
+python scripts/medallion/medallion.py download --quarter T1_2026 --overwrite
 ```
 
 ### (i) Préparation des données (scripts utilitaires)

@@ -111,8 +111,8 @@ composante pondération sont publiées dans les buckets medallion MinIO (`silver
 Depuis la racine du dépôt `ENE_SURVEY_WEIGHTS` :
 
 ```powershell
-.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -Year 2026 -DryRun
-.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -Year 2026 -Overwrite
+python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --dry-run
+python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --overwrite
 ```
 
 Utiliser toujours `-DryRun` avant l'upload réel pour vérifier la liste exacte des
@@ -133,8 +133,8 @@ $env:ALL_PROXY = ''
 
 # Depuis la racine du dépôt ; le dépôt ENE_MEDALLION_ORCHESTRATION est cherché à côté
 # de celui-ci (ou dans $env:ENE_ORCHESTRATION_ROOT), les identifiants dans .env.
-.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -DryRun
-.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -Overwrite
+python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --dry-run
+python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --overwrite
 ```
 
 Le fichier d'identifiants doit rester hors du dépôt. Ne jamais copier les clés

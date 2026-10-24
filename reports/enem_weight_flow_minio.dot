@@ -55,7 +55,7 @@ digraph ENE_WEIGHT_FLOW_MINIO {
       fillcolor="#F3F8FF",
       label=<
         <B>Synchronisation locale</B><BR ALIGN="LEFT"/>
-        scripts/medallion/03_download_weights_inputs.ps1<BR ALIGN="LEFT"/>
+        scripts/medallion/medallion.py download<BR ALIGN="LEFT"/>
         -Quarter &lt;TRIMESTRE&gt; -Overwrite
       >
     ];
@@ -222,7 +222,7 @@ digraph ENE_WEIGHT_FLOW_MINIO {
       fillcolor="#F9F0FF",
       label=<
         <B>Publication</B><BR ALIGN="LEFT"/>
-        scripts/medallion/04_upload_weights_outputs.ps1<BR ALIGN="LEFT"/>
+        scripts/medallion/medallion.py upload-outputs<BR ALIGN="LEFT"/>
         -Quarter &lt;TRIMESTRE&gt; -Year &lt;ANNEE&gt; -Overwrite
       >
     ];

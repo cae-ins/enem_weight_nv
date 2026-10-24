@@ -8,14 +8,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **RUWTHS** (R Unified Weighting Treatment Harmonized System) — R code computing the survey weights of the Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M, Côte d'Ivoire, ANStat). The project language is French; comments, variable names and documentation are mostly in French.
 
-**Data, code and compute are independent.** The code holds no path of a given computer: `config/1_config.r` takes the repository root (working directory, or `ENE_BASE_DIR`). All inputs are downloaded from MinIO into `data/` and all products are published back to MinIO, through the wrappers in `scripts/medallion/` and the Python module of the sibling repository `ENE_MEDALLION_ORCHESTRATION` (data contract: `ene_medallion_io/weights_contract.py`). Repositories never exchange files directly. Credentials only live in `.env` (see `.env.example`) or the secrets file of the orchestration module.
+**Data, code and compute are independent.** The code holds no path of a given computer: `config/1_config.r` takes the repository root (working directory, or `ENE_BASE_DIR`). All inputs are downloaded from MinIO into `data/` and all products are published back to MinIO, through the Python launcher `scripts/medallion/medallion.py` and the Python module of the sibling repository `ENE_MEDALLION_ORCHESTRATION` (data contract: `ene_medallion_io/weights_contract.py`). Repositories never exchange files directly. Credentials only live in `.env` (see `.env.example`) or the secrets file of the orchestration module.
 
 ## Pipeline
 
 Real execution order (folder numbers do not reflect it):
 
 ```
-scripts/medallion/03_download_weights_inputs.ps1   inputs from MinIO
+python scripts/medallion/medallion.py download            inputs from MinIO
 01_utils/  1_concat_denomb → 2_denomb_updates → update_interviewkey_map → 3_assign_firstTrim_interview
            (+ Stata suppression .do files) → 5_delete_individu_age_sexe
 02_base_weights/1_gen_weights_columns → 2_calc_base_weights         π and base weights (constant within a region)
@@ -25,11 +25,11 @@ scripts/medallion/03_download_weights_inputs.ps1   inputs from MinIO
 04_calibration/QUARTERLY_WEIGHTING/<year>/<T>/180X_1D/00_Master_Calibration_180X_1D.R
                                                                      calibration (FINAL_WEIGHT, and FINAL_WEIGHT_cellules from T1 2026)
 03_nonresponse/3_compare_nonresponse_methods, 04_calibration/household_weights
-scripts/medallion/04_upload_weights_outputs.ps1                      publication
+python scripts/medallion/medallion.py upload-outputs                 publication
 08_yearly_weights/ponderation_annuelle.r                             annual weights (FINAL_WEIGHT / K)
 ```
 
-- `scripts/medallion/10_upload_weights_inputs.ps1` publishes the inputs owned by the weighting stage (enumeration, enumeration updates, population totals, references).
+- `python scripts/medallion/medallion.py upload-inputs` publishes the inputs owned by the weighting stage (enumeration, enumeration updates, population totals, references).
 - The calibration master of each quarter is a copy of the previous one; it runs in RStudio or with `Rscript` from the repository root (batch mode: `View()` is neutralised, Excel is not opened). `scripts/04_calibration/_experimental_archived/run_calibration.R` is archived and is not the entry point.
 - Published quarters (up to T4 2025) are frozen, including their calibration folders. The modelled non-response applies from `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`).
 - `11_modif_design/`: sample-reduction simulation (`0_MASTER_SIMULATION.r`, quarter format `YYYY_TX`). `12_longitudinal_weights/`: longitudinal weights, in progress.

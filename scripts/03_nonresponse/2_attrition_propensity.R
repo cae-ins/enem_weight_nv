@@ -46,7 +46,7 @@ if (q_index(quarter) < q_index(NR_MODEL_FIRST_QUARTER)) {
 }
 
 # Indicator bases (Traite_) of the cohorts' first quarters, downloaded from
-# MinIO gold/enem/<quarter>/base_indicateurs/ by scripts/medallion/03_download_weights_inputs.ps1.
+# MinIO gold/enem/<quarter>/base_indicateurs/ by "python scripts/medallion/medallion.py download".
 TRAITE_DIR <- "data/03_processed/base_indicateurs"
 W_DIR <- "data/04_weights"
 BW_DIR <- file.path(W_DIR, quarter, "base_weights")
@@ -94,7 +94,7 @@ traite_path <- function(q) {
   if (!file.exists(path)) {
     stop("Base Traite absente pour ", q, " : ", path,
          "\nLa télécharger depuis MinIO (gold/enem/", q, "/base_indicateurs/) avec ",
-         "scripts/medallion/03_download_weights_inputs.ps1 -Quarter ", quarter, call. = FALSE)
+         "python scripts/medallion/medallion.py download --quarter ", quarter, call. = FALSE)
   }
   path
 }

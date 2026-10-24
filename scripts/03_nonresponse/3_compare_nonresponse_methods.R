@@ -10,7 +10,7 @@
 #               are computed in ENE_INDICATORS_TABULATIONS from the weighted base
 #               published on MinIO (gold/enem/<quarter>/base_ponderee/).
 #               Writes base_weights/nr_comparaison_*_<quarter>.csv, published
-#               with the weights by scripts/medallion/04_upload_weights_outputs.ps1.
+#               with the weights by "python scripts/medallion/medallion.py upload-outputs".
 # Usage       : Rscript scripts/03_nonresponse/3_compare_nonresponse_methods.R [--quarter=T1_2026]
 # ==============================================================================
 
