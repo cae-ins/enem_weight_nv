@@ -304,9 +304,9 @@ ENE_INDICATORS_TABULATIONS/python/
 ### 6.3 Format `.env`
 
 ```ini
-MINIO_ENDPOINT=http://192.168.1.230:30137
-MINIO_ACCESS_KEY=datalab-team
-MINIO_SECRET_KEY=minio-datalabteam123
+MINIO_ENDPOINT=http://<hote-minio>:<port>
+MINIO_ACCESS_KEY=XXXXX
+MINIO_SECRET_KEY=XXXXX
 
 BUCKET_STAGING=staging
 BUCKET_BRONZE=bronze
@@ -316,7 +316,7 @@ BUCKET_GOLD=gold
 TRIMESTRE=T4_2025
 TRIMESTRES_BULLETIN=T2_2024,T3_2024,T4_2024,T1_2025,T2_2025,T3_2025,T4_2025
 
-STATA_EXE=C:\Users\f.migone\OneDrive - GOUVCI\Stata17\Stata17\StataMP-64.exe
+STATA_EXE=<chemin vers StataMP-64.exe>
 RSCRIPT_EXE=C:\Program Files\R\R-4.4.0\bin\Rscript.exe
 ```
 

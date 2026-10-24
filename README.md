@@ -1,10 +1,10 @@
-# 📝 RUWTHS : R Unified Weighting Treatment Harmonized System
+#  RUWTHS : R Unified Weighting Treatment Harmonized System
 
 **RUWTHS** *(prononcé "Ruth's")* est un système modulaire développé en **R** pour le traitement harmonisé des pondérations dans les enquêtes statistiques.
 Ce projet consiste en une refonte du dispositif de calcule des différentes types de pondérations dans le cadre de l'Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M).
 Il est en phase de test mais est déjà fortement stable. Il est écrit entièrement en R pour tirer avantage des solutions Open Source.
 
-## 🧭 Objectifs
+##  Objectifs
 
 RUWTHS vise à :
 
@@ -13,7 +13,7 @@ RUWTHS vise à :
 - Produire des fichiers de pondérations robustes, traçables et reproductibles
 - Générer automatiquement des diagnostics d'erreur et d'incohérences dans les données.
 
-## 🎯 De manière spécifique, RUWTHS permet de : 
+##  De manière spécifique, RUWTHS permet de : 
 
 - Produire des **poids d’enquête fiables, traçables et reproductibles**.
 - Gérer de façon unifiée :
@@ -23,7 +23,7 @@ RUWTHS vise à :
   - les **contrôles qualité et diagnostics**.
 - Supporter à la fois les enquêtes **transversales** et les suivis **longitudinaux**.
 
-## 📂 Structure du dépôt
+##  Structure du dépôt
 ```
 enem_weight_nv/
 │── config/ # Paramètres par trimestre, configuration du plan de sondage
@@ -34,7 +34,7 @@ enem_weight_nv/
 │── README.md # Documentation du projet
 ```
 
-## ⚙️ Méthodologie (niveau conceptuel)
+##  Méthodologie (niveau conceptuel)
 
 ### 1) Poids de base — `calc_base_weights.R`
 
@@ -80,21 +80,21 @@ où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
 - Comparaison distributions **pondérées vs non pondérées**.
 - Génération de diagnostics (tableaux/graphes) dans `dashboard/` et de journaux dans `logs/`.
 
-## 🔄 Schéma du flux de traitement
+##  Schéma du flux de traitement
 
 ![Flux de pondération ENE-M vers MinIO](reports/enem_weight_flow_minio.png)
 
 Source modifiable : `reports/enem_weight_flow_minio.dot`.
 
 
-## 🛠 Technologies
+##  Technologies
 
 - **R** : logique de pondération et calibration
 - **Rgenesees** : moteur de calibrage
 - **R Shiny** : tableaux de bord
 - **Stata** : scripts complémentaires (préparation/validation)
 
-## 📊 Résultats attendus
+##  Résultats attendus
 
 - Fichiers de poids **par trimestre** (ménages & individus).
 - Diagnostics reproductibles dans `/dashboard` et `/logs`.
@@ -125,25 +125,16 @@ Si le poste est connecté au MinIO de la direction par VPN, forcer l'endpoint S3
 serveur et neutraliser le proxy local pour cette session PowerShell :
 
 ```powershell
-$env:MINIO_ENDPOINT = 'http://192.168.1.230:30137'
-$env:NO_PROXY = 'localhost,127.0.0.1,::1,192.168.1.230'
+$env:MINIO_ENDPOINT = 'http://XXX.XXX.XXX.XXX:YYYYY'
+$env:NO_PROXY = 'localhost,127.0.0.1,::1,XXX.XXX.XXX.XXX'
 $env:HTTP_PROXY = ''
 $env:HTTPS_PROXY = ''
 $env:ALL_PROXY = ''
 
-python C:\Users\f.migone\Desktop\ENE_MEDALLION_ORCHESTRATION\ene_medallion_io\04_upload_weights_outputs.py `
-  --quarter T1_2026 `
-  --year 2026 `
-  --base-dir C:\Users\f.migone\Desktop\ENE_SURVEY_WEIGHTS `
-  --credentials-file C:\Users\f.migone\Desktop\ENE_SECRETS\ENE_SURVEY_WEIGHTS_credentials.json `
-  --dry-run
-
-python C:\Users\f.migone\Desktop\ENE_MEDALLION_ORCHESTRATION\ene_medallion_io\04_upload_weights_outputs.py `
-  --quarter T1_2026 `
-  --year 2026 `
-  --base-dir C:\Users\f.migone\Desktop\ENE_SURVEY_WEIGHTS `
-  --credentials-file C:\Users\f.migone\Desktop\ENE_SECRETS\ENE_SURVEY_WEIGHTS_credentials.json `
-  --overwrite
+# Depuis la racine du dépôt ; le dépôt ENE_MEDALLION_ORCHESTRATION est cherché à côté
+# de celui-ci (ou dans $env:ENE_ORCHESTRATION_ROOT), les identifiants dans .env.
+.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -DryRun
+.\scripts\medallion\04_upload_weights_outputs.ps1 -Quarter T1_2026 -Overwrite
 ```
 
 Le fichier d'identifiants doit rester hors du dépôt. Ne jamais copier les clés
