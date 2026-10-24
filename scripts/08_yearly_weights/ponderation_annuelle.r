@@ -14,7 +14,9 @@ suppressPackageStartupMessages({
 })
 
 parse_args <- function(args = commandArgs(trailingOnly = TRUE)) {
-  values <- list(year = "2025", base_dir = ".", strategy = "180X_1D")
+  values <- list(
+    year = "2025", base_dir = ".", strategy = "180X_1D", quarters = NULL
+  )
   for (arg in args) {
     if (grepl("^--year=", arg)) {
       values$year <- sub("^--year=", "", arg)
@@ -22,6 +24,8 @@ parse_args <- function(args = commandArgs(trailingOnly = TRUE)) {
       values$base_dir <- sub("^--base-dir=", "", arg)
     } else if (grepl("^--strategy=", arg)) {
       values$strategy <- sub("^--strategy=", "", arg)
+    } else if (grepl("^--quarters=", arg)) {
+      values$quarters <- sub("^--quarters=", "", arg)
     } else {
       stop("Option inconnue : ", arg, call. = FALSE)
     }
@@ -177,7 +181,23 @@ verify_calibrated_weights <- function(data, calibration_path, tolerance = 1e-10)
 args <- parse_args()
 project_root <- normalizePath(args$base_dir, winslash = "/", mustWork = TRUE)
 weights_root <- file.path(project_root, "data", "04_weights")
-quarters <- paste0("T", 1L:4L)
+# The complete year is the default. An incomplete year (2024: collection
+# started in T2) must be declared explicitly, e.g. --quarters=T2,T3,T4.
+quarters <- if (is.null(args$quarters)) {
+  paste0("T", 1L:4L)
+} else {
+  values <- toupper(trimws(strsplit(args$quarters, ",", fixed = TRUE)[[1L]]))
+  values <- values[nzchar(values)]
+  if (length(values) < 2L || !all(grepl("^T[1-4]$", values)) ||
+      anyDuplicated(values)) {
+    stop(
+      "--quarters invalide : ", args$quarters,
+      ". Format attendu : T2,T3,T4 (au moins deux trimestres distincts).",
+      call. = FALSE
+    )
+  }
+  values[order(as.integer(substr(values, 2L, 2L)))]
+}
 
 source_paths <- file.path(
   weights_root,
@@ -196,8 +216,8 @@ calibration_paths <- file.path(
 available <- file.exists(source_paths)
 if (!all(available)) {
   stop(
-    "Les quatre poids trimestriels sont obligatoires pour une estimation ",
-    "annuelle. Fichiers absents : ",
+    "Les poids trimestriels ", paste(quarters, collapse = ", "),
+    " sont obligatoires pour une estimation annuelle. Fichiers absents : ",
     paste(source_paths[!available], collapse = ", "),
     call. = FALSE
   )
@@ -205,7 +225,8 @@ if (!all(available)) {
 available_calibration <- file.exists(calibration_paths)
 if (!all(available_calibration)) {
   stop(
-    "Les quatre objets de calibration ", args$strategy,
+    "Les objets de calibration ", args$strategy, " (",
+    paste(quarters, collapse = ", "), ")",
     " sont obligatoires. Fichiers absents : ",
     paste(calibration_paths[!available_calibration], collapse = ", "),
     call. = FALSE
@@ -322,6 +343,7 @@ manifest <- list(
   calibration_strategy = args$strategy,
   contributing_quarters = quarters,
   quarter_count = n_quarters,
+  annual_coverage = if (n_quarters == 4L) "ANNEE_COMPLETE" else "ANNEE_INCOMPLETE",
   row_count = nrow(annual_weights),
   key = c("trimestre", "interview_key", "membres_id"),
   primary_format = "Apache Parquet (Zstandard)",
