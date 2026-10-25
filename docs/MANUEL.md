@@ -225,6 +225,7 @@ Contenu par trimestre :
 | T2 2025 | Ajout de 4 ZD manquantes |
 | T3 2025 | Ajout de 4 ZD manquantes |
 | T4 2025, T1 2026 | Aucune |
+| T3 2026 | Suppression de 11 entretiens de dénombrement vides (doublons de ZD, sans effet sur les comptages) |
 
 Les fichiers `07_correction_quarter/menage/*.r`, `01_utils/2_0_denomb_special_updates.r` et `01_utils/0_fonctions_utiles` sont d'anciennes versions jamais appelées.
 
