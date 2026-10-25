@@ -98,7 +98,7 @@ Sources : note méthodologique (l.108-312), `data/01_raw/Organisation/quarter_re
 
 - Chaque ZD est découpée en **6 segments**, rangés au hasard de 1 à 6.
 - À l'entrée d'une ZD, on dénombre le segment actif, puis on y tire **12 ménages** par tirage systématique (6 par semaine de référence). Soit 237 × 12 = **2 844 ménages** en première interrogation par trimestre.
-- Le segment suivant de la même ZD n'entre qu'au cycle suivant (A1 en T2 2024, A2 en T2 2026 d'après le tableau de rotation de la note). Le code actuel ne gère que le segment 1 (§15).
+- Le segment suivant de la même ZD n'entre qu'au cycle suivant (A1 en T2 2024, A2 en T2 2026 d'après le tableau de rotation de la note). Chaque lot trimestriel de ZD est construit pour représenter le pays par région et milieu de résidence. Le segment 2 des ZD de T2 2024 est entré en T3 2026 et non en T2 2026 (§2.4) ; le segment se déduit du trimestre de dénombrement par `segment_actif()` (§4.1).
 
 ### 2.4 Rotation
 
@@ -118,6 +118,8 @@ Rangs d'interrogation au T1 2026 :
 | 4 | 5 | T4 2024 |
 
 La table `quarter_resurvey.xlsx` (colonnes `Trimestre_En_Cours`, `Trimestre_1_Reint`, `_2_`, `_3_`) donne ces correspondances pour chaque trimestre.
+
+**Choix — premières interrogations de T2 2026 reportées (25 octobre 2026).** En T2 2026, les réinterrogations (par téléphone) ont eu lieu comme prévu, mais pas les premières interrogations : les ZD prévues pour T2 2026 (segment 2 des ZD de T2 2024) sont entrées en T3 2026. La cohorte « T2 2026 » n'existe donc pas : elle a été retirée de `quarter_resurvey.xlsx` (lignes T3 2026, T2 2027, T3 2027), le reste de la table est inchangé. En T3 2026, les réinterrogés sont T3 2025 (rang 3) et T2 2025 (rang 4), sans rang 2. Original gardé localement dans `data/01_raw/Organisation/archive/quarter_resurvey_avant_report_T2_2026.xlsx`. `03_nonresponse/2_attrition_propensity.R` lit désormais ses cohortes, rangs (1 + nombre de visites antérieures) et visites intermédiaires dans cette table au lieu des décalages fixes 1, 4, 5 (résultat identique pour tous les trimestres sauf ceux où la cohorte T2 2026 manque). `COHORT_OFFSETS` du contrat MinIO (`ENE_MEDALLION_ORCHESTRATION/ene_medallion_io/weights_contract.py`) reste sur les décalages fixes : il télécharge pour T3 2026 un sur-ensemble des cohortes (T2 2026 en trop), sans blocage. **T2 2026 n'est pas publié** : il est traité et conservé pour la continuité des échantillons (visites intermédiaires et correspondance des entretiens de T3 2026), et doit donc être traité avant T3 2026. Les poids annuels 2026 se calculent avec `--quarters=T1,T3,T4` (K = 3).
 
 ### 2.5 Collecte
 
@@ -187,7 +189,9 @@ Tous les scripts font `source("config/1_config.r")` : il faut les lancer avec la
 ### 4.1 Dénombrement
 
 - **`1_concat_denomb.R`** lit tous les `.dta` de `data/01_raw/Denombrement/<T>/`, normalise les noms (`janitor::clean_names`), aligne les colonnes et empile les fichiers de même nom (`menage*`, `ENEM*`, `batiment*`, `ilot*`). `concat_denomb.R` est un doublon figé sur T2 2024.
-- **`2_denomb_updates.R`** intègre les dénombrements refaits sur le terrain, livrés en Excel dans `data/01_raw/Denombrement_update/T?_AAAA/`. Il convertit les libellés géographiques en codes par jointure sur le RGPH, compte `nb_mens_seg` (ménages du segment) et `nb_mens_zd`, et écrit un fichier horodaté filtré sur `segment == 1`.
+- **`2_denomb_updates.R`** intègre les dénombrements refaits sur le terrain, livrés en Excel dans `data/01_raw/Denombrement_update/T?_AAAA/`. Il convertit les libellés géographiques en codes par jointure sur le RGPH, compte `nb_mens_seg` (ménages du segment) et `nb_mens_zd`, et écrit un fichier horodaté qui garde le segment enquêté (`segment_actif(quarter)`, voir ci-dessous).
+
+**Choix — segment 2 (25 octobre 2026).** Dans le schéma de rotation, les ZD dénombrées en T3 2026 sont celles de T2 2024 : l'enquête y revient, mais sur le segment 2. `config/1_config.r` fixe `SEGMENT_2_FIRST_QUARTER = "T3_2026"` ; `segment_actif()` renvoie 2 pour un trimestre d'entrée (dénombrement) à partir de ce seuil, 1 avant. `2_denomb_updates.R` l'applique au dossier de la mise à jour, `1_gen_weights_columns.R` à `first_trim` : les ZD réinterrogées issues des dénombrements antérieurs restent au segment 1. Trimestres publiés inchangés (lignes antérieures à T3 2026 identiques au fichier du 25 juin 2026).
 
 **Choix — IDSeg (commit `f66d621`, 6 juin 2026).** Quatre fichiers Excel étaient ignorés en silence parce que la colonne du segment s'appelait autrement qu'`IDSeg` ou manquait. Comme `nb_mens_seg` entre dans la probabilité de tirage du ménage, ces segments gardaient un dénombrement périmé **(inférence sur l'impact)**. Correction : liste d'alias (`IDSEG_ALIASES`), arrêt du script si un fichier n'a aucune colonne compatible, et une exception documentée (`SEG_BaseT12025_menage_Touba_6014_.xlsx`), traitée dans `07_correction_quarter/denombrement/correction_T1_2025.r`.
 
@@ -839,7 +843,7 @@ Classés du plus urgent au moins urgent.
 
 ### 15.1 À traiter avant le prochain trimestre
 
-1. **Segment 2 non géré.** `1_gen_weights_columns.R` force `segment = 1` et `2_denomb_updates.R` filtre `segment == 1`. D'après le tableau de rotation, le segment 2 des premières ZD entre en T2 2026 : la chaîne risque de casser ou de mal compter.
+1. **Segment 2.** Traité depuis le 25 octobre 2026 par `segment_actif()` (§4.1) : segment 2 pour les ZD entrées à partir de T3 2026. Un troisième passage (segment 3) demandera d'étendre la règle.
 2. **Bases `Traite_` à republier par la tabulation.** La migration du 24 octobre 2026 a publié celles des trimestres T2 2024 à T4 2025 (copies locales du dépôt de tabulation, dont certaines venaient de son dossier `legacy/`). La tabulation doit désormais publier elle-même la base de chaque trimestre (`07_upload_quarter_bases`), y compris celle de T1 2026 une fois recalculée avec les nouveaux poids : elle servira de cohorte à partir de T2 2026. Les indicateurs de T1 2026 publiés en juin reposent sur l'ancienne méthode et doivent être recalculés.
 3. **Secrets dans l'historique git.** Le `.env` (de `42bad4d` à `7a5771b`), `config/credentials.json` (jusqu'à `d0a9ff5`) et `ARCHITECTURE_ENE_PIPELINE.md` (`dd074cb`) ont contenu des identifiants MinIO. Les fichiers actuels sont nettoyés, mais les valeurs restent dans l'historique : il faut changer ces identifiants côté serveur.
 4. **Modifications non commitées** : toute la non-réponse modélisée, le calage de référence et le module longitudinal n'ont pas encore de trace git.

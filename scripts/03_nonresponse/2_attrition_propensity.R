@@ -58,16 +58,32 @@ EXPECTED_HH_PER_SEG <- 12
 q_label <- function(i) paste0("T", i %% 4L + 1L, "_", i %/% 4L)
 short <- function(q) paste0(substr(q, 6, 7), substr(q, 1, 2))   # T4_2025 -> 25T4
 
-# Rotation 2-2-2: offsets 0, 1, 4, 5 from the first quarter give ranks 1 to 4.
+# Rotation 2-2-2, read from the rotation table rather than fixed offsets (0, 1, 4, 5):
+# T2 2026 had no first interviews (carried over to T3 2026, re-interviews held as
+# planned), so the offsets are no longer regular (docs/MANUEL.md §2.4). Re-interviewed cohorts of the
+# quarter = its row; earlier visits of a cohort = earlier quarters whose row lists it;
+# rank = 1 + number of earlier visits (first interview included).
 current <- q_index(quarter)
-cohorts <- data.frame(rank = 2:4, offset = c(1L, 4L, 5L))
-cohorts$first <- vapply(current - cohorts$offset, q_label, character(1))
-# Intermediate visits (between the first interview and the current quarter).
-intermediate <- list(
-  `2` = character(0),
-  `3` = q_label(current - 3L),
-  `4` = c(q_label(current - 4L), q_label(current - 1L))
-)
+rotation <- readxl::read_excel(file.path(BASE_DIR, "data", "01_raw", "Organisation",
+                                         "quarter_resurvey.xlsx"))
+rotation <- as.data.frame(lapply(rotation, function(x) gsub(" ", "_", x)),
+                          stringsAsFactors = FALSE)
+reint_cols <- grep("^Trimestre_[0-9]+_Reint$", names(rotation), value = TRUE)
+row_q <- rotation[rotation$Trimestre_En_Cours %in% quarter, reint_cols, drop = FALSE]
+if (nrow(row_q) != 1L) stop("Trimestre absent de quarter_resurvey.xlsx : ", quarter, call. = FALSE)
+firsts <- as.character(na.omit(unlist(row_q, use.names = FALSE)))
+lists_cohort <- function(coh) apply(rotation[reint_cols], 1, function(r) coh %in% r)
+earlier_visits <- lapply(firsts, function(coh) {
+  q <- rotation$Trimestre_En_Cours[lists_cohort(coh)]
+  q[q_index(q) < current]
+})
+cohorts <- data.frame(first = firsts, rank = 2L + lengths(earlier_visits))
+# Intermediate visits (between the first interview and the current quarter), by cohort
+# (keyed by cohort, not rank, in case two cohorts ever share a rank).
+intermediate <- setNames(earlier_visits, firsts)
+cohorts <- cohorts[order(cohorts$rank), ]
+message("Cohortes réinterrogées : ",
+        paste0(cohorts$first, " (rang ", cohorts$rank, ")", collapse = ", "))
 
 clean_key <- function(x) {
   x <- trimws(as.character(x))
@@ -136,7 +152,7 @@ frame <- bind_rows(lapply(seq_len(nrow(cohorts)), function(i) {
       .groups = "drop"
     )
   # Response at intermediate visits (known before the current quarter).
-  inter <- intermediate[[as.character(cohorts$rank[i])]]
+  inter <- intermediate[[coh]]
   n_inter <- rep(0L, nrow(m))
   for (iq in inter) {
     v <- read_menage(iq) %>%

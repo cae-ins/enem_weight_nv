@@ -321,8 +321,10 @@ timestamp <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
 output_filename <- paste0("denombrement_update_", timestamp, ".dta")
 output_path <- file.path(BASE_DIR, "data", "02_cleaned", "Denombrement_update", output_filename)
 
+# Segment enquêté selon le trimestre d'entrée de la ZD (config/1_config.r) :
+# segment 1 avant SEGMENT_2_FIRST_QUARTER, segment 2 ensuite.
 subset_dataset <- final_dataset %>%
-  filter(segment == 1)
+  filter(segment == segment_actif(quarter))
 
 # ------------------------------------------------------------------------------
 # 11. Final save
@@ -332,6 +334,6 @@ glimpse(final_dataset)
 glimpse(subset_dataset)
 
 message("Final dataset created with ", nrow(final_dataset), " records.")
-message("Dataset segment 1 created with ", nrow(subset_dataset), " records.")
+message("Dataset of surveyed segments (segment_actif) created with ", nrow(subset_dataset), " records.")
 write_dta(subset_dataset, output_path)
-message("Segment 1 dataset written to: ", output_path)
+message("Surveyed segments dataset written to: ", output_path)

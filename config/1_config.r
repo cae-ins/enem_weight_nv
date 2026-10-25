@@ -16,6 +16,21 @@ TARGET_QUARTER <- Sys.getenv("ENE_QUARTER", unset = "T1_2026")
 # régionales) est conservé dans d_weights_cellules et calé à côté (FINAL_WEIGHT_cellules).
 NR_MODEL_FIRST_QUARTER <- "T1_2026"
 
+# Segment enquêté dans la ZD : segment 1 pour les ZD entrées dans l'échantillon avant ce
+# trimestre (y compris quand elles sont réinterrogées ensuite), segment 2 pour celles qui
+# y entrent à partir de ce trimestre. Le trimestre d'entrée est celui du dénombrement
+# (first_trim dans 02_base_weights, dossier de Denombrement_update dans 2_denomb_updates.R).
+SEGMENT_2_FIRST_QUARTER <- "T3_2026"
+
+rang_trimestre <- function(q) {
+  as.integer(substr(q, 4, 7)) * 10L + as.integer(substr(q, 2, 2))
+}
+
+segment_actif <- function(first_trim) {
+  rang <- suppressWarnings(rang_trimestre(first_trim))
+  ifelse(!is.na(rang) & rang >= rang_trimestre(SEGMENT_2_FIRST_QUARTER), 2, 1)
+}
+
 # Directory templates (use `sprintf()` or `glue` for dynamic quarters)
 PATHS <- list(
   # Raw data
