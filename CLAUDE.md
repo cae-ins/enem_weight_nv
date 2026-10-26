@@ -21,7 +21,7 @@ python scripts/medallion/medallion.py download            inputs from MinIO
 02_base_weights/1_gen_weights_columns → 2_calc_base_weights         π and base weights (constant within a region)
 03_nonresponse/1_adjust_weights_non_response                         regional cell adjustment (corrected_weight_HH)
 02_base_weights/3_indivs_weights                                     individu_<T>.dta, d_weights
-03_nonresponse/2_attrition_propensity   (from T1 2026)               modelled non-response: d_weights; old one in d_weights_cellules
+03_nonresponse/2_attrition_propensity   (from T1 2026)               production non-response: d_weights (from base_weight_HH); cells kept as reference in d_weights_cellules
 04_calibration/QUARTERLY_WEIGHTING/<year>/<T>/180X_1D/00_Master_Calibration_180X_1D.R
                                                                      calibration (FINAL_WEIGHT, and FINAL_WEIGHT_cellules from T1 2026)
 03_nonresponse/3_compare_nonresponse_methods, 04_calibration/household_weights
@@ -31,6 +31,7 @@ python scripts/medallion/medallion.py upload-outputs                 publication
 
 - `python scripts/medallion/medallion.py upload-inputs` publishes the inputs owned by the weighting stage (enumeration, enumeration updates, population totals, references).
 - The calibration master of each quarter is a copy of the previous one; it runs in RStudio or with `Rscript` from the repository root (batch mode: `View()` is neutralised, Excel is not opened). `scripts/04_calibration/_experimental_archived/run_calibration.R` is archived and is not the entry point.
+- From T1 2026 the modelled non-response is the only production method: it restarts from `base_weight_HH` and is never stacked on the cell factor. The cell method still runs (needed by `3_indivs_weights.R`) but only as a reference (`d_weights_cellules`, `FINAL_WEIGHT_cellules`): these columns sit in `individu_<T>_CAL.dta` for comparison, the official weight is `FINAL_WEIGHT`.
 - Published quarters (up to T1 2026) are frozen, including their calibration folders. The modelled non-response applies from `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`).
 - Rules that change over time live in one place each: `NR_MODEL_FIRST_QUARTER`, `SEGMENT_2_FIRST_QUARTER` / `segment_actif()` (segment 2 for ZD enumerated from T3 2026) in `config/1_config.r`; re-interviewed cohorts in `data/01_raw/Organisation/quarter_resurvey.xlsx` (read by `4_construct_denombrement.r` and `2_attrition_propensity.R`, never fixed offsets); quarter-specific fixes in `scripts/07_correction_quarter/denombrement/correction_<T>.r`.
 - T2 2026 had no first interviews (carried over to T3 2026; its cohort is removed from the rotation table). It is processed for sample continuity but never published; 2026 annual weights use `--quarters=T1,T3,T4`.

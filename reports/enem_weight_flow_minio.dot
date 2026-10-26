@@ -65,21 +65,18 @@ digraph ENE_WEIGHT_FLOW_MINIO {
         <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">02_base_weights/1_gen_weights_columns.R<BR/>  (+ 4_construct_denombrement.r)<BR/>02_base_weights/2_calc_base_weights.R</FONT></TD></TR>
       </TABLE>>];
 
-    nr_cells [label=<
-      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
-        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Non-réponse par cellules régionales</B> · corrected_weight_HH</TD></TR>
-        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">03_nonresponse/1_adjust_weights_non_response.R<BR/>02_base_weights/3_indivs_weights.R  → individu_&lt;T&gt;.dta</FONT></TD></TR>
-      </TABLE>>];
+
 
     nr_model [label=<
       <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
-        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Non-réponse modélisée</B> · à partir de T1 2026</TD></TR>
-        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">03_nonresponse/2_attrition_propensity.R</FONT><BR/><FONT POINT-SIZE="11">d_weights = modèle d'attrition ; d_weights_cellules = cellules</FONT></TD></TR>
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Non-réponse modélisée</B> · production à partir de T1 2026 · d_weights</TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">03_nonresponse/2_attrition_propensity.R</FONT><BR/><FONT POINT-SIZE="11">modèle d'attrition, à partir de base_weight_HH :<BR/>rangs 2 à 4 : base_weight_HH × f_phase1 × f_classe<BR/>rang 1 : base_weight_HH × f_cell (région × rang)</FONT></TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT"><FONT POINT-SIZE="10" COLOR="#7A8496">prérequis : 1_adjust_weights_non_response.R et 3_indivs_weights.R</FONT></TD></TR>
       </TABLE>>];
 
     calibration [label=<
       <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
-        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Calage 180X_1D</B> (ReGenesees) · FINAL_WEIGHT, FINAL_WEIGHT_cellules</TD></TR>
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Calage 180X_1D</B> (ReGenesees) · FINAL_WEIGHT</TD></TR>
         <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">04_calibration/QUARTERLY_WEIGHTING/&lt;année&gt;/&lt;T&gt;/180X_1D/<BR/>  00_Master_Calibration_180X_1D.R</FONT><BR/><FONT POINT-SIZE="11" COLOR="#8A5A00">contrôles : X_Summary_Table, table_check, convergence</FONT></TD></TR>
       </TABLE>>];
 
@@ -118,7 +115,7 @@ digraph ENE_WEIGHT_FLOW_MINIO {
 
     upload [label=<
       <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#A0679A" STYLE="ROUNDED">
-        <TR><TD BGCOLOR="#F1D9EE" ALIGN="LEFT"><B>Publication</B> · --dry-run d'abord</TD></TR>
+        <TR><TD BGCOLOR="#F1D9EE" ALIGN="LEFT"><B>Publication</B> · &#45;&#45;dry-run d'abord</TD></TR>
         <TR><TD BGCOLOR="#FCF5FB" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">python scripts/medallion/medallion.py upload-outputs --quarter &lt;T&gt;<BR/>python scripts/medallion/medallion.py upload-outputs --period annual --year &lt;a&gt;</FONT></TD></TR>
       </TABLE>>];
 
@@ -155,7 +152,7 @@ digraph ENE_WEIGHT_FLOW_MINIO {
 
   // ---------------------------------------------------------------- Liens
   {staging_in silver_in gold_in} -> download;
-  download -> denomb -> menages -> base_weights -> nr_cells -> nr_model -> calibration -> derived -> upload;
+  download -> denomb -> menages -> base_weights -> nr_model -> calibration -> derived -> upload;
   derived -> annual [style=dashed];
   annual -> upload [style=dashed];
   upload -> {silver_out gold_out};

@@ -154,9 +154,9 @@ Aucun orchestrateur n'enchaîne les étapes de préparation et de poids de base 
 | 6 | `01_utils/5_delete_individu_age_sexe.r` | Retire les individus sans âge ni sexe, les orphelins | `data/03_processed/{Menage,Individu}/<T>/` |
 | 7 | `02_base_weights/1_gen_weights_columns.R` (source `4_construct_denombrement.r`) | Comptages par ZD (cohortes lues dans `quarter_resurvey.xlsx`, corrections de `07_correction_quarter/denombrement/`), codes d'incohérence | `base_weights_<T>.dta`, `inconsistent_rows_<T>.dta` |
 | 8 | `02_base_weights/2_calc_base_weights.R` | Probabilités d'inclusion, poids de base | `base_weights_<T>.dta`, `probabilities_gt1_<T>.dta` |
-| 9 | `03_nonresponse/1_adjust_weights_non_response.R` | Correction de non-réponse par région | `base_weights_<T>.dta` |
+| 9 | `03_nonresponse/1_adjust_weights_non_response.R` | Méthode par cellules régionales : production jusqu'à T4 2025 ; à partir de T1 2026, simple référence (`d_weights_cellules`), prérequis des étapes 10 et 11 | `base_weights_<T>.dta` |
 | 10 | `02_base_weights/3_indivs_weights.R` | Fichiers ménages et individus avec `d_weights` | `menage_<T>.dta`, `individu_<T>.dta`, `SR_individu_<T>.dta` |
-| 11 | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | Non-réponse modélisée (cohortes et rangs lus dans `quarter_resurvey.xlsx`) | réécrit `individu_<T>.dta` ; `nr_modele_*.csv` |
+| 11 | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | **Non-réponse de production** : modèle d'attrition, recalculé à partir de `base_weight_HH` (cohortes et rangs lus dans `quarter_resurvey.xlsx`) | réécrit `individu_<T>.dta` ; `nr_modele_*.csv` |
 | 12 | `04_calibration/QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/00_Master_Calibration_180X_1D.R` | Calage | `data/07_QUARTERLY_WEIGHTING/...`, `calibrated_weights/individu_<T>_CAL.dta` |
 | 13 | `03_nonresponse/3_compare_nonresponse_methods.R` | Compare les deux méthodes | `nr_comparaison_*.csv` |
 | 14 | `04_calibration/household_weights.r` | Poids ménages | `household_weights/` |
@@ -171,7 +171,7 @@ Les étapes 1 à 6 traitent aussi les trimestres antérieurs dont les cohortes s
 |---|---|---|---|
 | `pi_zd`, `pi_hh`, `pi_HH` | ZD (ligne de `base_weights`) | Probabilités d'inclusion | `2_calc_base_weights.R` |
 | `base_weight_HH` | ZD | 1 / `pi_HH` | `2_calc_base_weights.R` |
-| `corrected_weight_HH` | ZD | Poids de base × facteur régional de non-réponse | `1_adjust_weights_non_response.R` |
+| `corrected_weight_HH` | ZD | Poids de base × facteur régional de non-réponse (production jusqu'à T4 2025, référence ensuite) | `1_adjust_weights_non_response.R` |
 | `d_weights` | individu | Poids d'entrée du calage. Jusqu'à T4 2025 : `corrected_weight_HH`. À partir de T1 2026 : poids modélisé | `3_indivs_weights.R`, puis `2_attrition_propensity.R` |
 | `d_weights_cellules` | individu | `corrected_weight_HH` (à partir de T1 2026) | `2_attrition_propensity.R` |
 | `FINAL_WEIGHT` | individu | Poids calé | `04c_...` |
@@ -337,11 +337,13 @@ Le script joint ménages et individus aux poids par la clé géographique (`hh2 
 
 Deux méthodes coexistent. Jusqu'au T4 2025 (trimestres publiés), seule la méthode par cellules régionales existe. À partir du T1 2026, la méthode modélisée est la production et la méthode par cellules est gardée en colonnes de référence.
 
+**À partir du T1 2026, la production est la non-réponse modélisée (§6.4) et elle seule** : `d_weights` → `FINAL_WEIGHT`. Les deux corrections ne s'ajoutent jamais : le poids modélisé repart de `base_weight_HH` (rangs 2 à 4 : `base_weight_HH × f_phase1 × f_classe` ; rang 1 : `base_weight_HH × f_cell`, facteur région × rang). La méthode par cellules tourne encore parce que `3_indivs_weights.R` en a besoin ; son poids est seulement recopié dans `d_weights_cellules` et calé à part (`FINAL_WEIGHT_cellules`) pour la comparaison du §6.5. Ces colonnes figurent dans `individu_<T>_CAL.dta` pour la comparaison, mais le poids officiel est `FINAL_WEIGHT`.
+
 ### 6.1 Pourquoi une correction
 
 Dans chaque ZD, 12 ménages sont prévus mais tous ne répondent pas. Aux réinterrogations s'ajoute l'**attrition** : un ménage interrogé au rang 1 peut ne plus être joignable aux rangs 2, 3 ou 4. Les ménages qui restent ne ressemblent pas forcément à ceux qui partent.
 
-### 6.2 Méthode par cellules régionales (`1_adjust_weights_non_response.R`)
+### 6.2 Méthode par cellules régionales (`1_adjust_weights_non_response.R`) — production jusqu'au T4 2025, référence ensuite
 
 Code :
 

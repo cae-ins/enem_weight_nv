@@ -22,9 +22,9 @@ Ordre réel d'exécution (la numérotation des dossiers ne le reflète pas ; dé
 | Dénombrement | `01_utils/1_concat_denomb.R`, `01_utils/2_denomb_updates.R` | Empile le dénombrement, intègre les dénombrements refaits sur le terrain |
 | Ménages | `01_utils/update_interviewkey_map.R`, `3_assign_firstTrim_interview.R`, suppressions `.do`, `5_delete_individu_age_sexe.r` | Correspondance des entretiens, premier trimestre, nettoyage |
 | Poids de base | `02_base_weights/1_gen_weights_columns.R`, `2_calc_base_weights.R` | Comptages par ZD, probabilités d'inclusion, `base_weight_HH` |
-| Non-réponse | `03_nonresponse/1_adjust_weights_non_response.R`, puis `02_base_weights/3_indivs_weights.R` | Cellules régionales (`corrected_weight_HH`), fichiers ménages et individus |
-| Non-réponse modélisée | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | Modèle d'attrition : `d_weights` ; l'ancienne méthode reste dans `d_weights_cellules` |
-| Calage | `04_calibration/QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/00_Master_Calibration_180X_1D.R` | `FINAL_WEIGHT` (et `FINAL_WEIGHT_cellules` à partir de T1 2026) |
+| Fichiers individus | `03_nonresponse/1_adjust_weights_non_response.R`, puis `02_base_weights/3_indivs_weights.R` | Fichiers ménages et individus ; le poids par cellules n'est plus qu'une référence (`d_weights_cellules`) |
+| **Non-réponse (production)** | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | Modèle d'attrition recalculé à partir de `base_weight_HH` : `d_weights` |
+| Calage | `04_calibration/QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/00_Master_Calibration_180X_1D.R` | `FINAL_WEIGHT`, poids officiel |
 | Contrôles | `03_nonresponse/3_compare_nonresponse_methods.R`, `04_calibration/household_weights.r` | Comparaison des méthodes, poids ménages |
 | Publication | `python scripts/medallion/medallion.py upload-outputs --quarter <T>` | `silver/enem/<T>/poids/`, `gold/enem/<T>/base_ponderee/` |
 | Année | `08_yearly_weights/ponderation_annuelle.r --year=<a>` | `FINAL_WEIGHT / K` (`--quarters=` pour une année incomplète) |
@@ -37,7 +37,7 @@ Elles sont centralisées, pour qu'un écart de terrain se traite à un seul endr
 
 | Règle | Où | État |
 |---|---|---|
-| Méthode de non-réponse | `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`) | Modélisée à partir de T1 2026 |
+| Méthode de non-réponse | `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`) | Modélisée à partir de T1 2026 (seule méthode de production ; cellules jusqu'à T4 2025) |
 | Segment enquêté dans la ZD | `SEGMENT_2_FIRST_QUARTER`, `segment_actif()` (`config/1_config.r`) | Segment 2 pour les ZD dénombrées à partir de T3 2026, segment 1 avant |
 | Calendrier de rotation | `data/01_raw/Organisation/quarter_resurvey.xlsx` (MinIO : `staging/enem/references/organisation/`) | Cohorte T2 2026 retirée : ses premières interrogations ont été reportées en T3 2026 |
 | Corrections propres à un trimestre | `scripts/07_correction_quarter/denombrement/correction_<T>.r` | Chargées automatiquement par `4_construct_denombrement.r` |
