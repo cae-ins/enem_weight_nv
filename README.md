@@ -1,192 +1,99 @@
-#  RUWTHS : R Unified Weighting Treatment Harmonized System
+# RUWTHS : R Unified Weighting Treatment Harmonized System
 
-**RUWTHS** *(prononcé "Ruth's")* est un système modulaire développé en **R** pour le traitement harmonisé des pondérations dans les enquêtes statistiques.
-Ce projet consiste en une refonte du dispositif de calcule des différentes types de pondérations dans le cadre de l'Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M).
-Il est en phase de test mais est déjà fortement stable. Il est écrit entièrement en R pour tirer avantage des solutions Open Source.
+**RUWTHS** *(prononcé « Ruth's »)* calcule les pondérations de l'Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M, Côte d'Ivoire, ANStat) : poids de base, correction de la non-réponse, calage sur les totaux de population, poids ménages, poids annuels et, en cours de développement, poids longitudinaux. Le code est en R (calage avec **ReGenesees**), avec quelques fichiers Stata et un lanceur Python pour les échanges MinIO.
 
-##  Objectifs
+**Documentation de référence : [`docs/MANUEL.md`](docs/MANUEL.md)** (méthode, formules, fichiers, historique des choix, risques). Elle fait foi quand elle diverge des anciens documents (`docs/00_index.md` à `05_processus_complet.md`, `ARCHITECTURE_ENE_PIPELINE.md`).
 
-RUWTHS vise à :
+## Principe
 
-- Unifier les étapes de pondération dans des enquêtes répétées ou longitudinales
-- Standardiser le traitement des non-réponses, ajustements, calages et calibration (la calibration est réalisée à partir de **Rgenesees**)
-- Produire des fichiers de pondérations robustes, traçables et reproductibles
-- Générer automatiquement des diagnostics d'erreur et d'incohérences dans les données.
+**Données, code et calcul sont indépendants.** Le code ne contient aucun chemin propre à un poste : `config/1_config.r` prend la racine du dépôt (répertoire de travail, ou `ENE_BASE_DIR`). Toutes les entrées se téléchargent depuis MinIO dans `data/` (non versionné), et tous les produits sont publiés sur MinIO. La liste des échanges est écrite dans le dépôt voisin [ENE_MEDALLION_ORCHESTRATION](https://github.com/cae-ins/ene_medallion_orchestration) (`ene_medallion_io/weights_contract.py`). Les dépôts ne s'échangent jamais de fichiers directement.
 
-##  De manière spécifique, RUWTHS permet de : 
+## Chaîne de traitement
 
-- Produire des **poids d’enquête fiables, traçables et reproductibles**.
-- Gérer de façon unifiée :
-  - les **poids de sondage de base**,
-  - l’**ajustement pour non-réponse**,
-  - le **calibrage** sur les totaux de population,
-  - les **contrôles qualité et diagnostics**.
-- Supporter à la fois les enquêtes **transversales** et les suivis **longitudinaux**.
+![Flux de pondération ENE-M](reports/enem_weight_flow_minio.png)
 
-##  Structure du dépôt
-```
-enem_weight_nv/
-│── config/ # Paramètres par trimestre, configuration du plan de sondage
-│── data/ # Données brutes et pondérées (ménages, individus, fichiers par trimestre)
-│── scripts/ # Scripts R pour chaque étape du processus de pondération
-│── dashboard/ # Tableaux de bord Shiny de suivi des incohérences pouvant affecter les pondérations (diagnostics, visualisations)
-│── logs/ # Journaux d’exécution (traçabilité)
-│── README.md # Documentation du projet
-```
+Source modifiable : `reports/enem_weight_flow_minio.dot` (`dot -Tpng` et `dot -Tsvg`).
 
-##  Méthodologie (niveau conceptuel)
+Ordre réel d'exécution (la numérotation des dossiers ne le reflète pas ; détail au §3.1 du manuel) :
 
-### 1) Poids de base — `calc_base_weights.R`
+| Étape | Script | Rôle |
+|---|---|---|
+| Entrées | `python scripts/medallion/medallion.py download --quarter <T>` | Télécharge références, dénombrements, fichiers apurés, entrées des cohortes |
+| Dénombrement | `01_utils/1_concat_denomb.R`, `01_utils/2_denomb_updates.R` | Empile le dénombrement, intègre les dénombrements refaits sur le terrain |
+| Ménages | `01_utils/update_interviewkey_map.R`, `3_assign_firstTrim_interview.R`, suppressions `.do`, `5_delete_individu_age_sexe.r` | Correspondance des entretiens, premier trimestre, nettoyage |
+| Poids de base | `02_base_weights/1_gen_weights_columns.R`, `2_calc_base_weights.R` | Comptages par ZD, probabilités d'inclusion, `base_weight_HH` |
+| Non-réponse | `03_nonresponse/1_adjust_weights_non_response.R`, puis `02_base_weights/3_indivs_weights.R` | Cellules régionales (`corrected_weight_HH`), fichiers ménages et individus |
+| Non-réponse modélisée | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | Modèle d'attrition : `d_weights` ; l'ancienne méthode reste dans `d_weights_cellules` |
+| Calage | `04_calibration/QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/00_Master_Calibration_180X_1D.R` | `FINAL_WEIGHT` (et `FINAL_WEIGHT_cellules` à partir de T1 2026) |
+| Contrôles | `03_nonresponse/3_compare_nonresponse_methods.R`, `04_calibration/household_weights.r` | Comparaison des méthodes, poids ménages |
+| Publication | `python scripts/medallion/medallion.py upload-outputs --quarter <T>` | `silver/enem/<T>/poids/`, `gold/enem/<T>/base_ponderee/` |
+| Année | `08_yearly_weights/ponderation_annuelle.r --year=<a>` | `FINAL_WEIGHT / K` (`--quarters=` pour une année incomplète) |
 
-Calcule les **poids de base** (inverse de la probabilité d’inclusion) :
+Tous les scripts se lancent depuis la racine du dépôt. Le trimestre se fixe par `ENE_QUARTER=TX_AAAA` (ou `TARGET_QUARTER` dans `config/1_config.r`). Le pas-à-pas complet d'un trimestre est au §13.2 du manuel.
 
-![eq-base](https://latex.codecogs.com/svg.latex?w^{(0)}_{hi}=\frac{1}{\pi_{hi}})
+## Règles qui changent dans le temps
 
-**Idée** : ![eq-base](https://latex.codecogs.com/svg.latex?\pi_{hi})
-  est la probabilité de sélection de l’unité *i* dans la strate (ou segment) *h*; le poids de base est l’inverse de cette probabilité.
+Elles sont centralisées, pour qu'un écart de terrain se traite à un seul endroit :
 
-### 2) Suivi & appariement — `tracking.R`
+| Règle | Où | État |
+|---|---|---|
+| Méthode de non-réponse | `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`) | Modélisée à partir de T1 2026 |
+| Segment enquêté dans la ZD | `SEGMENT_2_FIRST_QUARTER`, `segment_actif()` (`config/1_config.r`) | Segment 2 pour les ZD dénombrées à partir de T3 2026, segment 1 avant |
+| Calendrier de rotation | `data/01_raw/Organisation/quarter_resurvey.xlsx` (MinIO : `staging/enem/references/organisation/`) | Cohorte T2 2026 retirée : ses premières interrogations ont été reportées en T3 2026 |
+| Corrections propres à un trimestre | `scripts/07_correction_quarter/denombrement/correction_<T>.r` | Chargées automatiquement par `4_construct_denombrement.r` |
 
-- Gère le **suivi longitudinal** des ménages/individus réinterviewés entre trimestres.
-- Harmonise les identifiants et ajoute la variable `finalnumtrimestre`.
-- Produit un fichier prêt pour la pondération (maîtrise de la rotation/panel).
+T2 2026 (réinterrogations seules, par téléphone) est traité pour la continuité des échantillons, mais **n'est pas publié**. Les poids annuels 2026 se calculent avec `--quarters=T1,T3,T4`.
 
-### 3) Ajustement pour non-réponse — `non_response.R`
+## Échanges MinIO
 
-- **Actuel** : ajustement calculé par **Région × Milieu (urbain/rural)**.  
-- **Optionnel** : possibilité de revenir à une définition plus fine **par segment**.
-
-Formule d’ajustement (par Région × Milieu) appliquée aux poids de base :
-
-![eq-nr](https://latex.codecogs.com/svg.latex?w^{(1)}_{i}=w^{(0)}_{i}\cdot\frac{N_{rm}}{R_{rm}})
-
-où ![Nrm](https://latex.codecogs.com/svg.latex?N_{rm}) et  ![Rrm](https://latex.codecogs.com/svg.latex?R_{rm}) sont respectivement le nombre d’unités **éligibles** et **répondantes** dans la **région** *r* et le **milieu** *m*.
-
-### 4) Calibrage — `calibration.R`
-
-Aligne les poids sur des **totaux externes** (benchmarks démographiques, ex. âge × sexe × région × milieu), typiquement via **Rgenesees**. On cherche des facteurs de calibration ![g](https://latex.codecogs.com/svg.latex?g(\cdot))
-tels que :
-
-![eq-calib-constraint](https://latex.codecogs.com/svg.latex?\sum_i%20w^{(2)}_{i}x_{i}=X)
-
-où \(X\) sont les totaux de contrôle. Les poids calibrés s’écrivent :
-
-![eq-calib-weight](https://latex.codecogs.com/svg.latex?w^{(2)}_{i}=w^{(1)}_{i}\cdot%20g(x_i))
-
-### 5) Contrôles qualité — `quality_checks.R`
-
-- Absence de poids nuls/manquants; détection d’outliers (éventuel trimming).
-- Cohérence **ménage ↔ individu** et checks de doublons.
-- Comparaison distributions **pondérées vs non pondérées**.
-- Génération de diagnostics (tableaux/graphes) dans `dashboard/` et de journaux dans `logs/`.
-
-##  Schéma du flux de traitement
-
-![Flux de pondération ENE-M vers MinIO](reports/enem_weight_flow_minio.png)
-
-Source modifiable : `reports/enem_weight_flow_minio.dot`.
-
-
-##  Technologies
-
-- **R** : logique de pondération et calibration
-- **Rgenesees** : moteur de calibrage
-- **R Shiny** : tableaux de bord
-- **Stata** : scripts complémentaires (préparation/validation)
-
-##  Résultats attendus
-
-- Fichiers de poids **par trimestre** (ménages & individus).
-- Diagnostics reproductibles dans `/dashboard` et `/logs`.
-- Poids finaux utilisables directement pour l’analyse (emploi, chômage, sous-emploi, etc.).
-
-## Publication MinIO des sorties de pondération
-
-Après validation de la calibration et des poids ménages finaux, les sorties de la
-composante pondération sont publiées dans les buckets medallion MinIO (`silver` et
-`gold`) avec le script d'orchestration intégré au dépôt.
-
-### Commande standard
-
-Depuis la racine du dépôt `ENE_SURVEY_WEIGHTS` :
-
-```powershell
-python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --dry-run
-python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --overwrite
+```bash
+python scripts/medallion/medallion.py download        --quarter T3_2026 [--dry-run] [--overwrite]
+python scripts/medallion/medallion.py upload-inputs   --quarter T3_2026 [--references] [--all-quarters]
+python scripts/medallion/medallion.py upload-outputs  --quarter T3_2026 [--dry-run] [--overwrite]
+python scripts/medallion/medallion.py upload-outputs  --period annual --year 2025
 ```
 
-Utiliser toujours `-DryRun` avant l'upload réel pour vérifier la liste exacte des
-fichiers et des destinations. Utiliser `-Overwrite` uniquement quand les objets du
-serveur doivent être remplacés par la version locale finalisée.
+- Lancer `--dry-run` avant un envoi réel pour voir la liste exacte des objets et des destinations. Sans `--overwrite`, un objet existant n'est jamais remplacé.
+- Seuls les produits listés dans le contrat de données partent ; les fichiers d'essai laissés dans `data/` ne sont jamais publiés.
+- Les identifiants vivent uniquement dans `.env` (modèle : `.env.example`) ou dans le fichier de secrets du module d'orchestration. Ne jamais les copier dans un fichier versionné.
+- Le lanceur ajoute l'hôte MinIO à `NO_PROXY` et cherche le dépôt `ENE_MEDALLION_ORCHESTRATION` à côté de celui-ci, ou dans `ENE_ORCHESTRATION_ROOT`. Hors du réseau ANStat, les publications attendent : le circuit ne change pas.
 
-### Exécution via le serveur VPN de la direction
+Buckets et préfixes : manuel, §11.
 
-Si le poste est connecté au MinIO de la direction par VPN, forcer l'endpoint S3 du
-serveur et neutraliser le proxy local pour cette session PowerShell :
+## Structure du dépôt
 
-```powershell
-$env:MINIO_ENDPOINT = 'http://XXX.XXX.XXX.XXX:YYYYY'
-$env:NO_PROXY = 'localhost,127.0.0.1,::1,XXX.XXX.XXX.XXX'
-$env:HTTP_PROXY = ''
-$env:HTTPS_PROXY = ''
-$env:ALL_PROXY = ''
-
-# Depuis la racine du dépôt ; le dépôt ENE_MEDALLION_ORCHESTRATION est cherché à côté
-# de celui-ci (ou dans $env:ENE_ORCHESTRATION_ROOT), les identifiants dans .env.
-python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --dry-run
-python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --overwrite
+```
+config/          1_config.r (racine, trimestre, règles datées), dictionnaire des variables, configuration des poids longitudinaux
+data/            entrées et produits, reconstruits depuis MinIO (non versionné)
+docs/            MANUEL.md (référence) ; anciens documents
+scripts/
+  00_setup/                installation des paquets (ReGenesees depuis GitHub)
+  01_utils/                dénombrement, correspondance des entretiens, nettoyage, totaux, RGPH
+  02_base_weights/         comptages par ZD, probabilités d'inclusion, poids de base, fichiers individus
+  03_nonresponse/          cellules régionales, modèle d'attrition, comparaison
+  04_calibration/          calage par trimestre (QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/), poids ménages
+  05_quality_control/      qualité des estimations (CV)
+  07_correction_quarter/   corrections propres à chaque trimestre
+  08_yearly_weights/       poids annuels
+  11_modif_design/         simulation de réduction d'échantillon
+  12_longitudinal_weights/ probabilités de retour et poids longitudinaux (en cours)
+  medallion/               lanceur MinIO (Python)
+dashboard/       tableaux de bord Shiny de suivi des incohérences
+reports/         schémas et graphiques
+tests/           tests testthat
 ```
 
-Le fichier d'identifiants doit rester hors du dépôt. Ne jamais copier les clés
-MinIO dans le README ou dans un script versionné.
+## Prérequis
 
-### Structure locale attendue
+- R ≥ 4.4 ; paquets : `scripts/00_setup/install_required_packages.R` ; ReGenesees depuis GitHub (`DiegoZardetto/ReGenesees`).
+- Python avec `boto3`, et le dépôt `ENE_MEDALLION_ORCHESTRATION`.
+- Stata pour les fichiers de suppression `.do`.
 
-Pour un trimestre `<TRIMESTRE>` tel que `T1_2026`, le script publie les fichiers
-situés sous :
+## Précision des estimations
 
-```text
-data/04_weights/<TRIMESTRE>/
-  base_weights/
-    base_weights_<TRIMESTRE>.dta
-    inconsistent_rows_<TRIMESTRE>.dta
-    individu_<TRIMESTRE>.dta
-    SR_individu_<TRIMESTRE>.dta
-    menage_<TRIMESTRE>.dta
-  calibrated_weights/
-    individu_<TRIMESTRE>_CAL.dta
-```
+**La précision officielle (erreurs types, intervalles de confiance, CV, effets de plan), calculée avec les formules qui tiennent compte du plan de sondage, du calage et de la rotation, se trouve dans le dépôt [cae-ins/ENE_PRECISION_ESTIMATION](https://github.com/cae-ins/ENE_PRECISION_ESTIMATION).** Il lit l'objet de calage que ce dépôt publie dans `silver/enem/<T>/poids/calibration_design/180X_1D/`, et la base d'indicateurs de [ENE_INDICATORS_TABULATIONS](https://github.com/cae-ins/ene_indicators_tabulations). Sa méthode est décrite dans `docs/NOTE_METHODOLOGIQUE_PRECISION_ENE.md`.
 
-### Structure publiée sur MinIO
+## Contrôle qualité
 
-Le dossier complet `data/04_weights/<TRIMESTRE>` est publié dans `silver` :
-
-```text
-s3://silver/enem/<TRIMESTRE>/poids/base_weights/base_weights_<TRIMESTRE>.dta
-s3://silver/enem/<TRIMESTRE>/poids/base_weights/inconsistent_rows_<TRIMESTRE>.dta
-s3://silver/enem/<TRIMESTRE>/poids/base_weights/individu_<TRIMESTRE>.dta
-s3://silver/enem/<TRIMESTRE>/poids/base_weights/SR_individu_<TRIMESTRE>.dta
-s3://silver/enem/<TRIMESTRE>/poids/base_weights/menage_<TRIMESTRE>.dta
-s3://silver/enem/<TRIMESTRE>/poids/calibrated_weights/individu_<TRIMESTRE>_CAL.dta
-s3://silver/enem/<TRIMESTRE>/poids/_manifests/upload_<timestamp>.json
-```
-
-Les fichiers directement consommables par la composante indicateurs sont publiés
-dans `gold` :
-
-```text
-s3://gold/enem/<TRIMESTRE>/base_indicateurs/individu_<TRIMESTRE>_CAL.dta
-s3://gold/enem/<TRIMESTRE>/base_indicateurs/menage_<TRIMESTRE>.dta
-s3://gold/enem/<TRIMESTRE>/base_indicateurs/_manifests/upload_<timestamp>.json
-```
-
-### Trace de publication T1_2026
-
-Lors de la publication du `2026-06-06`, la version ménage envoyée était :
-
-```text
-Fichier : data/04_weights/T1_2026/base_weights/menage_T1_2026.dta
-Taille  : 51,500,006 bytes
-Date    : 2026-06-04 18:49:34 heure locale
-SHA256  : 7A0896ECB12ABF18F9194D13FD806929F93DF08CA1D3B393A2C258434D73D999
-```
+- Calage : `X_Summary_Table` (aucune « Error », `Diff_Known_Tot_Final_Est` = 0, facteur de correction dans [0,95 ; 1,65], cellules ≥ 30), `table_check` (écart ≤ 100), statut de convergence `ecal.status.production`.
+- `05_quality_control/postestimation_quality.R` classe les estimations A (CV < 15 %), B (15–30 %), C (≥ 30 %) pour un contrôle rapide ; ses erreurs types ignorent le plan de sondage. Pour les chiffres publiés, utiliser [ENE_PRECISION_ESTIMATION](https://github.com/cae-ins/ENE_PRECISION_ESTIMATION).

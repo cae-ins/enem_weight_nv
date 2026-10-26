@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 # Index du projet ENE_SURVEY_WEIGHTS
 
 Ce document donne une vue d'ensemble de la structure du projet, les répertoires principaux et le rôle général de chacun. Il sert de point d'entrée pour les contributeurs et facilite la navigation dans le dépôt.

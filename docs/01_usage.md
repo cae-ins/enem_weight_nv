@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 ## Utilisation rapide — mettre en route le pipeline de pondérations
 
 Avant d'exécuter le code, suivez ces deux préparations initiales :

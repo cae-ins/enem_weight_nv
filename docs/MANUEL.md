@@ -2,7 +2,7 @@
 
 > **Objet.** Ce manuel décrit tout ce que contient le dépôt `ENE_SURVEY_WEIGHTS` : le plan de sondage de l'Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M, Côte d'Ivoire, ANStat), chaque étape du calcul des poids, les formules, les fichiers, la manière d'exploiter la chaîne, les choix faits au fil du temps et leur origine.
 >
-> **État décrit.** 24 octobre 2026, branche git `feat/non-reponse-modelisee` (dernier commit `7a5771b`, plus des modifications non commitées décrites en §6.5). Trimestre de travail : T1 2026.
+> **État décrit.** 26 octobre 2026, branche git `feat/non-reponse-modelisee` (tout le travail décrit est commité). Dernier trimestre publié : T1 2026 ; T2 2026 traité sans publication (§2.4) ; trimestre de travail : T3 2026.
 >
 > **Convention.** Ce qui est écrit dans le code, un commit ou un document du dépôt est donné comme un fait, avec sa source (fichier, ligne ou hash de commit). Ce qui est déduit sans être écrit nulle part est signalé par **(inférence)**. Les formules ont été recopiées depuis le code puis simplifiées à la main ; elles doivent être relues par le responsable méthodologique avant tout usage officiel.
 
@@ -147,16 +147,16 @@ Aucun orchestrateur n'enchaîne les étapes de préparation et de poids de base 
 |---|---|---|---|
 | 0 | `python scripts/medallion/medallion.py download` | Télécharge les entrées depuis MinIO (§11.3) | `data/` (références, dénombrements, fichiers apurés, entrées des cohortes) |
 | 1 | `01_utils/1_concat_denomb.R` | Empile le dénombrement du trimestre | `data/02_cleaned/Denombrement/<T>/` |
-| 2 | `01_utils/2_denomb_updates.R` | Intègre les dénombrements mis à jour (Excel, IDSeg) | `data/02_cleaned/Denombrement_update/denombrement_update_<ts>.dta` |
+| 2 | `01_utils/2_denomb_updates.R` | Intègre les dénombrements mis à jour (Excel, IDSeg), garde le segment enquêté (`segment_actif()`) | `data/02_cleaned/Denombrement_update/denombrement_update_<ts>.dta` |
 | 3 | `01_utils/update_interviewkey_map.R` | Table de correspondance des `interview_key` | `data/03_processed/Tracking_ID/<date>/` |
 | 4 | `01_utils/3_assign_firstTrim_interview.R` | Trimestre de première interrogation | `data/03_processed/Menage/<T>/` |
 | 5 | Fichiers Stata `.do` de suppression (§4.5) | Retire les ménages au-delà de 12 par ZD | `data/03_processed/Menage/<T>/` |
 | 6 | `01_utils/5_delete_individu_age_sexe.r` | Retire les individus sans âge ni sexe, les orphelins | `data/03_processed/{Menage,Individu}/<T>/` |
-| 7 | `02_base_weights/1_gen_weights_columns.R` (source `4_construct_denombrement.r`) | Comptages par ZD, codes d'incohérence | `base_weights_<T>.dta`, `inconsistent_rows_<T>.dta` |
+| 7 | `02_base_weights/1_gen_weights_columns.R` (source `4_construct_denombrement.r`) | Comptages par ZD (cohortes lues dans `quarter_resurvey.xlsx`, corrections de `07_correction_quarter/denombrement/`), codes d'incohérence | `base_weights_<T>.dta`, `inconsistent_rows_<T>.dta` |
 | 8 | `02_base_weights/2_calc_base_weights.R` | Probabilités d'inclusion, poids de base | `base_weights_<T>.dta`, `probabilities_gt1_<T>.dta` |
 | 9 | `03_nonresponse/1_adjust_weights_non_response.R` | Correction de non-réponse par région | `base_weights_<T>.dta` |
 | 10 | `02_base_weights/3_indivs_weights.R` | Fichiers ménages et individus avec `d_weights` | `menage_<T>.dta`, `individu_<T>.dta`, `SR_individu_<T>.dta` |
-| 11 | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | Non-réponse modélisée | réécrit `individu_<T>.dta` ; `nr_modele_*.csv` |
+| 11 | `03_nonresponse/2_attrition_propensity.R` (à partir de T1 2026) | Non-réponse modélisée (cohortes et rangs lus dans `quarter_resurvey.xlsx`) | réécrit `individu_<T>.dta` ; `nr_modele_*.csv` |
 | 12 | `04_calibration/QUARTERLY_WEIGHTING/<année>/<T>/180X_1D/00_Master_Calibration_180X_1D.R` | Calage | `data/07_QUARTERLY_WEIGHTING/...`, `calibrated_weights/individu_<T>_CAL.dta` |
 | 13 | `03_nonresponse/3_compare_nonresponse_methods.R` | Compare les deux méthodes | `nr_comparaison_*.csv` |
 | 14 | `04_calibration/household_weights.r` | Poids ménages | `household_weights/` |
@@ -319,7 +319,7 @@ Après : taille en ménages, nombre de ZD réellement présentes, plus de plafon
 
 ### 5.4 Contrôle des probabilités supérieures à 1
 
-`check_probability_bounds()` écrit les cas où une probabilité dépasse 1 dans `probabilities_gt1_<T>.dta`. Introduit comme **bloquant** par `f66d621` (juin 2026) ; passé en **avertissement** dans les modifications non commitées. Sans plafonnement, `pi_hh` dépasse 1 dès qu'un segment compte moins de 2 ménages. Comme le poids final ne dépend pas de `nb_mens_seg` (§5.3), ces cas n'affectent pas le poids de base, mais ils signalent un dénombrement suspect.
+`check_probability_bounds()` écrit les cas où une probabilité dépasse 1 dans `probabilities_gt1_<T>.dta`. Introduit comme **bloquant** par `f66d621` (juin 2026) ; passé en **avertissement** par `bf59339` (24 octobre 2026). Sans plafonnement, `pi_hh` dépasse 1 dès qu'un segment compte moins de 2 ménages. Comme le poids final ne dépend pas de `nb_mens_seg` (§5.3), ces cas n'affectent pas le poids de base, mais ils signalent un dénombrement suspect.
 
 ### 5.5 Poids « WR » et fichier `SR_`
 
@@ -385,7 +385,7 @@ Les nouveaux ménages, qui répondent mieux, sont sur-représentés ; les ménag
 
 **Principe.** Rang 1 : correction par cellule région × rang. Rangs 2 à 4 : correction en deux phases. Phase 1, comme si tous les répondants de la première interrogation étaient revenus. Phase 2, correction de l'attrition entre la première interrogation et le trimestre courant, par classes de propension de réponse estimées à partir de ce que l'on savait du ménage à sa première interrogation.
 
-**Population du modèle (le panel).** Pour chaque cohorte réinterrogée (rangs 2, 3, 4), les ménages qui ont répondu à leur première interrogation (`first_trim` = trimestre d'entrée, `hh14 == 1`), lus dans `data/04_weights/<cohorte>/base_weights/menage_<cohorte>.dta`. Au T1 2026 : 7 154 ménages.
+**Population du modèle (le panel).** Pour chaque cohorte réinterrogée (rangs 2, 3, 4 ; cohortes, rangs et visites intermédiaires lus dans `quarter_resurvey.xlsx`, le rang étant 1 + le nombre de visites antérieures ; en T3 2026, pas de rang 2, §2.4), les ménages qui ont répondu à leur première interrogation (`first_trim` = trimestre d'entrée, `hh14 == 1`), lus dans `data/04_weights/<cohorte>/base_weights/menage_<cohorte>.dta`. Au T1 2026 : 7 154 ménages.
 
 **Variable expliquée.** `repond = 1` si le ménage figure parmi les répondants du trimestre courant, reconnus par `v1interviewkey`. Un ménage répond s'il est dans `base_weights/individu_<T>.dta`, c'est-à-dire dans l'échantillon d'entrée du calage. Ce périmètre est identique à celui de l'échantillon calé (7 789 ménages au T1 2026), mais il est connu avant le calage. Au T1 2026 : 5 297 répondants sur 7 154.
 
@@ -640,7 +640,7 @@ La note méthodologique dérive des coefficients optimaux $\alpha_q$ (minimum de
 
 **Sorties** dans `data/04_weights/<année>/` : `LFS_WEIGHTS_<année>.parquet` (produit principal), `.dta` (compatibilité), `_quality.csv`, `_manifest.json` (méthode, trimestres, MD5 des sources).
 
-**Année incomplète.** 2024 ne compte que T2, T3, T4. La version commitée exige les quatre trimestres ; la modification non commitée ajoute `--quarters=T2,T3,T4` et le champ `annual_coverage` (`ANNEE_COMPLETE` / `ANNEE_INCOMPLETE`). Le fichier 2024 a été produit ainsi le 20 octobre 2026 (48 796 lignes) ; 2025 compte 96 276 lignes.
+**Année incomplète.** 2024 ne compte que T2, T3, T4. Avant `2950590` (24 octobre 2026), le script exigeait les quatre trimestres ; il accepte désormais `--quarters=T2,T3,T4` et le champ `annual_coverage` (`ANNEE_COMPLETE` / `ANNEE_INCOMPLETE`). Le fichier 2024 a été produit ainsi le 20 octobre 2026 (48 796 lignes) ; 2025 compte 96 276 lignes. 2026 se calculera avec `--quarters=T1,T3,T4` : T2 2026 n'est pas publié (§2.4).
 
 **Historique.** Août 2025 : moyenne des poids par individu (`poids_annuels.r`), puis division par le nombre de trimestres (`agregate_year.R`) ; janvier 2026 : `ponderation_annuelle.r` avec détection automatique des trimestres (`0dd8854`) et un do-file Stata pour 2024 ; août 2026 : réécriture vérifiée (`7a5771b`).
 
@@ -656,7 +656,9 @@ Voir §7.7. Plus, dans `05_quality_control/` : `Check_Ponderations.do` (somme de
 
 ### 10.2 Erreurs types
 
-Trois outils, de qualité inégale :
+**La précision officielle se calcule dans le dépôt [`ENE_PRECISION_ESTIMATION`](https://github.com/cae-ins/ENE_PRECISION_ESTIMATION)** : erreurs types, intervalles de confiance, CV et effets de plan des indicateurs trimestriels et annuels, par linéarisation de Taylor sur l'objet de calage publié dans `silver/enem/<T>/poids/calibration_design/`, avec la covariance entre trimestres due à la rotation 2-2 (Berger-Priam). La méthode est dans sa note `docs/NOTE_METHODOLOGIQUE_PRECISION_ENE.md`. Ce dépôt-ci ne fait que publier l'objet de calage.
+
+Les outils de ce dépôt ci-dessous servent au contrôle ou aux simulations ; trois outils, de qualité inégale :
 
 1. **`04_calibration/STANDARD_ERRORS/<a>/<T>/07*.R`** (cas d'étude OIT 17) : `svystatTM` et `svystatR` de ReGenesees sur l'objet calé, soit la linéarisation de Taylor de l'estimateur par calage, avec effet de plan. C'est la méthode correcte, mais elle ne couvre que 2024/T2 à 2025/T2 et utilise des noms de variables OIT absents des données ENE.
 2. **`05_quality_control/postestimation_quality.R`** (`fc68676`, décembre 2025) : `svydesign(ids = ~1, weights = ~pmencor_ind)` sur la base de travail `Base_Travail_BT_vf.dta`, par trimestre, région et district. **Sans grappes ni strates** : les erreurs types sont celles d'un sondage aléatoire simple pondéré, probablement sous-estimées. Drapeaux A (CV < 15 %), B (15-30 %), C (≥ 30 %), F (estimation absente).
@@ -754,7 +756,7 @@ Résultats saisis dans `report_variation.r` (T3 2025) : CV de SU1 de 7,93 % (100
 
 État : la chaîne `_auto` ne tourne pas telle qu'elle est commitée (chemin d'entrée mal construit) ; les sorties existantes viennent des versions non `_auto`. Le README est obsolète.
 
-### 12.5 Poids longitudinaux (12_longitudinal_weights, non commité)
+### 12.5 Poids longitudinaux (12_longitudinal_weights, commit `82c097c`)
 
 Probabilités de retour d'un individu entre deux vagues, pour les transitions R1 → R2, R3 → R4 (un trimestre) et R1 → R3 (quatre trimestres). Un logit par fenêtre, avec des covariables mesurées à l'origine seulement (les agrégats sur toutes les vagues sont exclus parce qu'ils contiennent de l'information postérieure). Poids :
 
@@ -779,19 +781,20 @@ winsorisé au 99e centile par fenêtre. Le recalage 180X sur les marges de la va
 ### 13.2 Pas à pas (trimestre T à partir de T1 2026)
 
 1. Fixer le trimestre : variable d'environnement `ENE_QUARTER=T<q>_<a>`, ou `TARGET_QUARTER` dans `config/1_config.r`.
-2. Télécharger les entrées : `python scripts/medallion/medallion.py download --quarter T<q>_<a>`. La fin du journal liste les objets absents ; il ne doit rester que des absences attendues (par exemple les bases `Traite_` d'un trimestre que la tabulation n'a pas encore publié). Les nouvelles entrées du trimestre (dénombrement, mises à jour, totaux) se publient avec `python scripts/medallion/medallion.py upload-inputs --quarter T<q>_<a>`.
-3. Lancer, dans l'ordre du §3.1, les étapes 1 à 10. Après `3_assign_firstTrim_interview.R`, relancer les suppressions `.do` et `5_delete_individu_age_sexe.r`.
-4. Ajouter dans `07_correction_quarter/` les corrections propres au trimestre si le dénombrement en demande.
-5. Lancer `Rscript scripts/03_nonresponse/2_attrition_propensity.R`. Lire `nr_modele_diagnostics_<T>.csv` (AUC, tests) et `nr_modele_classes_<T>.csv` (taux de réponse par classe).
-6. Créer le dossier de calage du trimestre en copiant celui du trimestre précédent (`QUARTERLY_WEIGHTING/<a>/<T>/180X_1D/`), puis ajuster les bornes dans 04c si nécessaire.
-7. Préparer les totaux : `python scripts/01_utils/build_pop_lfs_by_region_sex_2agegr_from_anstat.py --year <a> --quarter T<q> --template <gabarit>`.
-8. Lancer le master, dans RStudio ou avec `Rscript scripts/04_calibration/QUARTERLY_WEIGHTING/<a>/T<q>/180X_1D/00_Master_Calibration_180X_1D.R`. Vérifier : `ecal.status.production` (codes de retour nuls ; un avertissement est émis sinon), `X_Summary_Table` (pas d'« Error », `Diff_Known_Tot_Final_Est` nul), `table_check` (aucun écart > 100), le calage `_cellules` (il s'arrête en cas de non-convergence). Les étapes 06 et 07f, absentes du dossier, sont signalées et ignorées.
-9. Lancer `Rscript scripts/03_nonresponse/3_compare_nonresponse_methods.R` et lire la répartition des poids par rang.
-10. Lancer `scripts/04_calibration/household_weights.r`.
-11. Publier : `python scripts/medallion/medallion.py upload-outputs --quarter T<q>_<a>` (seuls les produits de la liste partent ; `--overwrite` uniquement pour une republication voulue).
-12. Une fois l'année complète : `Rscript scripts/08_yearly_weights/ponderation_annuelle.r --year=<a>`, puis `python scripts/medallion/medallion.py upload-outputs --period annual --year <a>`.
+2. Vérifier que la ligne du trimestre dans `quarter_resurvey.xlsx` décrit les cohortes réellement réinterrogées (écarts de terrain : §2.4), et que `SEGMENT_2_FIRST_QUARTER` correspond au segment dénombré (`hh7` du dénombrement).
+3. Télécharger les entrées : `python scripts/medallion/medallion.py download --quarter T<q>_<a>`. La fin du journal liste les objets absents ; il ne doit rester que des absences attendues (par exemple les bases `Traite_` d'un trimestre que la tabulation n'a pas encore publié). Les nouvelles entrées du trimestre (dénombrement, mises à jour, totaux) se publient avec `python scripts/medallion/medallion.py upload-inputs --quarter T<q>_<a>`.
+4. Lancer, dans l'ordre du §3.1, les étapes 1 à 10. Après `3_assign_firstTrim_interview.R`, relancer les suppressions `.do` et `5_delete_individu_age_sexe.r`.
+5. Ajouter dans `07_correction_quarter/` les corrections propres au trimestre si le dénombrement en demande.
+6. Lancer `Rscript scripts/03_nonresponse/2_attrition_propensity.R`. Lire `nr_modele_diagnostics_<T>.csv` (AUC, tests) et `nr_modele_classes_<T>.csv` (taux de réponse par classe).
+7. Créer le dossier de calage du trimestre en copiant celui du trimestre précédent (`QUARTERLY_WEIGHTING/<a>/<T>/180X_1D/`), puis ajuster les bornes dans 04c si nécessaire.
+8. Préparer les totaux : `python scripts/01_utils/build_pop_lfs_by_region_sex_2agegr_from_anstat.py --year <a> --quarter T<q> --template <gabarit>`.
+9. Lancer le master, dans RStudio ou avec `Rscript scripts/04_calibration/QUARTERLY_WEIGHTING/<a>/T<q>/180X_1D/00_Master_Calibration_180X_1D.R`. Vérifier : `ecal.status.production` (codes de retour nuls ; un avertissement est émis sinon), `X_Summary_Table` (pas d'« Error », `Diff_Known_Tot_Final_Est` nul), `table_check` (aucun écart > 100), le calage `_cellules` (il s'arrête en cas de non-convergence). Les étapes 06 et 07f, absentes du dossier, sont signalées et ignorées.
+10. Lancer `Rscript scripts/03_nonresponse/3_compare_nonresponse_methods.R` et lire la répartition des poids par rang.
+11. Lancer `scripts/04_calibration/household_weights.r`.
+12. Publier : `python scripts/medallion/medallion.py upload-outputs --quarter T<q>_<a>` (seuls les produits de la liste partent ; `--overwrite` uniquement pour une republication voulue).
+13. Une fois l'année complète : `Rscript scripts/08_yearly_weights/ponderation_annuelle.r --year=<a>`, puis `python scripts/medallion/medallion.py upload-outputs --period annual --year <a>`.
 
-Pour un trimestre antérieur à T1 2026 : sauter l'étape 5 ; le master de ces trimestres n'a ni garde ni calage de référence.
+Pour un trimestre antérieur à T1 2026 : sauter l'étape 6 ; le master de ces trimestres n'a ni garde ni calage de référence.
 
 ### 13.3 Fichiers à connaître
 
@@ -834,7 +837,12 @@ Pour un trimestre antérieur à T1 2026 : sauter l'étape 5 ; le master de ces t
 | 6 juin 2026 | `d0a9ff5` | Finalisation T1 2026 ; archivage de `run_calibration.R` ; script Python des totaux |
 | 6 juin 2026 | `f66d621` | Fichiers de dénombrement ignorés (IDSeg) ; contrôle des probabilités > 1 |
 | 21 août 2026 | `7a5771b` | Poids annuels vérifiés contre l'objet de calage ; `.env` retiré du suivi |
-| Oct. 2026 | non commité | Poids annuels d'une année incomplète (`--quarters`) ; contrôle π > 1 non bloquant ; non-réponse modélisée en production à partir du T1 2026 ; calage de référence `_cellules` ; bases `Traite_` par MinIO ; poids longitudinaux |
+| 24 oct. 2026 | `427ed7d` | Non-réponse modélisée en production à partir du T1 2026 ; calage de référence `_cellules` |
+| 24 oct. 2026 | `bf59339`, `2950590` | Contrôle π > 1 non bloquant ; poids annuels d'une année incomplète (`--quarters`) |
+| 24 oct. 2026 | `6a9fcb3`, `f39b077`, `0befa09` | Plus aucun chemin propre au poste ; toutes les données par MinIO (contrat de données) ; lanceur Python `medallion.py` à la place de PowerShell |
+| 24 oct. 2026 | `82c097c`, `140aa99` | Poids longitudinaux (probabilités de retour) ; ce manuel |
+| 25 oct. 2026 | `42848d8` | Segment 2 pour les ZD entrées à partir de T3 2026 (`segment_actif()`) ; cohorte T2 2026 retirée de la rotation (premières interrogations reportées en T3 2026) ; cohortes de la non-réponse modélisée lues dans `quarter_resurvey.xlsx` |
+| 26 oct. 2026 | `9264ae3` | Corrections de dénombrement T3 2026 (11 entretiens vides retirés) |
 
 ---
 
@@ -847,7 +855,7 @@ Classés du plus urgent au moins urgent.
 1. **Segment 2.** Traité depuis le 25 octobre 2026 par `segment_actif()` (§4.1) : segment 2 pour les ZD entrées à partir de T3 2026. Un troisième passage (segment 3) demandera d'étendre la règle.
 2. **Bases `Traite_` à republier par la tabulation.** La migration du 24 octobre 2026 a publié celles des trimestres T2 2024 à T4 2025 (copies locales du dépôt de tabulation, dont certaines venaient de son dossier `legacy/`). La tabulation doit désormais publier elle-même la base de chaque trimestre (`07_upload_quarter_bases`), y compris celle de T1 2026 une fois recalculée avec les nouveaux poids : elle servira de cohorte à partir de T2 2026. Les indicateurs de T1 2026 publiés en juin reposent sur l'ancienne méthode et doivent être recalculés.
 3. **Secrets dans l'historique git.** Le `.env` (de `42bad4d` à `7a5771b`), `config/credentials.json` (jusqu'à `d0a9ff5`) et `ARCHITECTURE_ENE_PIPELINE.md` (`dd074cb`) ont contenu des identifiants MinIO. Les fichiers actuels sont nettoyés, mais les valeurs restent dans l'historique : il faut changer ces identifiants côté serveur.
-4. **Modifications non commitées** : toute la non-réponse modélisée, le calage de référence et le module longitudinal n'ont pas encore de trace git.
+4. **Publications MinIO en attente (T3 2026).** Le dénombrement de T3 2026 et `quarter_resurvey.xlsx` corrigé (cohorte T2 2026 retirée) ne sont que locaux : `python scripts/medallion/medallion.py upload-inputs --quarter T3_2026 --references`. T2 2026, non publié, doit être traité avant T3 2026. `COHORT_OFFSETS` du contrat MinIO reste sur les décalages fixes (sur-ensemble sans blocage) : à aligner sur la table de rotation.
 
 ### 15.2 Méthode
 

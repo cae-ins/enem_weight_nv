@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 ## Résumé des scripts R du projet
 
 Ce document fournit un résumé lisible du fichier `docs/scripts_summary.csv` (liste des scripts R, rôle court, packages, entrées, sorties, fonctions détectées). Le CSV contient les chemins complets et une courte description. Le but est d'avoir un index exploitable pour la revue de code et la génération de documentation.

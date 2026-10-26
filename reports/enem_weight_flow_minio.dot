@@ -1,270 +1,172 @@
+// Flux de pondération ENE-M (état du 26 octobre 2026 ; docs/MANUEL.md fait foi).
+// Rendu, depuis reports/ :
+//   dot -Tpng -Gdpi=130 -o enem_weight_flow_minio.png enem_weight_flow_minio.dot
+//   dot -Tsvg -o enem_weight_flow_minio.svg enem_weight_flow_minio.dot
 digraph ENE_WEIGHT_FLOW_MINIO {
   graph [
-    rankdir=TB,
-    compound=true,
-    bgcolor="#FFFFFF",
-    pad="0.35",
-    nodesep="0.45",
-    ranksep="0.55",
-    splines=ortho,
-    fontname="Arial",
-    labelloc="t",
-    label=<
-      <B>Flux de ponderation ENE-M</B><BR/>
-      <FONT POINT-SIZE="18">des donnees apurees a la publication MinIO Silver / Gold</FONT>
-    >,
-    fontsize=26
+    rankdir=TB, newrank=true, compound=true,
+    bgcolor="#FFFFFF", pad="0.4", nodesep="0.35", ranksep="0.32",
+    splines=spline, fontname="Arial", fontsize=24, labelloc="t",
+    label=<<B>Flux de pondération ENE-M</B><BR/><FONT POINT-SIZE="14" COLOR="#5B6475">des entrées MinIO aux poids publiés · état du 26 octobre 2026 · référence : docs/MANUEL.md</FONT><BR/> >
   ];
+  node  [shape=plain, fontname="Arial", fontsize=12];
+  edge  [color="#7A8496", arrowsize=0.7, penwidth=1.3, fontname="Arial", fontsize=11, fontcolor="#5B6475"];
 
-  node [
-    shape=box,
-    style="rounded,filled",
-    fontname="Arial",
-    fontsize=15,
-    color="#425466",
-    penwidth=1.5,
-    margin="0.14,0.10"
-  ];
+  // ---------------------------------------------------------------- Entrées
+  subgraph cluster_in {
+    label=<<B>1 · Entrées sur MinIO</B>  <FONT POINT-SIZE="11" COLOR="#5B6475">contrat : ENE_MEDALLION_ORCHESTRATION/ene_medallion_io/weights_contract.py</FONT>>;
+    fontsize=14; style="rounded"; color="#9DBCE0"; penwidth=1.4; margin=12;
 
-  edge [
-    fontname="Arial",
-    fontsize=11,
-    color="#596579",
-    arrowsize=0.8,
-    penwidth=1.25
-  ];
+    staging_in [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#6F93BF" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D6E6F7" ALIGN="LEFT"><B>staging</B> · propriétaire : pondération</TD></TR>
+        <TR><TD BGCOLOR="#F3F8FD" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">enem/&lt;T&gt;/brutes/denombrement/<BR/>enem/&lt;T&gt;/brutes/denombrement_update/<BR/>enem/&lt;T&gt;/population/<BR/>enem/references/  (RGPH, rotation, projections)</FONT></TD></TR>
+      </TABLE>>];
 
-  subgraph cluster_input {
-    label="1. Entree : bases apurees disponibles sur MinIO";
-    fontname="Arial";
-    fontsize=17;
-    color="#A7C7E7";
-    penwidth=1.8;
-    style="rounded";
+    silver_in [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#6F93BF" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D6E6F7" ALIGN="LEFT"><B>silver</B> · apurement, poids des cohortes</TD></TR>
+        <TR><TD BGCOLOR="#F3F8FD" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">enem/&lt;T&gt;/menage/<BR/>enem/&lt;T&gt;/individu/<BR/>enem/&lt;cohorte&gt;/poids/base_weights/</FONT></TD></TR>
+      </TABLE>>];
 
-    minio_inputs [
-      fillcolor="#EAF4FF",
-      label=<
-        <B>Silver - apurement</B><BR ALIGN="LEFT"/>
-        s3://silver/enem/&lt;TRIMESTRE&gt;/menage/menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        s3://silver/enem/&lt;TRIMESTRE&gt;/individu/individu_&lt;TRIMESTRE&gt;.dta
-      >
-    ];
+    gold_in [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#6F93BF" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D6E6F7" ALIGN="LEFT"><B>gold</B> · tabulation</TD></TR>
+        <TR><TD BGCOLOR="#F3F8FD" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">enem/&lt;cohorte&gt;/base_indicateurs/<BR/>  Traite_&lt;AATq&gt;.dta</FONT></TD></TR>
+      </TABLE>>];
 
-    download_inputs [
-      fillcolor="#F3F8FF",
-      label=<
-        <B>Synchronisation locale</B><BR ALIGN="LEFT"/>
-        scripts/medallion/medallion.py download<BR ALIGN="LEFT"/>
-        -Quarter &lt;TRIMESTRE&gt; -Overwrite
-      >
-    ];
-
-    local_clean [
-      fillcolor="#F7FBFF",
-      label=<
-        <B>Entrees locales ponderation</B><BR ALIGN="LEFT"/>
-        data/02_cleaned/Menage/&lt;TRIMESTRE&gt;/menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        data/02_cleaned/Individu/&lt;TRIMESTRE&gt;/individu_&lt;TRIMESTRE&gt;.dta
-      >
-    ];
+    download [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#6F93BF" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#B9D3EF" ALIGN="LEFT"><B>Téléchargement</B> · tout arrive sous data/</TD></TR>
+        <TR><TD BGCOLOR="#F3F8FD" ALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">python scripts/medallion/medallion.py download --quarter &lt;T&gt;</FONT></TD></TR>
+      </TABLE>>];
   }
 
+  // ---------------------------------------------------------------- Traitements
   subgraph cluster_local {
-    label="2. Traitements locaux de ponderation";
-    fontname="Arial";
-    fontsize=17;
-    color="#BFD6C6";
-    penwidth=1.8;
-    style="rounded";
+    label=<<B>2 · Traitements locaux</B>  <FONT POINT-SIZE="11" COLOR="#5B6475">depuis la racine du dépôt · ENE_QUARTER=&lt;T&gt;</FONT>>;
+    fontsize=14; style="rounded"; color="#A9CDB4"; penwidth=1.4; margin=12;
 
-    config [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Parametrage du trimestre</B><BR ALIGN="LEFT"/>
-        config/1_config.r<BR ALIGN="LEFT"/>
-        TARGET_QUARTER = "&lt;TRIMESTRE&gt;"
-      >
-    ];
+    denomb [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Dénombrement</B></TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">01_utils/1_concat_denomb.R<BR/>01_utils/2_denomb_updates.R</FONT><FONT POINT-SIZE="11">   segment enquêté</FONT></TD></TR>
+      </TABLE>>];
 
-    input_qc [
-      shape=diamond,
-      width=2.0,
-      height=1.2,
-      fixedsize=false,
-      fillcolor="#FFF7D6",
-      label=<
-        <B>QC inputs</B><BR/>
-        cles, doublons,<BR/>variables attendues
-      >
-    ];
+    menages [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Ménages et individus</B></TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">01_utils/update_interviewkey_map.R<BR/>01_utils/3_assign_firstTrim_interview.R<BR/>suppressions .do (Stata)<BR/>01_utils/5_delete_individu_age_sexe.r</FONT></TD></TR>
+      </TABLE>>];
 
-    frame [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Construction de la base de travail</B><BR ALIGN="LEFT"/>
-        denombrement, appariement panel,<BR ALIGN="LEFT"/>
-        variables de plan et de controle
-      >
-    ];
+    base_weights [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Poids de base</B> · π, base_weight_HH</TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">02_base_weights/1_gen_weights_columns.R<BR/>  (+ 4_construct_denombrement.r)<BR/>02_base_weights/2_calc_base_weights.R</FONT></TD></TR>
+      </TABLE>>];
 
-    base_weights [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Poids de base menages</B><BR ALIGN="LEFT"/>
-        probabilites d'inclusion, segments,<BR ALIGN="LEFT"/>
-        base_weights_&lt;TRIMESTRE&gt;.dta
-      >
-    ];
+    nr_cells [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Non-réponse par cellules régionales</B> · corrected_weight_HH</TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">03_nonresponse/1_adjust_weights_non_response.R<BR/>02_base_weights/3_indivs_weights.R  → individu_&lt;T&gt;.dta</FONT></TD></TR>
+      </TABLE>>];
 
-    nonresponse [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Ajustement non-reponse</B><BR ALIGN="LEFT"/>
-        facteurs par region x milieu<BR ALIGN="LEFT"/>
-        option : segment si retenu
-      >
-    ];
+    nr_model [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Non-réponse modélisée</B> · à partir de T1 2026</TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">03_nonresponse/2_attrition_propensity.R</FONT><BR/><FONT POINT-SIZE="11">d_weights = modèle d'attrition ; d_weights_cellules = cellules</FONT></TD></TR>
+      </TABLE>>];
 
-    indiv_weights [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Poids individus et fichiers SR</B><BR ALIGN="LEFT"/>
-        individu_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        SR_individu_&lt;TRIMESTRE&gt;.dta
-      >
-    ];
+    calibration [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Calage 180X_1D</B> (ReGenesees) · FINAL_WEIGHT, FINAL_WEIGHT_cellules</TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">04_calibration/QUARTERLY_WEIGHTING/&lt;année&gt;/&lt;T&gt;/180X_1D/<BR/>  00_Master_Calibration_180X_1D.R</FONT><BR/><FONT POINT-SIZE="11" COLOR="#8A5A00">contrôles : X_Summary_Table, table_check, convergence</FONT></TD></TR>
+      </TABLE>>];
 
-    known_totals [
-      fillcolor="#F2F0FF",
-      color="#7466B2",
-      label=<
-        <B>Totaux externes</B><BR ALIGN="LEFT"/>
-        RP2021 / projections / contraintes<BR ALIGN="LEFT"/>
-        age, sexe, region, milieu
-      >
-    ];
+    derived [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#D4ECDB" ALIGN="LEFT"><B>Produits dérivés</B></TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">03_nonresponse/3_compare_nonresponse_methods.R<BR/>04_calibration/household_weights.r</FONT></TD></TR>
+      </TABLE>>];
 
-    calibration [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Calibration ReGenesees</B><BR ALIGN="LEFT"/>
-        preparation echantillon + totaux,<BR ALIGN="LEFT"/>
-        resolution, facteurs g, poids finaux
-      >
-    ];
-
-    calib_qc [
-      shape=diamond,
-      width=2.0,
-      height=1.2,
-      fixedsize=false,
-      fillcolor="#FFF7D6",
-      label=<
-        <B>QC calibration</B><BR/>
-        convergence,<BR/>bornes, totaux,<BR/>diagnostics
-      >
-    ];
-
-    attach_final [
-      fillcolor="#EFF8F0",
-      label=<
-        <B>Attachement des poids finaux</B><BR ALIGN="LEFT"/>
-        calibrated_weights/individu_&lt;TRIMESTRE&gt;_CAL.dta<BR ALIGN="LEFT"/>
-        base_weights/menage_&lt;TRIMESTRE&gt;.dta
-      >
-    ];
+    annual [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5E9A70" STYLE="ROUNDED,DASHED">
+        <TR><TD BGCOLOR="#E6F2E9" ALIGN="LEFT"><B>Poids annuels</B> · année close · FINAL_WEIGHT / K</TD></TR>
+        <TR><TD BGCOLOR="#F4FAF5" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">08_yearly_weights/ponderation_annuelle.r<BR/>  --year=&lt;a&gt; [--quarters=T1,T3,T4]</FONT><BR/><FONT POINT-SIZE="11">2026 : T2 non publié, K = 3</FONT></TD></TR>
+      </TABLE>>];
   }
 
-  subgraph cluster_outputs {
-    label="3. Sorties locales versionnees avant depot";
-    fontname="Arial";
-    fontsize=17;
-    color="#F0C987";
-    penwidth=1.8;
-    style="rounded";
+  // ---------------------------------------------------------------- Règles datées
+  subgraph cluster_rules {
+    label=<<B>Règles datées</B>  <FONT POINT-SIZE="11" COLOR="#5B6475">un seul endroit chacune</FONT>>;
+    fontsize=14; style="rounded,dashed"; color="#B7A6DD"; penwidth=1.4; margin=12;
 
-    local_outputs [
-      fillcolor="#FFF8EA",
-      label=<
-        <B>data/04_weights/&lt;TRIMESTRE&gt;/</B><BR ALIGN="LEFT"/>
-        base_weights/base_weights_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        base_weights/inconsistent_rows_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        base_weights/individu_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        base_weights/SR_individu_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        base_weights/menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        calibrated_weights/individu_&lt;TRIMESTRE&gt;_CAL.dta
-      >
-    ];
-
-    upload_check [
-      shape=diamond,
-      width=2.0,
-      height=1.2,
-      fixedsize=false,
-      fillcolor="#FFF7D6",
-      label=<
-        <B>Dry-run</B><BR/>
-        liste des objets<BR/>et destinations
-      >
-    ];
+    rules [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#7D6BB8" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#E3DCF5" ALIGN="LEFT"><B>config/1_config.r</B></TD>
+            <TD BGCOLOR="#E3DCF5" ALIGN="LEFT"><B>quarter_resurvey.xlsx</B></TD></TR>
+        <TR><TD BGCOLOR="#F8F6FD" ALIGN="LEFT" BALIGN="LEFT" VALIGN="TOP"><FONT FACE="Consolas" POINT-SIZE="11">NR_MODEL_FIRST_QUARTER  = "T1_2026"<BR/>SEGMENT_2_FIRST_QUARTER = "T3_2026"<BR/>segment_actif(first_trim)</FONT></TD>
+            <TD BGCOLOR="#F8F6FD" ALIGN="LEFT" BALIGN="LEFT" VALIGN="TOP"><FONT POINT-SIZE="11">cohortes réinterrogées par trimestre<BR/>cohorte T2 2026 retirée (premières<BR/>interrogations reportées en T3 2026)</FONT></TD></TR>
+        <TR><TD BGCOLOR="#E3DCF5" ALIGN="LEFT" COLSPAN="2"><B>Corrections du trimestre</B>  <FONT FACE="Consolas" POINT-SIZE="11">07_correction_quarter/denombrement/correction_&lt;T&gt;.r</FONT></TD></TR>
+      </TABLE>>];
   }
 
-  subgraph cluster_minio_out {
-    label="4. Depot final MinIO";
-    fontname="Arial";
-    fontsize=17;
-    color="#D8B4E2";
-    penwidth=1.8;
-    style="rounded";
+  // ---------------------------------------------------------------- Publication
+  subgraph cluster_out {
+    label=<<B>3 · Publication</B>  <FONT POINT-SIZE="11" COLOR="#5B6475">seuls les produits du contrat partent · sans --overwrite, rien n'est remplacé</FONT>>;
+    fontsize=14; style="rounded"; color="#D7A9D0"; penwidth=1.4; margin=12;
 
-    upload_script [
-      fillcolor="#F9F0FF",
-      label=<
-        <B>Publication</B><BR ALIGN="LEFT"/>
-        scripts/medallion/medallion.py upload-outputs<BR ALIGN="LEFT"/>
-        -Quarter &lt;TRIMESTRE&gt; -Year &lt;ANNEE&gt; -Overwrite
-      >
-    ];
+    upload [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#A0679A" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#F1D9EE" ALIGN="LEFT"><B>Publication</B> · --dry-run d'abord</TD></TR>
+        <TR><TD BGCOLOR="#FCF5FB" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">python scripts/medallion/medallion.py upload-outputs --quarter &lt;T&gt;<BR/>python scripts/medallion/medallion.py upload-outputs --period annual --year &lt;a&gt;</FONT></TD></TR>
+      </TABLE>>];
 
-    silver_outputs [
-      fillcolor="#F7F0FF",
-      label=<
-        <B>Silver - audit et tracabilite</B><BR ALIGN="LEFT"/>
-        s3://silver/enem/&lt;TRIMESTRE&gt;/poids/<BR ALIGN="LEFT"/>
-        base_weights/*<BR ALIGN="LEFT"/>
-        calibrated_weights/*<BR ALIGN="LEFT"/>
-        _manifests/upload_&lt;timestamp&gt;.json
-      >
-    ];
+    silver_out [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#A0679A" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#F1D9EE" ALIGN="LEFT"><B>silver</B> · audit et traçabilité</TD></TR>
+        <TR><TD BGCOLOR="#FCF5FB" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">enem/&lt;T&gt;/poids/base_weights/<BR/>enem/&lt;T&gt;/poids/calibrated_weights/<BR/>enem/&lt;T&gt;/poids/calibration_design/180X_1D/<BR/>enem/annual/&lt;a&gt;/poids/</FONT></TD></TR>
+      </TABLE>>];
 
-    gold_outputs [
-      fillcolor="#FFF0FA",
-      color="#9A4D8F",
-      label=<
-        <B>Gold - base indicateurs</B><BR ALIGN="LEFT"/>
-        s3://gold/enem/&lt;TRIMESTRE&gt;/base_indicateurs/<BR ALIGN="LEFT"/>
-        individu_&lt;TRIMESTRE&gt;_CAL.dta<BR ALIGN="LEFT"/>
-        menage_&lt;TRIMESTRE&gt;.dta<BR ALIGN="LEFT"/>
-        _manifests/upload_&lt;timestamp&gt;.json
-      >
-    ];
+    gold_out [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#A0679A" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#F1D9EE" ALIGN="LEFT"><B>gold</B> · bases pondérées (lues par la tabulation)</TD></TR>
+        <TR><TD BGCOLOR="#FCF5FB" ALIGN="LEFT" BALIGN="LEFT"><FONT FACE="Consolas" POINT-SIZE="11">enem/&lt;T&gt;/base_ponderee/individu_&lt;T&gt;_CAL.dta<BR/>enem/&lt;T&gt;/base_ponderee/menage_&lt;T&gt;.dta<BR/>enem/annual/&lt;a&gt;/base_ponderee/LFS_WEIGHTS_&lt;a&gt;</FONT></TD></TR>
+      </TABLE>>];
   }
 
-  minio_inputs -> download_inputs -> local_clean;
-  local_clean -> config;
-  config -> input_qc;
-  input_qc -> frame;
-  frame -> base_weights;
-  base_weights -> nonresponse;
-  nonresponse -> indiv_weights;
-  indiv_weights -> calibration;
-  known_totals -> calibration;
-  calibration -> calib_qc;
-  calib_qc -> attach_final;
-  attach_final -> local_outputs;
-  local_outputs -> upload_check;
-  upload_check -> upload_script;
-  upload_script -> silver_outputs;
-  upload_script -> gold_outputs;
+  // ---------------------------------------------------------------- Dépôts en aval
+  subgraph cluster_down {
+    label=<<B>4 · Dépôts en aval</B>  <FONT POINT-SIZE="11" COLOR="#5B6475">lisent les sorties sur MinIO</FONT>>;
+    fontsize=14; style="rounded"; color="#D9C08A"; penwidth=1.4; margin=12;
+
+    tabulation [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#B08A3E" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#F5E7C6" ALIGN="LEFT"><B>ENE_INDICATORS_TABULATIONS</B></TD></TR>
+        <TR><TD BGCOLOR="#FDF9EF" ALIGN="LEFT"><FONT POINT-SIZE="11">indicateurs à partir de base_ponderee</FONT></TD></TR>
+      </TABLE>>];
+
+    precision [label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#B08A3E" STYLE="ROUNDED">
+        <TR><TD BGCOLOR="#F5E7C6" ALIGN="LEFT"><B>ENE_PRECISION_ESTIMATION</B> · github.com/cae-ins/ENE_PRECISION_ESTIMATION</TD></TR>
+        <TR><TD BGCOLOR="#FDF9EF" ALIGN="LEFT" BALIGN="LEFT"><FONT POINT-SIZE="11">précision officielle : erreurs types, IC, CV, effets de plan<BR/>linéarisation de Taylor sur l'objet de calage (calibration_design/)</FONT></TD></TR>
+      </TABLE>>];
+  }
+
+  // ---------------------------------------------------------------- Liens
+  {staging_in silver_in gold_in} -> download;
+  download -> denomb -> menages -> base_weights -> nr_cells -> nr_model -> calibration -> derived -> upload;
+  derived -> annual [style=dashed];
+  annual -> upload [style=dashed];
+  upload -> {silver_out gold_out};
+  {rank=same; silver_out; gold_out;}
+  gold_out -> tabulation;
+  silver_out -> precision;
+  tabulation -> precision [style=dashed, xlabel=" INDKEY "];
+
+  // Règles à côté de la chaîne, reliées aux étapes qui les lisent
+  {rank=same; menages; rules;}
+  rules -> denomb       [style=dashed, color="#8E7CC3", constraint=false];
+  rules -> base_weights [style=dashed, color="#8E7CC3", constraint=false];
+  rules -> nr_model     [style=dashed, color="#8E7CC3", constraint=false];
 }

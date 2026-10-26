@@ -31,7 +31,10 @@ python scripts/medallion/medallion.py upload-outputs                 publication
 
 - `python scripts/medallion/medallion.py upload-inputs` publishes the inputs owned by the weighting stage (enumeration, enumeration updates, population totals, references).
 - The calibration master of each quarter is a copy of the previous one; it runs in RStudio or with `Rscript` from the repository root (batch mode: `View()` is neutralised, Excel is not opened). `scripts/04_calibration/_experimental_archived/run_calibration.R` is archived and is not the entry point.
-- Published quarters (up to T4 2025) are frozen, including their calibration folders. The modelled non-response applies from `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`).
+- Published quarters (up to T1 2026) are frozen, including their calibration folders. The modelled non-response applies from `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`).
+- Rules that change over time live in one place each: `NR_MODEL_FIRST_QUARTER`, `SEGMENT_2_FIRST_QUARTER` / `segment_actif()` (segment 2 for ZD enumerated from T3 2026) in `config/1_config.r`; re-interviewed cohorts in `data/01_raw/Organisation/quarter_resurvey.xlsx` (read by `4_construct_denombrement.r` and `2_attrition_propensity.R`, never fixed offsets); quarter-specific fixes in `scripts/07_correction_quarter/denombrement/correction_<T>.r`.
+- T2 2026 had no first interviews (carried over to T3 2026; its cohort is removed from the rotation table). It is processed for sample continuity but never published; 2026 annual weights use `--quarters=T1,T3,T4`.
+- Official precision (standard errors, CI, CV, design effects) is computed in the sibling repository `ENE_PRECISION_ESTIMATION` (https://github.com/cae-ins/ENE_PRECISION_ESTIMATION) from the published calibration object, not here.
 - `11_modif_design/`: sample-reduction simulation (`0_MASTER_SIMULATION.r`, quarter format `YYYY_TX`). `12_longitudinal_weights/`: longitudinal weights, in progress.
 
 ## Key Libraries
@@ -56,4 +59,4 @@ ReGenesees (calibration, linearisation), survey, haven (`.dta`), dplyr (`%>%`), 
 ## Quality Control
 
 - Calibration: `X_Summary_Table` (no "Error", `Diff_Known_Tot_Final_Est` = 0, correction factor within [0.95, 1.65], cells ≥ 30), `table_check` (gap ≤ 100), convergence status `ecal.status.production`.
-- `05_quality_control/postestimation_quality.R` flags estimates A (CV < 15 %), B (15–30 %), C (≥ 30 %); its standard errors ignore the sample design (see `docs/MANUEL.md` §10).
+- `05_quality_control/postestimation_quality.R` flags estimates A (CV < 15 %), B (15–30 %), C (≥ 30 %); its standard errors ignore the sample design (see `docs/MANUEL.md` §10); use `ENE_PRECISION_ESTIMATION` for published precision.

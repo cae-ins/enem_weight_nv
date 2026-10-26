@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 # Documentation Complète du Projet ENE_SURVEY_WEIGHTS
 
 Ce document fournit une vue d'ensemble détaillée du fonctionnement du projet, des formules mathématiques utilisées pour la pondération, et une explication des fonctions principales.

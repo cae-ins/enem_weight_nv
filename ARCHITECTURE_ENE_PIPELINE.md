@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](docs/MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](README.md).
+
 # Architecture du Pipeline ENE-M — Données, Pondérations, Indicateurs
 
 **Version :** 3.0

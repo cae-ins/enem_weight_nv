@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 # Processus complet du projet ENE_SURVEY_WEIGHTS
 
 Ce document decrit le role du projet `ENE_SURVEY_WEIGHTS` dans la chaine de production ENE-M, puis detaille le processus local de production des ponderations.
