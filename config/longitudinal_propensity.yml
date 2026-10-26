@@ -1,0 +1,46 @@
+version: 1
+
+columns:
+  individual_id: id_individu
+  household_id: id_menage
+  quarter: current_quarter
+  interview_rank: rang_int
+  age: ageannee
+  origin_weight: pmencor_ind
+
+population:
+  minimum_age: 15
+
+model:
+  # Un logit distinct est estime pour chaque vraie fenetre de transition.
+  categorical_covariates:
+    - sexe
+    - age_group_model
+    - milieu
+    - hh2
+    - semaine_ref
+    - profil_rep
+  numeric_covariates:
+    - taille_mng
+    - taux_univ
+    - taux_log
+    - taux_filt_std
+    - taux_migr
+    - taux_fp
+    - taux_demo
+    - ecart_fsens_fstd
+    - taux_univ_3plus
+    - taux_univ_15plus
+    - taux_univ_menage
+  minimum_level_count: 30
+  probability_epsilon: 0.000001
+  maximum_iterations: 100
+
+weights:
+  winsorization_quantile: 0.99
+
+outputs:
+  directory: data/04_weights/longitudinal
+  probabilities_file: return_probabilities.parquet
+  diagnostics_file: return_probability_diagnostics.parquet
+  models_file: propensity_models.rds

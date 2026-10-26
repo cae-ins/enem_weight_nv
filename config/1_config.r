@@ -1,6 +1,35 @@
-# Project root (use `here::here()` if working in RStudio)
-BASE_DIR <- "C:/Users/f.migone/Desktop/ENE_SURVEY_WEIGHTS"
-TARGET_QUARTER <- "T1_2026"
+# Project root: ENE_BASE_DIR if set, otherwise the working directory, which must
+# be the repository root (every script sources "config/1_config.r" relatively).
+# No path of a given computer is written in the code: the data are downloaded
+# from MinIO into <root>/data (python scripts/medallion/medallion.py download).
+BASE_DIR <- normalizePath(Sys.getenv("ENE_BASE_DIR", unset = getwd()), winslash = "/", mustWork = TRUE)
+if (!file.exists(file.path(BASE_DIR, "config", "1_config.r"))) {
+  stop("BASE_DIR n'est pas la racine du dépôt ENE_SURVEY_WEIGHTS : ", BASE_DIR,
+       " (lancer depuis la racine ou définir ENE_BASE_DIR)", call. = FALSE)
+}
+# Quarter to process: ENE_QUARTER (same variable as the MinIO scripts) or the value below.
+TARGET_QUARTER <- Sys.getenv("ENE_QUARTER", unset = "T1_2026")
+
+# Correction de la non-réponse des ménages : à partir de ce trimestre, la production
+# utilise la non-réponse modélisée (03_nonresponse/2_attrition_propensity.R, après
+# 02_base_weights/3_indivs_weights.R). Le poids de l'ancienne méthode (cellules
+# régionales) est conservé dans d_weights_cellules et calé à côté (FINAL_WEIGHT_cellules).
+NR_MODEL_FIRST_QUARTER <- "T1_2026"
+
+# Segment enquêté dans la ZD : segment 1 pour les ZD entrées dans l'échantillon avant ce
+# trimestre (y compris quand elles sont réinterrogées ensuite), segment 2 pour celles qui
+# y entrent à partir de ce trimestre. Le trimestre d'entrée est celui du dénombrement
+# (first_trim dans 02_base_weights, dossier de Denombrement_update dans 2_denomb_updates.R).
+SEGMENT_2_FIRST_QUARTER <- "T3_2026"
+
+rang_trimestre <- function(q) {
+  as.integer(substr(q, 4, 7)) * 10L + as.integer(substr(q, 2, 2))
+}
+
+segment_actif <- function(first_trim) {
+  rang <- suppressWarnings(rang_trimestre(first_trim))
+  ifelse(!is.na(rang) & rang >= rang_trimestre(SEGMENT_2_FIRST_QUARTER), 2, 1)
+}
 
 # Directory templates (use `sprintf()` or `glue` for dynamic quarters)
 PATHS <- list(

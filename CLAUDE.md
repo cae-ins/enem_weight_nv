@@ -2,97 +2,62 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Reference documentation: `docs/MANUEL.md`** (method, formulas, files, history of choices, risks). It supersedes the older `docs/00_index.md` … `05_processus_complet.md`, the README and `ARCHITECTURE_ENE_PIPELINE.md` where they disagree.
+
 ## Project Overview
 
-**RUWTHS** (R Unified Weighting Treatment Harmonized System) — a modular R system for computing survey weights for the Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M) in Côte d'Ivoire. The project language is French; comments, variable names, and documentation are primarily in French.
+**RUWTHS** (R Unified Weighting Treatment Harmonized System) — R code computing the survey weights of the Enquête Nationale sur l'Emploi auprès des Ménages (ENE-M, Côte d'Ivoire, ANStat). The project language is French; comments, variable names and documentation are mostly in French.
 
-## Architecture & Pipeline
+**Data, code and compute are independent.** The code holds no path of a given computer: `config/1_config.r` takes the repository root (working directory, or `ENE_BASE_DIR`). All inputs are downloaded from MinIO into `data/` and all products are published back to MinIO, through the Python launcher `scripts/medallion/medallion.py` and the Python module of the sibling repository `ENE_MEDALLION_ORCHESTRATION` (data contract: `ene_medallion_io/weights_contract.py`). Repositories never exchange files directly. Credentials only live in `.env` (see `.env.example`) or the secrets file of the orchestration module.
 
-The weighting pipeline runs sequentially through numbered script directories under `scripts/`:
+## Pipeline
+
+Real execution order (folder numbers do not reflect it):
 
 ```
-01_utils/        → Data preparation, concatenation, key mapping, deduplication
-02_base_weights/ → Base weight calculation: w^(0) = 1/π (inverse inclusion probability)
-03_nonresponse/  → Non-response adjustment by Region × Milieu: w^(1) = w^(0) × N_rm/R_rm
-04_calibration/  → Calibration via ReGenesees to align with population benchmarks
-05_quality_control/ → Post-estimation validation (CV thresholds, outliers, consistency checks)
-06_monitoring/   → Monitoring dashboards
-07_correction_quarter/ → Quarter-specific household data corrections
-08_yearly_weights/ → Combine quarterly weights into annual weights
-09_create_indicators/ → Employment/labor market indicator computation
-10_data_management/  → Data cleaning (income variables, cloud storage)
-11_modif_design/ → Sample reduction simulation framework (experimental)
+python scripts/medallion/medallion.py download            inputs from MinIO
+01_utils/  1_concat_denomb → 2_denomb_updates → update_interviewkey_map → 3_assign_firstTrim_interview
+           (+ Stata suppression .do files) → 5_delete_individu_age_sexe
+02_base_weights/1_gen_weights_columns → 2_calc_base_weights         π and base weights (constant within a region)
+03_nonresponse/1_adjust_weights_non_response                         regional cell adjustment (corrected_weight_HH)
+02_base_weights/3_indivs_weights                                     individu_<T>.dta, d_weights
+03_nonresponse/2_attrition_propensity   (from T1 2026)               production non-response: d_weights (from base_weight_HH); cells kept as reference in d_weights_cellules
+04_calibration/QUARTERLY_WEIGHTING/<year>/<T>/180X_1D/00_Master_Calibration_180X_1D.R
+                                                                     calibration (FINAL_WEIGHT, and FINAL_WEIGHT_cellules from T1 2026)
+03_nonresponse/3_compare_nonresponse_methods, 04_calibration/household_weights
+python scripts/medallion/medallion.py upload-outputs                 publication
+08_yearly_weights/ponderation_annuelle.r                             annual weights (FINAL_WEIGHT / K)
 ```
 
-Within each directory, scripts are numbered to indicate execution order (e.g., `1_gen_weights_columns.R` → `2_calc_base_weights.R` → `3_indivs_weights.R`).
-
-## Key Entry Points
-
-### Global configuration
-All scripts begin by sourcing `config/1_config.r`, which sets `BASE_DIR`, `TARGET_QUARTER` (format: `"TX_YYYY"`, e.g. `"T4_2025"`), path templates (`PATHS` list with `{quarter}` placeholders), and file templates (`FILES` list). Changing the target quarter is the primary way to switch between periods.
-
-### Calibration pipeline
-```r
-# In scripts/04_calibration/run_calibration.R — set these parameters:
-TARGET_QUARTER <- "T1_2025"
-SCHEMA_ID <- "180X_1D"       # See config/schemas_calibration.csv for all schemas
-USE_SR <- FALSE               # Use non-response adjusted weights
-INTERACTIVE_BOUNDS_MODE <- FALSE
-source("scripts/04_calibration/run_calibration.R")
-```
-This orchestrator replaced 237 duplicated script files. It runs 7 steps automatically (load data → prepare sample → prepare population totals → calibrate → attach weights → summary table → precision). Schema configurations are in `config/schemas_calibration.csv` (14 schemas, from 8 to 816 constraints). Calibration constraint files live in `scripts/04_calibration/QUARTERLY_WEIGHTING/constraints/[schema_id]/`.
-
-### Simulation pipeline (sample reduction)
-```r
-# In scripts/11_modif_design/0_MASTER_SIMULATION.r — set these parameters:
-PARAM_TARGET_QUARTER <- "2025_T3"   # NB: format is "YYYY_TX" here, not "TX_YYYY"
-PARAM_RATIO_REDUCTION <- 0.75       # Keep 75% of households
-PARAM_N_ITER <- 30
-PARAM_SEED <- 123
-source("scripts/11_modif_design/0_MASTER_SIMULATION.r")
-```
-Runs 5 steps: PSU selection → base weights → calibration → attach LFS data → precision estimation. Uses `furrr::future_map()` for parallel iterations. Output goes to `data/04_weights/simulation/{TARGET_QUARTER}/`.
+- `python scripts/medallion/medallion.py upload-inputs` publishes the inputs owned by the weighting stage (enumeration, enumeration updates, population totals, references).
+- The calibration master of each quarter is a copy of the previous one; it runs in RStudio or with `Rscript` from the repository root (batch mode: `View()` is neutralised, Excel is not opened). `scripts/04_calibration/_experimental_archived/run_calibration.R` is archived and is not the entry point.
+- From T1 2026 the modelled non-response is the only production method: it restarts from `base_weight_HH` and is never stacked on the cell factor. The cell method still runs (needed by `3_indivs_weights.R`) but only as a reference (`d_weights_cellules`, `FINAL_WEIGHT_cellules`): these columns sit in `individu_<T>_CAL.dta` for comparison, the official weight is `FINAL_WEIGHT`.
+- Published quarters (up to T1 2026) are frozen, including their calibration folders. The modelled non-response applies from `NR_MODEL_FIRST_QUARTER` (`config/1_config.r`).
+- Rules that change over time live in one place each: `NR_MODEL_FIRST_QUARTER`, `SEGMENT_2_FIRST_QUARTER` / `segment_actif()` (segment 2 for ZD enumerated from T3 2026) in `config/1_config.r`; re-interviewed cohorts in `data/01_raw/Organisation/quarter_resurvey.xlsx` (read by `4_construct_denombrement.r` and `2_attrition_propensity.R`, never fixed offsets); quarter-specific fixes in `scripts/07_correction_quarter/denombrement/correction_<T>.r`.
+- T2 2026 had no first interviews (carried over to T3 2026; its cohort is removed from the rotation table). It is processed for sample continuity but never published; 2026 annual weights use `--quarters=T1,T3,T4`.
+- Official precision (standard errors, CI, CV, design effects) is computed in the sibling repository `ENE_PRECISION_ESTIMATION` (https://github.com/cae-ins/ENE_PRECISION_ESTIMATION) from the published calibration object, not here.
+- `11_modif_design/`: sample-reduction simulation (`0_MASTER_SIMULATION.r`, quarter format `YYYY_TX`). `12_longitudinal_weights/`: longitudinal weights, in progress.
 
 ## Key Libraries
 
-- **ReGenesees**: Core calibration engine (generalized regression estimator)
-- **survey**: Survey design objects and estimation
-- **haven**: Read/write Stata `.dta` files (primary data format)
-- **dplyr**: All data manipulation uses tidyverse pipes (`%>%`)
-- **arrow**: Parquet I/O for intermediate simulation results
-- **furrr/future**: Parallel processing in simulation scripts
-- **labelled**: Stata value label handling
-
-No renv/packrat lockfile — packages are installed directly via `install.packages()` in config.
+ReGenesees (calibration, linearisation), survey, haven (`.dta`), dplyr (`%>%`), labelled, arrow (Parquet), furrr/future (simulation). No renv lockfile; `scripts/00_setup/install_required_packages.R` installs CRAN packages, ReGenesees comes from GitHub (`DiegoZardetto/ReGenesees`).
 
 ## Data Conventions
 
-- **Primary format**: Stata `.dta` (via haven). All data files are gitignored.
-- **Data directory structure**: `data/01_raw/`, `data/02_Cleaned/`, `data/03_Processed/`, `data/04_weights/`
-- **Quarter format**: `"TX_YYYY"` in most scripts (e.g., `"T4_2025"`), but `"YYYY_TX"` in simulation master script
-- **Weight variables**: `poids_de_base` (base), `weight` (intermediate), `poids_final` (calibrated)
-- **Key identifiers**: `interview_key` (household), `cle_individu`/`membre_id` (individual), `ZD` (enumeration district/segment)
-- **Inconsistency tracking**: `incoherence_code` field (code 10 = segment dropped from weighting)
-- **Column normalization**: Scripts lowercase column names and remove double underscores
-
-## File Naming Conventions
-
-- Weight outputs: `individu_TX_YYYY.dta` (base), `individu_TX_YYYY_CAL.dta` (calibrated), `SR_individu_TX_YYYY.dta` (with non-response)
-- Schema notation: `[X]X_[D]D` — X = number of constraints, D = number of domains (e.g., `180X_1D`)
-- Script headers follow a standard format with `# ====` dividers, script name, title, description, author, date
+- Stata `.dta` is the primary format; Parquet for annual weights and simulations. `data/` is gitignored and rebuilt from MinIO.
+- Quarter format `TX_YYYY` (`ENE_QUARTER` or `TARGET_QUARTER`), except `YYYY_TX` in the simulation master.
+- Weight variables: `base_weight_HH` (1/π), `corrected_weight_HH` (cell non-response), `d_weights` (calibration input), `FINAL_WEIGHT`, `FINAL_CORR_FACTOR`; from T1 2026 also `d_weights_cellules`, `FINAL_WEIGHT_cellules`.
+- Keys: `interview_key` (household), `membres_id` (member), `v1interviewkey` (first interview), `hh2/hh3/hh4/hh8/hh7` (region, department, sub-prefecture, ZD, segment), `rgmen` (1 = first interview).
+- `incoherence_code` 10 = ZD without any interview this quarter, dropped. `SR_individu_<T>.dta` = first interviews only (`_WR` = without resurvey), not "with non-response".
+- Outputs: `base_weights/individu_<T>.dta` (calibration input), `calibrated_weights/individu_<T>_CAL.dta` (production), `data/04_weights/<year>/LFS_WEIGHTS_<year>.parquet` (annual).
 
 ## Code Style
 
-- Heavy use of `dplyr` pipes (`%>%`) and `all_of()` for dynamic column selection
-- Vectorized operations preferred over loops
-- Helper functions use named arguments with explicit documentation in comments
-- `cat()` with Unicode box-drawing characters for terminal progress display
-- `tryCatch()` around sourced scripts in master orchestrators
+- `dplyr` pipes (`%>%`), `all_of()` for dynamic columns, vectorised operations.
+- Script headers with `# ====` dividers (name, title, description, usage).
+- Paths relative to the repository root or built from `BASE_DIR`; never a path of a given computer.
 
-## Quality Control Thresholds
+## Quality Control
 
-CV (Coefficient of Variation) interpretation used in quality checks and simulation analysis:
-- < 5% = Excellent
-- 5-10% = Good
-- 10-15% = Moderate
-- \> 15% = Poor
+- Calibration: `X_Summary_Table` (no "Error", `Diff_Known_Tot_Final_Est` = 0, correction factor within [0.95, 1.65], cells ≥ 30), `table_check` (gap ≤ 100), convergence status `ecal.status.production`.
+- `05_quality_control/postestimation_quality.R` flags estimates A (CV < 15 %), B (15–30 %), C (≥ 30 %); its standard errors ignore the sample design (see `docs/MANUEL.md` §10); use `ENE_PRECISION_ESTIMATION` for published precision.

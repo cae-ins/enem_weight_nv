@@ -24,7 +24,7 @@ parse_args <- function(args) {
     sourcedir = "data",
     bucket = Sys.getenv('MINIO_BUCKET', ''),
     prefix = "",
-    endpoint = Sys.getenv('MINIO_ENDPOINT', 'https://192.168.1.230:32639'),
+    endpoint = Sys.getenv('MINIO_ENDPOINT')   # from .env, never written in the code,
     accesskey = Sys.getenv('MINIO_ACCESS_KEY', ''),
     secretkey = Sys.getenv('MINIO_SECRET_KEY', ''),
     dryrun = FALSE,

@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 # Analyse des scripts R — scripts/01_utils/
 
 Ce document décrit chaque script `.R` présent dans le dossier `scripts/01_utils/` : rôle, fonctions principales, jeux de données lus/écrits, dépendances et étapes de transformation. Le but est de fournir une référence rapide pour les développeurs et analystes.

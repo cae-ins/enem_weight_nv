@@ -227,7 +227,7 @@ combined_counts <- mens_enq_counts %>%
 
 final_data <- final_data %>%
   left_join(combined_counts, by = c("region", "depart", "souspref", "ZD")) %>%
-  mutate(segment = 1)
+  mutate(segment = segment_actif(first_trim))  # 1 avant SEGMENT_2_FIRST_QUARTER, 2 ensuite
 
 final_data <- final_data %>%
   select(

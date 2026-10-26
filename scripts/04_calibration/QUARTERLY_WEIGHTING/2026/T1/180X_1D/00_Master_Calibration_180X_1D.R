@@ -58,8 +58,8 @@ ls()
 # install.packages("rstudioapi")
 
 ### To install Regenesees 
- install.packages("devtools")
- devtools::install_github("DiegoZardetto/ReGenesees")
+# install.packages("devtools")
+# devtools::install_github("DiegoZardetto/ReGenesees")
 
 ### or also  
 # install.packages("remotes")
@@ -99,6 +99,10 @@ library("readxl")         # to export R dataframes in excel
 library("writexl")        # to export R dataframes in excel
 library("expss")          # contains unctions to create weighted tables
 library("haven")          # to read and write SPSS and STATA datasets 
+
+###  Batch mode (Rscript): View() does nothing and Excel is not opened, so the calibration
+###  can run on any computer with R; in RStudio the behaviour is unchanged.
+if (!interactive()) View <- function(...) invisible(NULL)
 
 
 
@@ -212,6 +216,15 @@ get_weights_path <- function(target_quarter, use_sr = FALSE) {
 #FILE_LFS_ILO_DER_DTA  <- get_weights_path(TARGET_QUARTER, use_sr = FALSE) 
 FILE_LFS_ILO_DER_DTA  <- get_weights_path(TARGET_QUARTER, use_sr = FALSE) 
 FILE_LFS_ILO_DER_DTA
+
+###  From NR_MODEL_FIRST_QUARTER on, d_weights is the modelled non-response weight and
+###  d_weights_cellules the historical one: both are calibrated (step 04c).
+nr_q_index <- function(q) 4L * as.integer(substr(q, 4, 7)) + as.integer(substr(q, 2, 2))
+if (nr_q_index(TARGET_QUARTER) >= nr_q_index(NR_MODEL_FIRST_QUARTER) &&
+    !"d_weights_cellules" %in% names(read_dta(FILE_LFS_ILO_DER_DTA, n_max = 0))) {
+  stop("d_weights_cellules absent : lancer scripts/03_nonresponse/2_attrition_propensity.R ",
+       "après 3_indivs_weights.R", call. = FALSE)
+}
 
 ###  Let's parameterize the name and path of the RData file with the full sample data 
 
@@ -401,7 +414,7 @@ FILE_LFS_ILO_CAL_DTA_EXPORT <- get_export_path(TARGET_QUARTER, quarter, year, us
 FILE_LFS_ILO_CAL_DTA_EXPORT
 ###  Let's parameterize the name and path of the EXCEL file containing the empty template for table 1 already formatted 
 
-R_SCRIPT_X_FORMATS <- paste0(BASE_DIR,"/scripts/04_calibration/QUARTERLY_WEIGHTING/2025/T4/180X_1D/04f_XFormats_180X_1D.R")
+R_SCRIPT_X_FORMATS <- paste0(BASE_DIR, "/scripts/04_calibration/QUARTERLY_WEIGHTING/", year, "/T", quarter, "/", pathx, "/04f_XFormats_", pathx, ".R")
 #R_SCRIPT_X_FORMATS  = paste0(dir_prog_QW,year,"_T",quarter, xnum, "/", "04f_XFormats_",pathx,".R")
 
  
@@ -484,9 +497,11 @@ source( paste0( PROG_DIR, "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,
 ###
 ##############################################################################################################
 
-xls = xl.get.excel()
-xl.workbook.close(xl.workbook.name = NULL)
-xl.workbook.open( paste0( PROG_DIR , "01_Set_of_constraints_", setx,".xlsx")   )
+if (interactive()) {
+  xls = xl.get.excel()
+  xl.workbook.close(xl.workbook.name = NULL)
+  xl.workbook.open( paste0( PROG_DIR , "01_Set_of_constraints_", setx,".xlsx")   )
+}
 
 
 
@@ -565,7 +580,7 @@ source( paste0( PROG_DIR , "05_Attach_final_weights_to_full_sample_data_", pathx
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "06_Create_Table1_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-source( paste0( PROG_DIR , "06_Create_Table1_", pathx,".R"  ) )
+if (file.exists(paste0(PROG_DIR, "06_Create_Table1_", pathx, ".R"))) source(paste0(PROG_DIR, "06_Create_Table1_", pathx, ".R")) else message("Étape absente du dossier, ignorée : 06_Create_Table1_")
 
 
 
@@ -579,5 +594,5 @@ source( paste0( PROG_DIR , "06_Create_Table1_", pathx,".R"  ) )
 #  rstudioapi::navigateToFile( paste0( dir_prog_565QW , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R") )
 
 ### or run the script below altogether without opening it  
-source( paste0( PROG_DIR , "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx,".R"  ) )
+if (file.exists(paste0(PROG_DIR, "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx, ".R"))) source(paste0(PROG_DIR, "07f_Calculate_Precision_of_levels_with_Regenesees_ver3_", pathx, ".R")) else message("Étape absente du dossier, ignorée : 07f_Calculate_Precision_of_levels_with_Regenesees_ver3_")
 

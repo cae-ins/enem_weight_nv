@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 ## Utilisation rapide — mettre en route le pipeline de pondérations
 
 Avant d'exécuter le code, suivez ces deux préparations initiales :
@@ -32,7 +34,7 @@ Les rosters individuels ne sont pas requis pour les ponderations. Ils ne doivent
 Exemple :
 
 ```powershell
-.\scripts\medallion\03_download_weights_inputs.ps1 -Quarter T1_2026 -Overwrite
+python scripts/medallion/medallion.py download --quarter T1_2026 --overwrite
 ```
 
 ### (i) Préparation des données (scripts utilitaires)

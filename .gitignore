@@ -1,3 +1,6 @@
+# Secrets / configuration locale MinIO (ne jamais committer)
+.env
+
 # Ignorer tous les fichiers .dta partout dans le projet
 **/*.dta
 
@@ -13,6 +16,8 @@
 
 # Ignorer tous les fichiers RData
 **/*.RData
+**/*.rds
+**/*.parquet
 
 # Ignorer tous les dossiers nommés data, à n'importe quel niveau
 **/data/
@@ -25,3 +30,6 @@ config/credentials.json
 "scripts/01_utils/temp_code.R"
 "scripts/04_calibration/QUARTERLY_WEIGHTING/2025/T3/180X_1D - Copie/"
 "scripts/check_calibration.r"
+
+# Historiques de session R
+.Rhistory

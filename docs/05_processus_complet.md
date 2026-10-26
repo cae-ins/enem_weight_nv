@@ -1,3 +1,5 @@
+> **Document historique, non tenu à jour.** La référence est [`docs/MANUEL.md`](MANUEL.md) (méthode, chaîne, MinIO, choix datés) ; le point d'entrée est le [`README`](../README.md).
+
 # Processus complet du projet ENE_SURVEY_WEIGHTS
 
 Ce document decrit le role du projet `ENE_SURVEY_WEIGHTS` dans la chaine de production ENE-M, puis detaille le processus local de production des ponderations.
@@ -58,7 +60,7 @@ La synchronisation est deleguee aux scripts PowerShell du dossier `scripts/medal
 ### Telechargement des inputs
 
 ```powershell
-.\scripts\medallion\03_download_weights_inputs.ps1 -Quarter T1_2026 -Overwrite
+python scripts/medallion/medallion.py download --quarter T1_2026 --overwrite
 ```
 
 Cette etape recupere les bases necessaires a la ponderation et les place dans l'arborescence locale `data/`.
@@ -66,7 +68,7 @@ Cette etape recupere les bases necessaires a la ponderation et les place dans l'
 ### Upload des sorties
 
 ```powershell
-.\scripts\medallion\04_upload_weights_outputs.ps1 -Period quarterly -Quarter T1_2026 -Year 2026 -Overwrite
+python scripts/medallion/medallion.py upload-outputs --quarter T1_2026 --overwrite
 ```
 
 Cette etape publie les resultats valides :

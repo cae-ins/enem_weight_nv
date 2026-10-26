@@ -68,7 +68,9 @@ head(LFS_CALIBRATION_FINAL_WEIGHTS )
 
 ### select the variables to be merged with the full sample
 
-tmp_FINAL_WEIGHTS <- LFS_CALIBRATION_FINAL_WEIGHTS[, c("INDKEY", "FINAL_CORR_FACTOR", "FINAL_WEIGHT")]
+tmp_FINAL_WEIGHTS <- LFS_CALIBRATION_FINAL_WEIGHTS[, intersect(c("INDKEY", "FINAL_CORR_FACTOR", "FINAL_WEIGHT",
+                                                       "FINAL_CORR_FACTOR_cellules", "FINAL_WEIGHT_cellules"),
+                                                     names(LFS_CALIBRATION_FINAL_WEIGHTS))]
 
 head(tmp_FINAL_WEIGHTS) 
 
@@ -107,6 +109,8 @@ vars_to_keep <- c(
   "HHKEY", "PSUKEY", "STRATAKEY",
   "FINAL_CORR_FACTOR", "FINAL_WEIGHT"
 )
+# From T1 2026: reference weights of the historical non-response method.
+vars_to_keep <- c(vars_to_keep, intersect(c("FINAL_CORR_FACTOR_cellules", "FINAL_WEIGHT_cellules"), names(LFS_ILO_CAL)))
 
 LFS_ILO_CAL_sub <- LFS_ILO_CAL[, vars_to_keep]
 dim(LFS_ILO_CAL_sub)

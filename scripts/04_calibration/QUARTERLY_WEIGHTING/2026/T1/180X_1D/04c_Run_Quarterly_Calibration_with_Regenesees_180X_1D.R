@@ -401,7 +401,7 @@ X_Summary_Table <- X_Summaries( numX = xnum,
  
 ### ATTACH THE FORMATS TO THE Xs
  
-source("C:\\Users\\f.migone\\Desktop\\ENE_SURVEY_WEIGHTS\\scripts\\04_calibration\\QUARTERLY_WEIGHTING\\2025\\T4\\180X_1D\\04f_XFormats_180X_1D.R")
+source(R_SCRIPT_X_FORMATS)
  
  
 ### Visualize the results and check that the "Diff_Known_Tot_Final_Est" is zero for all the X because that means that
@@ -465,6 +465,44 @@ sample_data$FINAL_WEIGHT <- weights(calib_lfs)
 ###   Calculate the final correction factors
 
 sample_data$FINAL_CORR_FACTOR <- sample_data$FINAL_WEIGHT / sample_data$d_weights
+
+
+###   From T1 2026: reference calibration of the historical non-response weights
+###   (cells by region, d_weights_cellules), same design, constraints and settings
+###   as calib_lfs above. Kept as FINAL_WEIGHT_cellules for comparison only.
+
+ecal.status.production <- ecal.status   # kept: the reference calibration below overwrites ecal.status
+if (any(unlist(ecal.status.production$return.code) != 0)) {
+  warning("Le calage de production n'a pas convergé (force = TRUE) : vérifier X_Summary_Table et table_check.", call. = FALSE)
+}
+
+if ("d_weights_cellules" %in% names(sample_data)) {
+  design_lfs_cellules <- e.svydesign(data = sample_data,
+                                     ids = ~ PSUKEY + HHKEY,
+                                     strata = ~ STRATAKEY,
+                                     weights = ~ d_weights_cellules,
+                                     fpc = NULL,
+                                     self.rep.str = NULL,
+                                     check.data = TRUE)
+  calib_lfs_cellules <- e.calibrate(design = design_lfs_cellules,
+                                    df.population = popdataframe,
+                                    calmodel = constrains_x,
+                                    partition = ~ DOMAIN ,
+                                    calfun = "logit",
+                                    bounds = c(0.01, 5),
+                                    aggregate.stage = NULL,
+                                    maxit = 30,
+                                    epsilon = 1e-4,
+                                    force = TRUE)
+  if (any(unlist(ecal.status$return.code) != 0)) {
+    stop("Le calage de référence (d_weights_cellules) n'a pas convergé.", call. = FALSE)
+  }
+  sample_data$FINAL_WEIGHT_cellules <- weights(calib_lfs_cellules)
+  sample_data$FINAL_CORR_FACTOR_cellules <- sample_data$FINAL_WEIGHT_cellules / sample_data$d_weights_cellules
+  # Only the weights are kept: the session image (step 05) must hold a single calibrated
+  # design, calib_lfs (read by 08_yearly_weights and the precision pipeline).
+  rm(design_lfs_cellules, calib_lfs_cellules)
+}
 
 
 View(sample_data)

@@ -1,4 +1,5 @@
-use "C:\Users\f.migone\Desktop\ENE_SURVEY_WEIGHTS\data\03_processed\Menage\T3_2025\menage_T3_2025.dta" 
+* Lancer depuis la racine du depot (cd vers ENE_SURVEY_WEIGHTS) : chemins relatifs.
+use "data\03_processed\Menage\T3_2025\menage_T3_2025.dta" 
 drop if interview_key == "59-53-46-55"
 drop if interview_key == "42-51-09-21"
 ed if hh8 == "6005"
