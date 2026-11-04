@@ -90,11 +90,14 @@ ls()
 ###
 ##############################################################################################################
 
-library("rstudioapi")     # to open and closse tabs in Rstudio from syntax
+# rstudioapi and excel.link are only needed for the interactive use in RStudio under Windows;
+# they are loaded only there, so the calibration also runs with Rscript under Linux (JupyterHub).
+WINDOWS_INTERACTIF <- interactive() && .Platform$OS.type == "windows"
+if (WINDOWS_INTERACTIF) library("rstudioapi")     # to open and closse tabs in Rstudio from syntax
 library("ReGenesees")     # to calculate weights, CVs and DEFFs
 library("dplyr")          # to summarize data
 library("summarytools")   # to summarize data
-library("excel.link")     # contains the functions xl.get.excel(), xl.write(), xl.workbook.save()
+if (WINDOWS_INTERACTIF) library("excel.link")     # contains the functions xl.get.excel(), xl.write(), xl.workbook.save()
 library("readxl")         # to export R dataframes in excel
 library("writexl")        # to export R dataframes in excel
 library("expss")          # contains unctions to create weighted tables
@@ -198,6 +201,7 @@ pathx
 ###  Let's parameterize the path of the directory/folder from which we want to read the csv file with the full sample data 
 
 dir_data_DV <- paste0(BASE_DIR , "/data/05_DERIVED_VARIABLES/", year, "/T", quarter , "/" )
+dir.create(dir_data_DV, recursive = TRUE, showWarnings = FALSE)
 dir_data_DV
 
 ##############################################################################################################
@@ -263,6 +267,7 @@ FILE_POP_LFS_BY_REGION_SEX_2AGEGR_RDATA
 ###  Let's parameterize the path of the working directory where the outputs of the calibration will be stored
 
 dir_data_QW <- paste0( BASE_DIR , "/data/07_QUARTERLY_WEIGHTING/", year, "/T", quarter , "/" , pathx,"/")
+dir.create(dir_data_QW, recursive = TRUE, showWarnings = FALSE)
 dir_data_QW
 
 
@@ -411,6 +416,7 @@ get_export_path <- function(target_quarter, quarter, year, use_sr = FALSE) {
 
 # Utilisation
 FILE_LFS_ILO_CAL_DTA_EXPORT <- get_export_path(TARGET_QUARTER, quarter, year, use_sr = FALSE)
+dir.create(dirname(FILE_LFS_ILO_CAL_DTA_EXPORT), recursive = TRUE, showWarnings = FALSE)
 FILE_LFS_ILO_CAL_DTA_EXPORT
 ###  Let's parameterize the name and path of the EXCEL file containing the empty template for table 1 already formatted 
 
@@ -497,7 +503,7 @@ source( paste0( PROG_DIR, "01_Upload_Sample_Data_and_Known_Totals_in_R_", pathx,
 ###
 ##############################################################################################################
 
-if (interactive()) {
+if (WINDOWS_INTERACTIF) {
   xls = xl.get.excel()
   xl.workbook.close(xl.workbook.name = NULL)
   xl.workbook.open( paste0( PROG_DIR , "01_Set_of_constraints_", setx,".xlsx")   )
